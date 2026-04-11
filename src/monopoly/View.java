@@ -8,11 +8,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class View {
+
 
 	
-	//pulling this test javafx code from lab1
-	public class JavaFXTest extends Application {
+//pulling this test javafx code from lab1
+public class View extends Application {
 
 		@Override
 		public void start(Stage stage) throws Exception {
@@ -39,5 +39,6 @@ public class View {
 		public static void main(String[] args) {
 			launch(args);
 		}
+	
 	
 }

@@ -2,6 +2,8 @@ package monopoly;
 
 public abstract class CostSpace extends Space {
 	
-	private int costTotalToChargePlayer;
+	
+	public abstract int getAmountOfCostToChargePlayer(Player player);
+
 	
 }

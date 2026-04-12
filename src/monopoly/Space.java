@@ -1,8 +1,6 @@
 package monopoly;
 
-import java.util.List;
-
-import monopoly.Space.Color;
+import java.util.Set;
 
 public abstract class Space {
 	
@@ -10,7 +8,7 @@ public abstract class Space {
 	public Space nextSpace;
 	public String name;
 	public String description;
-	public List<Player> playersOnSpace;
+	public Set<Player> playersOnSpace;
 	protected Color color;
 	public enum Color{
 		NONE,
@@ -24,6 +22,7 @@ public abstract class Space {
 		BLUE
 		
 	}
+	
 	
 	
 	public void setNextSpace(Space newSpace) {

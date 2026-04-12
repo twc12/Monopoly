@@ -21,7 +21,7 @@ public class Model extends Observable {
 		
 		
 		for (int i=0; i<totalPlayers; i++) {
-			players.add(new Player(i+1));
+			players.add(new Player(i+1,this));
 		}
 	}
 	

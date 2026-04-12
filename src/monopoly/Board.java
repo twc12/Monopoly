@@ -15,9 +15,12 @@ public class Board extends Observable {
 	
 	private LinkedList<Space> spacesLinkedList;
 	public Space firstSpace;
+	public Space jailSpace;
 	
     public Board() {
         spacesLinkedList = new LinkedList<>();
+        
+        jailSpace = new Jail();
         
         //constructing all spaces in an array so i can see them neatly
         Space[] spacesArray = {
@@ -31,7 +34,7 @@ public class Board extends Observable {
             new Chance(),
             new RealEstate(Color.LIGHTBLUE),
             new RealEstate(Color.LIGHTBLUE),				//10
-            new Jail(),
+            jailSpace,
             new RealEstate(Color.PINK),
             new Utility(),
             new RealEstate(Color.PINK),
@@ -86,6 +89,10 @@ public class Board extends Observable {
 	
 	public Space getFirstSpace() {
 		return firstSpace;
+	}
+	
+	public Space getJailSpace() {
+		return jailSpace;
 	}
 	
 	public int getBoardWidth() {

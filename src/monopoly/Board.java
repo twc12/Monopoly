@@ -33,7 +33,6 @@ public class Board extends Observable {
 			if (i==0) {
 				head = current;
 				firstSpace = head;
-				current.setColor(Color.GREEN);
 			}
 			
 			if (i == 1 || i ==3) {
@@ -57,7 +56,7 @@ public class Board extends Observable {
 				current.setColor(Color.RED);
 			}
 			
-			if (i == 25 || i == 26 || i==28) {
+			if (i == 26 || i == 27 || i==29) {
 				current.setColor(Color.YELLOW);
 			}
 			

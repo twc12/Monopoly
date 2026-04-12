@@ -28,7 +28,7 @@ public class Board extends Observable {
 			
 			//building out board with all realestate spaces for now... proof of concept of grid working... sorry alex!
 			
-			Space current = new RealEstate(Space.Color.BLUE);
+			Space current = new RealEstate(Space.Color.NONE);
 			
 			if (i==0) {
 				head = current;
@@ -36,12 +36,38 @@ public class Board extends Observable {
 				current.setColor(Color.GREEN);
 			}
 			
+			if (i == 1 || i ==3) {
+				current.setColor(Color.BROWN);
+			}
 			
+			if (i == 6 || i ==8 || i==9) {
+				current.setColor(Color.LIGHTBLUE);
+			}
 			
+			if (i == 11 || i == 13 || i==14) {
+				current.setColor(Color.PINK);
+			}
 			
+			if (i == 16 || i == 18 || i==19) {
+				current.setColor(Color.ORANGE);
+			}
 			
+		
+			if (i == 21 || i == 23 || i==24) {
+				current.setColor(Color.RED);
+			}
 			
+			if (i == 25 || i == 26 || i==28) {
+				current.setColor(Color.YELLOW);
+			}
 			
+			if (i == 31 || i == 32 || i==34) {
+				current.setColor(Color.GREEN);
+			}
+			
+			if (i == 37 || i == 39) {
+				current.setColor(Color.BLUE);
+			}
 			
 			
 							

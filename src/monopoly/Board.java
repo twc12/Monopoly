@@ -69,13 +69,15 @@ public class Board extends Observable {
         	spacesLinkedList.add(spacesArray[i]);
         }
         
-        
+
         // set .next for each space
-        for (int i = 0; i < spacesLinkedList.size(); i++) {
+        for (int i = 0; i < spacesLinkedList.size()-1; i++) {
         	spacesLinkedList.get(i).setNextSpace(spacesLinkedList.get((i + 1)));
         }
+        firstSpace = spacesLinkedList.get(0); //class attribute firstSpace
+        spacesLinkedList.get(spacesLinkedList.size()-1).setNextSpace(firstSpace); // connecting the last space to the first
+
  
-        firstSpace = spacesLinkedList.get(0);
     }
 	
 	public int getTotalSpaces() {

@@ -17,6 +17,13 @@ public class Player {
     private ArrayList<Property> listOfProperties;
     private int outOfJailCards; 
     private Model model;
+    
+    /**
+     * Constructor for the Player Class
+     * 
+     * @param id the player identification
+     * @param model the model for the player class to interact with
+     */
     public Player(int id, Model model) {
         playerId = id;
         this.model = model;

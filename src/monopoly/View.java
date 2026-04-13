@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
+
 /**
  * File: View.java Purpose: This class holds the java fx view of the class. it
  * will handel user input logic and pass results to the controller. It will
@@ -185,6 +186,7 @@ public class View extends Application {
 		// CURRENTLY DOESNT USE OBJECT FOR ANYTHING
 		// in the future we should pull the image from the space object
 
+<<<<<<< HEAD
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
 		// The size and shape of normal size space

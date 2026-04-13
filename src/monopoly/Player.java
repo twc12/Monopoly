@@ -67,11 +67,14 @@ public class Player {
      * @param ammt: The integer amount of spaces to move forward
      */
     public void move(int ammt) {
+    	currentSpace.getPlayersOnSpace().remove(this);
     	for (int i = 0; i < ammt; i++) {
     		currentSpace = currentSpace.getNextSpace();
     		if(currentSpace == model.board.getFirstSpace())
     			this.addCash(200);
     	}
+    	currentSpace.getPlayersOnSpace().add(this);
+    	
     }
     
     /**
@@ -133,10 +136,4 @@ public class Player {
     	this.addCash(200);
     }
     
-    /*
-     * TODO
-     * 		Add card effect setter after card implementation
-     */
-    
-
 }

@@ -125,7 +125,8 @@ public class View extends Application {
 	    }
 		
 	    private void handleDiceRoll() {
-	    	controller.rollDice();
+	    	//controller.rollDice();
+	    	return;
 	    }
 		
 

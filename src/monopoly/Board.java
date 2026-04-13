@@ -15,7 +15,7 @@ public class Board extends Observable {
 	
 	private LinkedList<Space> spacesLinkedList;
 	public Space firstSpace;
-	public Space jailSpace;
+	public Jail jailSpace;
 	
     public Board() {
         spacesLinkedList = new LinkedList<>();
@@ -54,7 +54,7 @@ public class Board extends Observable {
             new RealEstate(Color.YELLOW),
             new Utility(),
             new RealEstate(Color.YELLOW),					//30
-            new Jail(),
+            new GoToJailSpace(jailSpace),
             new RealEstate(Color.GREEN),
             new RealEstate(Color.GREEN),
             new CommunityChest(),
@@ -99,6 +99,11 @@ public class Board extends Observable {
 		return boardWidth;
 	}
 	
+	/**
+	 * getSpaces(): Returns a list of Space objects
+	 * that make up the board
+	 * @return List<Space>: All the spaces on the board
+	 */
 	public List<Space> getSpaces() {
 	    return spacesLinkedList;
 	}

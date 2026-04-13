@@ -19,6 +19,11 @@ public class Controller {
 		return model.board.getTotalSpaces();
 	}
 	
+	/**
+	 * getSpaces(): Returns a list of Space objects
+	 * that make up the board
+	 * @return List<Space>: All the spaces on the board
+	 */
 	public List<Space> getSpaces(){
 		return model.board.getSpaces();
 	}
@@ -26,6 +31,10 @@ public class Controller {
 	
 	public int getBoardWidth() {
 		return model.board.getBoardWidth();
+	}
+	
+	public Space getFirstSpace() {
+		return model.board.getFirstSpace();
 	}
 	
 	

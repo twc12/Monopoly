@@ -30,4 +30,8 @@ public class Model extends Observable {
 	    return board.getSpaces();
 	}
 	
+	public List<Player> getPlayers() {
+		return players;
+	}
+	
 }

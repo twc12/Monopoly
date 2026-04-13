@@ -5,12 +5,16 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -39,6 +43,10 @@ public class View extends Application {
 			//board
 			GridPane gridPane = buildGridPane();			
 			pane.setCenter(gridPane);		
+			
+			//bottom playerinfo+controls
+			HBox bottomArea = buildBottomSection();
+			pane.setBottom(bottomArea);
 			
 			Scene scene = new Scene(pane, 800, 800);
 			stage.setScene(scene);
@@ -86,15 +94,39 @@ public class View extends Application {
 			
 		}
 		
-		
 		private void addSpaceToGrid(GridPane gridPane, Space space, int col, int row) {
 		    Circle circle = new Circle(20);
 		    circle.setFill(space.getFXColor());
 		    gridPane.add(circle, col, row);
 		}
-				
 		
+	    private HBox buildBottomSection() {
+	        // Player info
+	        Label playerName  = new Label("Player X");
+	        Label playerCash  = new Label("$$$$$$");
+	        Label playerProps = new Label("PROPERTIES OWNED LIST");
+	        VBox playerCard = new VBox(playerName, playerCash, playerProps);
+	        playerCard.setMinWidth(300);
+
+	        // Buttons
+	        Button rollDiceButton         = new Button("Roll Dice");
+	        rollDiceButton.setOnAction(event -> handleDiceRoll());
+	        
+	        Button tradeButton            = new Button("Trade");
+	        Button mortgagePropertyButton = new Button("Mortgage");
+	        Button endTurnButton          = new Button("End Turn");
+
+			FlowPane buttonPane = new FlowPane();
+			buttonPane.getChildren().addAll(rollDiceButton, tradeButton, mortgagePropertyButton, endTurnButton);
+			
+			//returning full bottom section
+	        HBox bottomBox = new HBox(playerCard, buttonPane); //player info card left, buttons right
+	        return bottomBox;
+	    }
 		
+	    private void handleDiceRoll() {
+	    	controller.rollDice();
+	    }
 		
 
 		public static void main(String[] args) {

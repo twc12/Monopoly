@@ -1,8 +1,6 @@
 package monopoly;
 
-import java.util.List;
-
-import monopoly.Space.Color;
+import java.util.Set;
 
 public abstract class Space {
 	
@@ -10,8 +8,8 @@ public abstract class Space {
 	public Space nextSpace;
 	public String name;
 	public String description;
-	public List<Player> playersOnSpace;
-	protected Color color;
+	public Set<Player> playersOnSpace;
+	protected Color color = Color.NONE; //default to none
 	public enum Color{
 		NONE,
 		BROWN,
@@ -24,6 +22,7 @@ public abstract class Space {
 		BLUE
 		
 	}
+	
 	
 	
 	public void setNextSpace(Space newSpace) {
@@ -44,6 +43,7 @@ public abstract class Space {
 	
 	
     public javafx.scene.paint.Color getFXColor() {
+    	
         switch (color) {
             case BLUE:
                 return javafx.scene.paint.Color.BLUE;
@@ -62,7 +62,7 @@ public abstract class Space {
             case YELLOW:
                 return javafx.scene.paint.Color.YELLOW;
 			default:
-				return javafx.scene.paint.Color.WHITE;
+				return javafx.scene.paint.Color.LIGHTGREEN;
         }
         
     }

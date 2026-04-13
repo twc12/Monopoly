@@ -1,7 +1,7 @@
 package monopoly;
 
 import java.util.Set;
-
+import javafx.scene.paint.Color;
 public abstract class Space {
 	
 	
@@ -12,7 +12,7 @@ public abstract class Space {
 	protected Color color = Color.NONE; //default to none
 	public enum Color{
 		NONE,
-		BROWN,
+		BROWN(),
 		LIGHTBLUE,
 		PINK,
 		ORANGE,
@@ -23,7 +23,13 @@ public abstract class Space {
 		
 	}
 	
+	public String getName() {
+		return name;
+	}
 	
+	public Set<Player> getPlayersOnSpace(){
+		return playersOnSpace;
+	}
 	
 	public void setNextSpace(Space newSpace) {
 		nextSpace = newSpace;

@@ -20,7 +20,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 
-
 	
 //pulling this test javafx code from lab1
 public class View extends Application {
@@ -128,11 +127,11 @@ public class View extends Application {
 	    	//controller.rollDice();
 	    	return;
 	    }
-		
-
+	    
 		public static void main(String[] args) {
 			launch(args);
 		}
 	
-	
+		
+		
 }

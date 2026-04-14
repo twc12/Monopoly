@@ -3,6 +3,7 @@ package monopoly;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Stack;
 
 
 // game state
@@ -13,11 +14,20 @@ public class Model extends Observable {
 	private List<Player> players;
 	private Player currentPlayer;
 	
+	private Stack<Card> chanceCards;
+	private Stack<Card> communityChestCards;
+	
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
 		this.addObserver(viewClassObj);
 		board = new Board();
+		
+		
+		Deck deck = new Deck();
+		chanceCards = deck.getChanceCards();
+		communityChestCards = deck.getCommunityChestCards();
+
 		
 		players = new ArrayList<>();
 		

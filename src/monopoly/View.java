@@ -405,6 +405,7 @@ public class View extends Application implements Observer{
 		Button mortgagePropertyButton = new Button("Mortgage");
 		Button endTurnButton = new Button("End Turn");
 		this.endTurnButton = endTurnButton;
+		endTurnButton.setDisable(true); //initially will be disabled until dice roll
 		endTurnButton.setOnAction((event) -> {
 			handleEndTurnButton();
 		});
@@ -446,16 +447,8 @@ public class View extends Application implements Observer{
 	 */
 	private void handleEndTurnButton() {
 		infoToTellPlayer.setText(""); // Clear the error info 
-		// if the current player can still roll dice then dont allow their turn to be over
-		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
-			endTurnButton.setDisable(true);
-			// TESTING
-			System.out.println("handleEndTurnButton: Attempting to tell user with label");
-			infoToTellPlayer.setText("Cannot end turn, you can still roll dice!");
-		}
-		else {
-			controller.processEndTurn();
-		}
+		controller.processEndTurn();
+		endTurnButton.setDisable(true);
 	}
 
 	/**
@@ -463,16 +456,11 @@ public class View extends Application implements Observer{
 	 * the "Roll Dice" button
 	 */
 	private void handleDiceRoll() {
-		// if the player is done rolling dice then dont allow them to roll dice
-		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-			infoToTellPlayer.setText("You can no longer roll!");
-			// disable the roll dice button because they finished rolling
-			rollDiceButton.setDisable(true);
-			return;
-		}
+
 		
 		
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn. 
+		
 		// TESTING
 		System.out.println("handleDiceRol: called");
 		
@@ -489,7 +477,18 @@ public class View extends Application implements Observer{
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
 		}
-		endTurnButton.setDisable(false);
+		
+		// if the player is done rolling dice then dont allow them to roll dice
+		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+			// disable the roll dice button because they finished rolling
+			rollDiceButton.setDisable(true);
+			endTurnButton.setDisable(false);
+		} else { //must have rolled doubles
+			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
+
+		}
+		
+		
 		return;
 	}
 	

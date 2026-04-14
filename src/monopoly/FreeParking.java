@@ -3,14 +3,19 @@ package monopoly;
 
 public class FreeParking extends Space {
 
-	private int freeParkingReward;
+	private int currFreeParkingReward;
+	
+	public FreeParking() {
+		super("FreeParkingSpace");
+		currFreeParkingReward = 0;
+	}
 	
 	public void addCashToFreeParkingReward(int cashAmount) {
-		freeParkingReward += cashAmount;
+		currFreeParkingReward += cashAmount;
 	}
 	
 	public int getFreeParkingRewardAmount() {
-		return freeParkingReward;
+		return currFreeParkingReward;
 	}
 	
 }

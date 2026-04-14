@@ -3,6 +3,10 @@ package monopoly;
 public class Utility extends Property {
 	
 	
+	public Utility() {
+		super("UtilitySpace");
+	}
+	
 	//will need to multiply this amount by the dice roll...
     public int getAmountOfCostToChargePlayer(Player player) {
     	

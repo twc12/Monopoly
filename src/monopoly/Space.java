@@ -1,5 +1,6 @@
 package monopoly;
 
+import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.paint.Color;
 public abstract class Space {
@@ -21,6 +22,27 @@ public abstract class Space {
 		GREEN,
 		BLUE
 		
+	}
+	
+	/**
+	 * Constructor: Initualizes a space to null everything
+	 */
+	public Space() {
+		nextSpace = null;
+		name = "Nameless";
+		description = "Descriptionless";
+		playersOnSpace = new HashSet<Player>();
+	}
+	
+	/**
+	 * Constructor: Initualizes a space 
+	 * @param name (String): The name of the space "BoardWalk"
+	 */
+	public Space(String name) {
+		nextSpace = null;
+		this.name = name;
+		description = "Descriptionless";
+		playersOnSpace = new HashSet<Player>();
 	}
 	
 	public String getName() {

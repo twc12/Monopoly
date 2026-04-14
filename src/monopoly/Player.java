@@ -17,6 +17,7 @@ public class Player {
     private ArrayList<Property> listOfProperties;
     private int outOfJailCards; 
     private Model model;
+    private boolean isDoneRollingDice;
     
     /**
      * Constructor for the Player Class
@@ -34,6 +35,7 @@ public class Player {
         currentSpace = model.board.getFirstSpace();
         listOfProperties = new ArrayList<Property>();
         outOfJailCards = 0;
+        isDoneRollingDice = false;
     }
     
     /**
@@ -70,7 +72,7 @@ public class Player {
     	currentSpace.getPlayersOnSpace().remove(this);
     	for (int i = 0; i < ammt; i++) {
     		currentSpace = currentSpace.getNextSpace();
-    		if(currentSpace == model.board.getFirstSpace())
+    		if(currentSpace instanceof GoSpace)
     			this.addCash(200);
     	}
     	currentSpace.getPlayersOnSpace().add(this);
@@ -134,6 +136,22 @@ public class Player {
     	//TODO add dynamic go amount
     	currentSpace = model.board.getFirstSpace();
     	this.addCash(200);
+    }
+    
+    /**
+     * Returns if the player is done rolling dice 
+     * @return Boolean: True if the player is done rolling dice 
+     */
+    public boolean getIsDoneRollingDice() {
+    	return isDoneRollingDice;
+    }
+    
+    /**
+     * Setter for saying if this player is done rolling dice
+     * @param playerIsDoneRollingDice (bool): True if the player is done rolling dice 
+     */
+    public void setIsDoneRollingDice(boolean playerIsDoneRollingDice) {
+    	isDoneRollingDice = playerIsDoneRollingDice;
     }
     
 }

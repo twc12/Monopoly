@@ -7,6 +7,9 @@ public abstract class Property extends CostSpace {
 	private boolean isMortgaged;
 	private int stageModifier;
 	
+	public Property(String name) {
+		super(name);
+	}
 	
 	public Player getOwner() {
 		return owner;

@@ -66,6 +66,9 @@ public class View extends Application implements Observer{
 	 */
 	private Group bottomLeftPlayerCardGroup;
 	
+	private Button rollDiceButton; // used to grey out when unavailable 
+	private Button endTurnButton; // used to grey out unavailable
+	
 	/**
 	 * This is to tell the user any important messages
 	 */
@@ -395,11 +398,13 @@ public class View extends Application implements Observer{
 
 		// Buttons
 		Button rollDiceButton = new Button("Roll Dice");
+		this.rollDiceButton = rollDiceButton;
 		rollDiceButton.setOnAction(event -> handleDiceRoll());
 
 		Button tradeButton = new Button("Trade");
 		Button mortgagePropertyButton = new Button("Mortgage");
 		Button endTurnButton = new Button("End Turn");
+		this.endTurnButton = endTurnButton;
 		endTurnButton.setOnAction((event) -> {
 			handleEndTurnButton();
 		});
@@ -443,6 +448,7 @@ public class View extends Application implements Observer{
 		infoToTellPlayer.setText(""); // Clear the error info 
 		// if the current player can still roll dice then dont allow their turn to be over
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
+			endTurnButton.setDisable(true);
 			// TESTING
 			System.out.println("handleEndTurnButton: Attempting to tell user with label");
 			infoToTellPlayer.setText("Cannot end turn, you can still roll dice!");
@@ -460,6 +466,8 @@ public class View extends Application implements Observer{
 		// if the player is done rolling dice then dont allow them to roll dice
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			infoToTellPlayer.setText("You can no longer roll!");
+			// disable the roll dice button because they finished rolling
+			rollDiceButton.setDisable(true);
 			return;
 		}
 		
@@ -481,6 +489,7 @@ public class View extends Application implements Observer{
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
 		}
+		endTurnButton.setDisable(false);
 		return;
 	}
 	
@@ -719,6 +728,8 @@ public class View extends Application implements Observer{
 		else if (message instanceof NextPlayerMessage) {
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
+			rollDiceButton.setDisable(false);
+			endTurnButton.setDisable(false);
 		}
 		
 		

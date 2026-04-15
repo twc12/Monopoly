@@ -101,10 +101,13 @@ public class Player {
      */
     public void putInJail() {
     	inJail = true;
+    	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (!(currentSpace instanceof Jail)) {
+    		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
     }
     
     /**
@@ -137,21 +140,30 @@ public class Player {
      * specified amount of cash to player.
      */
     public void advanceToGo() {
+    	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
-    	currentSpace = model.board.getFirstSpace();
+    	while (!(currentSpace instanceof GoSpace)) {
+    		ammtMoved++;
+    		currentSpace = currentSpace.getNextSpace();
+    	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
     	currentSpace.processSpace(this, model);
     }
+    
     
     /**
      * Advances player to nearest Railroad
      */
     public void advanceToRailroad() {
+    	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (!(currentSpace instanceof Railroad)) {
     		if(currentSpace instanceof GoSpace)
     			currentSpace.processSpace(this, model);
+    		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
     	currentSpace.processSpace(this, model);
     }
     
@@ -174,12 +186,15 @@ public class Player {
      * Advances player to nearest utility
      */
     public void advanceToUtility() {
+    	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (!(currentSpace instanceof Utility)) {
     		if(currentSpace instanceof GoSpace)
     			currentSpace.processSpace(this, model);
+    		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
     	currentSpace.processSpace(this, model);
     }
     

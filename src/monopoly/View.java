@@ -836,11 +836,17 @@ public class View extends Application implements Observer {
 			cardTitle.setText("Community Chest");
 	    cardLabel.setText(card.getDescription());
 	    cardOverlay.setVisible(true);
+	    if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+			// disable the roll dice button because they finished rolling
+			rollDiceButton.setDisable(true);
+			endTurnButton.setDisable(false);
+	    }
 
 	    cardOverlay.setOnMouseClicked(e -> {
 	        cardOverlay.setVisible(false);
 	        cardOverlay.setOnMouseClicked(null);
 	        controller.resolveCard(card, controller.getCurrentPlayer());
+	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
 	        e.consume();
 	    });
 	}

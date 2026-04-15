@@ -93,4 +93,7 @@ public abstract class Space {
     }
 
 	protected abstract void processSpace(Player player, Model model);
+
+		
+	
 }

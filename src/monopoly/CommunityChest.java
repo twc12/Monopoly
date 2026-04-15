@@ -8,7 +8,8 @@ public class CommunityChest extends Space {
 
 	@Override
 	protected void processSpace(Player player, Model model) {
-		// TODO Auto-generated method stub
+		Card card = model.getChanceCards().pop();
+		model.notifyViewCardDrawn(player, card);
 		
 	}
 }

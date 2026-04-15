@@ -71,10 +71,11 @@ public class Player {
     public void move(int ammt) {
     	currentSpace.getPlayersOnSpace().remove(this);
     	for (int i = 0; i < ammt; i++) {
-    		currentSpace = currentSpace.getNextSpace();
     		if(currentSpace instanceof GoSpace)
-    			this.addCash(200);
+    			currentSpace.processSpace(this, model);
+    		currentSpace = currentSpace.getNextSpace();
     	}
+    	currentSpace.processSpace(this, model);
     	currentSpace.getPlayersOnSpace().add(this);
     	
     }
@@ -100,7 +101,10 @@ public class Player {
      */
     public void putInJail() {
     	inJail = true;
-    	//TODO move to jail space
+    	currentSpace.getPlayersOnSpace().remove(this);
+    	while (!(currentSpace instanceof Jail)) {
+    		currentSpace = currentSpace.getNextSpace();
+    	}
     }
     
     /**
@@ -133,9 +137,50 @@ public class Player {
      * specified amount of cash to player.
      */
     public void advanceToGo() {
-    	//TODO add dynamic go amount
+    	currentSpace.getPlayersOnSpace().remove(this);
     	currentSpace = model.board.getFirstSpace();
-    	this.addCash(200);
+    	currentSpace.processSpace(this, model);
+    }
+    
+    /**
+     * Advances player to nearest Railroad
+     */
+    public void advanceToRailroad() {
+    	currentSpace.getPlayersOnSpace().remove(this);
+    	while (!(currentSpace instanceof Railroad)) {
+    		if(currentSpace instanceof GoSpace)
+    			currentSpace.processSpace(this, model);
+    		currentSpace = currentSpace.getNextSpace();
+    	}
+    	currentSpace.processSpace(this, model);
+    }
+    
+    /**
+     * Advances player to a specific property
+     * 
+     * @param name property to move to
+     */
+    public void advanceToProperty(String name) {
+    	currentSpace.getPlayersOnSpace().remove(this);
+    	while (currentSpace.getName() != name) {
+    		if(currentSpace instanceof GoSpace)
+    			currentSpace.processSpace(this, model);
+    		currentSpace = currentSpace.getNextSpace();
+    	}
+    	currentSpace.processSpace(this, model);
+    }
+    
+    /**
+     * Advances player to nearest utility
+     */
+    public void advanceToUtility() {
+    	currentSpace.getPlayersOnSpace().remove(this);
+    	while (!(currentSpace instanceof Utility)) {
+    		if(currentSpace instanceof GoSpace)
+    			currentSpace.processSpace(this, model);
+    		currentSpace = currentSpace.getNextSpace();
+    	}
+    	currentSpace.processSpace(this, model);
     }
     
     /**

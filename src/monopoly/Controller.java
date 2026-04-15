@@ -239,6 +239,10 @@ public class Controller {
 		int cost = space.getCostToCharge(player);
 		player.addCash(-cost);
 	}
+	
+	public void resolveCard(Card card, Player player) {
+		card.apply(player, model);
+	}
 
 	/**
 	 * 
@@ -291,5 +295,7 @@ public class Controller {
 	public List<Player> getAllPlayers(){
 		return model.getPlayers();
 	}
+	
+	
 	
 }

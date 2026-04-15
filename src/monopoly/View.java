@@ -31,6 +31,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -98,6 +99,14 @@ public class View extends Application implements Observer {
 	 * we can get the object that should be translated for every move.
 	 */
 	private Map<Player, Circle> playerObjToPlayerPiece;
+	
+	private Label cardLabel;
+	
+	private StackPane cardOverlay;
+	
+	private Label cardTitle;
+	
+	private StackPane root;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -141,6 +150,8 @@ public class View extends Application implements Observer {
 			
 			// initualize which pane the player is one 
 			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
+			
+			
 		}
 		
 		
@@ -151,7 +162,16 @@ public class View extends Application implements Observer {
 		BorderPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
 
-		Scene scene = new Scene(mainScreen, 800, 600);
+		// ADDED: root StackPane so overlay can sit above mainScreen
+		root = new StackPane();
+		root.getChildren().add(mainScreen);
+
+		// ADDED: build and attach the card overlay
+		buildCardOverlay();
+		root.getChildren().add(cardOverlay);
+
+		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
+		Scene scene = new Scene(root, 800, 600);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
@@ -747,6 +767,82 @@ public class View extends Application implements Observer {
 			controller.executePropertySale(player, property);
 		}
 		
+		if (message instanceof CardDrawnMessage) {
+		    CardDrawnMessage msg = (CardDrawnMessage) message;
+		    showCard(msg.getCard());
+		}
+		
+		
+		
+	}
+	
+	/**
+	 * Adds an Overlay to the board that can display a card.
+	 */
+	private void buildCardOverlay() {
+		// Sizing
+		int width = 350;
+		int height = 220;
+		
+	    StackPane overlay = new StackPane();
+	    overlay.setVisible(false);
+	    overlay.setStyle("-fx-background-color: rgba(0,0,0,0);");
+
+	    VBox cardBox = new VBox();
+	    cardBox.setAlignment(Pos.CENTER);
+	
+	    cardBox.setMaxWidth(width); 
+	    cardBox.setMaxHeight(height);
+	    
+	    // Change style here
+	    cardBox.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: 3;" +
+	        "-fx-padding: 20;"
+	    );
+	    
+	    // Title label
+	    cardTitle = new Label();
+	    cardTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+
+	    // Card description
+	    cardLabel = new Label();
+	    cardLabel.setWrapText(true);
+	    cardLabel.setTextAlignment(TextAlignment.CENTER);
+	    cardLabel.setAlignment(Pos.CENTER);
+	    cardLabel.setStyle("-fx-font-size: 16px;");
+
+	    Label continueLabel = new Label("Click to continue");
+	    continueLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
+
+	    cardBox.getChildren().addAll(cardTitle, cardLabel, continueLabel);
+	    overlay.getChildren().add(cardBox);
+
+
+	    cardOverlay = overlay;
+	}
+	
+	/**
+	 * Used for displaying and updating the card Overlay when a card
+	 * space is hit.
+	 * 
+	 * @param card
+	 */
+	public void showCard(Card card) {
+		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
+			cardTitle.setText("Chance");		
+		else
+			cardTitle.setText("Community Chest");
+	    cardLabel.setText(card.getDescription());
+	    cardOverlay.setVisible(true);
+
+	    cardOverlay.setOnMouseClicked(e -> {
+	        cardOverlay.setVisible(false);
+	        cardOverlay.setOnMouseClicked(null);
+	        controller.resolveCard(card, controller.getCurrentPlayer());
+	        e.consume();
+	    });
 	}
 
 }

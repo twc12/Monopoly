@@ -76,6 +76,14 @@ public class Model extends Observable {
 		return currentPlayer;
 	}
 	
+	public Stack<Card> getChanceCards(){
+		return chanceCards;
+	}
+	
+	public Stack<Card> getCommunityChestCards(){
+		return communityChestCards;
+	}
+	
 	/**
 	 * notifyViewOfDiceResult(dice1Result, dice2Result): This function
 	 * will tell the view object the results of the players dice roll 
@@ -127,6 +135,13 @@ public class Model extends Observable {
 		this.setChanged();
 		this.notifyObservers(purchasePromptMessage);
 		this.clearChanged();		
+	}
+	
+	public void notifyViewCardDrawn(Player player, Card card) {
+	    CardDrawnMessage cardDrawnMessage = new CardDrawnMessage(player, card);
+	    this.setChanged();
+	    this.notifyObservers(cardDrawnMessage);
+	    this.clearChanged();
 	}
 	
 }

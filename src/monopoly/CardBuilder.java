@@ -74,9 +74,15 @@ public class CardBuilder {
 		
 		
 //		TODO advance to cards
-//		chanceCards.add(new Card("", (player,model)->{
-//			;
-//		}));
+		chanceCards.add(new Card("Advance To Railroad", (player,model)->{
+			player.advanceToRailroad();
+		}));
+		
+		chanceCards.add(new Card("Advance To Utility", (player,model)->{
+			player.advanceToUtility();
+		}));
+		
+		
 		
 //		TODO when access to players from model implement Player Interaction Card
 //		chanceCards.add(new Card("", (player,model)->{
@@ -156,15 +162,19 @@ public class CardBuilder {
 			player.addCash(20);
 		}));
 		
-//		TODO street repairs
+//		TODO street repairs, need house implementation
 //		communityChestCards.add(new Card("You Are Assessed For\nStreet Repairs\n", (player,model)->{
 //			;
 //		}));
 		
-//		TODO Grand Opera
-//		communityChestCards.add(new Card("Grand Opera Opening\nCollect $50 from\nEvery Player", (player,model)->{
-//			;
-//		}));
-		
+		communityChestCards.add(new Card("Grand Opera Opening\nCollect $50 from\nEvery Player", (player,model)->{
+			for(Player opponent : model.getPlayers()) {
+				if(!player.equals(opponent)) {
+					opponent.addCash(-50);
+					player.addCash(50);
+				}
+			}
+		}));
+	
 	}
 }

@@ -17,5 +17,11 @@ public class FreeParking extends Space {
 	public int getFreeParkingRewardAmount() {
 		return currFreeParkingReward;
 	}
+
+	@Override
+	protected void processSpace(Player player, Model model) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -16,6 +16,12 @@ public class Jail extends Space {
 	public Set<Player> getCurrentPlayersInJail(){
 		return currPlayersInJail;
 	}
+
+	@Override
+	protected void processSpace(Player player, Model model) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

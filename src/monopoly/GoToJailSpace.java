@@ -16,6 +16,12 @@ public class GoToJailSpace extends Space {
 	public Jail getJailSpace() {
 		return jailSpaceObject;
 	}
+
+	@Override
+	protected void processSpace(Player player, Model model) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

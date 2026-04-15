@@ -15,4 +15,10 @@ public class GoSpace extends Space {
 	public void setAmountEarnedWhenPassingGo(int newAmount) {
 		this.amountEarnedWhenPassingGo = newAmount;
 	}
+
+	@Override
+	protected void processSpace(Player player, Model model) {
+		// TODO Auto-generated method stub
+		
+	}
 }

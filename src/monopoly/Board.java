@@ -29,7 +29,7 @@ public class Board extends Observable {
             new CommunityChest(),							//3
             new RealEstate(Color.BROWN, "Baltic Avenue", 60),					//4
             new TaxSpace(TaxSpace.TaxSpaceType.INCOME),		//5
-            new Railroad(),									
+            new Railroad("Reading Railroad"),									
             new RealEstate(Color.LIGHTBLUE, "Oriental Avenue", 100),
             new Chance(),
             new RealEstate(Color.LIGHTBLUE, "Vermont Avenue", 100),
@@ -39,7 +39,7 @@ public class Board extends Observable {
             new Utility("Electric Company"),
             new RealEstate(Color.PINK, "States Avenue", 140),
             new RealEstate(Color.PINK, "Virginia Avenue", 160),						//15
-            new Railroad(),
+            new Railroad("Pennsylvania Railroad"),									
             new RealEstate(Color.ORANGE,"St. James Place", 180),
             new CommunityChest(),
             new RealEstate(Color.ORANGE, "Tennessee Avenue", 180),
@@ -49,7 +49,7 @@ public class Board extends Observable {
             new Chance(),
             new RealEstate(Color.RED, "Indiana Avenue", 220),
             new RealEstate(Color.RED, "Illinois Avenue", 240),						//25
-            new Railroad(),
+            new Railroad("B. & O. Railroad"),
             new RealEstate(Color.YELLOW, "Atlantic Avenue", 260),
             new RealEstate(Color.YELLOW, "Ventnor Avenue", 260),
             new Utility("Water Works"),
@@ -59,7 +59,7 @@ public class Board extends Observable {
             new RealEstate(Color.GREEN, "North Carolina Avenue", 300),
             new CommunityChest(),
             new RealEstate(Color.GREEN, "Pennsylvania Avenue", 320),					//35
-            new Railroad(),
+            new Railroad("Short Line"),
             new Chance(),
             new RealEstate(Color.BLUE, "Park Place", 350),
             new TaxSpace(TaxSpace.TaxSpaceType.LUXURY),

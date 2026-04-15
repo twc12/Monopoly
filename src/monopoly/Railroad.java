@@ -2,8 +2,8 @@ package monopoly;
 
 public class Railroad extends Property {
 	
-	public Railroad() {
-		super("Railroad", 200);
+	public Railroad(String name) {
+		super(name, 200);
 	}
 
 	@Override

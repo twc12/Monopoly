@@ -3,18 +3,17 @@ package monopoly;
 public class Utility extends Property {
 	
 	
-	public Utility() {
-		super("UtilitySpace");
+	public Utility(String name) {
+		super(name, 150);
 	}
 	
 	//will need to multiply this amount by the dice roll...
-    public int getAmountOfCostToChargePlayer(Player player) {
+    public int getCostToCharge(Player player) {
     	
     	// if not owned, or is mortgaged, return 0
         if (getOwner() == null || this.getIsMortgaged()) {
         	return 0;
         }
- 
         
         //check how many utilities the owner owns. if owns 2, return 10. otherwise 4. 
         int ownedPropertyCount = 0;
@@ -27,7 +26,5 @@ public class Utility extends Property {
         return 4;
         
     }
-	
-	
 
 }

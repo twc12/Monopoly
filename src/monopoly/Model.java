@@ -121,5 +121,12 @@ public class Model extends Observable {
 		this.notifyObservers(nextPlayerMessage);
 		this.clearChanged();
 	}
+
+	public void notifyViewPurchasePrompt(Player currentPlayer, Property property) {
+		PurchasePromptMessage purchasePromptMessage = new PurchasePromptMessage(currentPlayer, property);
+		this.setChanged();
+		this.notifyObservers(purchasePromptMessage);
+		this.clearChanged();		
+	}
 	
 }

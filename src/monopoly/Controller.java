@@ -39,12 +39,19 @@ public class Controller {
 		
 		// Move player 
 		player.move(ammtMoved);
+		model.notifyViewOfPlayerMoved(player, ammtMoved);
+
+		player.getCurrentSpace().processSpace(player, model);
 		 
 		//TODO
 		//	process on enter space logic
 		
-		model.notifyViewOfPlayerMoved(player, ammtMoved);
 	}
+	
+	public void executePropertySale (Player player, Property property) {
+		player.addProperty(property);
+	}
+	
 	
 	/**
 	 * This is called from the view when the player presses "end turn"
@@ -166,7 +173,7 @@ public class Controller {
 		}
 		// Owned by someone else - Calculate player payment
 		if (!owner.equals(player)) {
-			int cost = utility.getAmountOfCostToChargePlayer(player);
+			int cost = utility.getCostToCharge(player);
 			// TODO: Apply the exchange of money to both the player and the owner
 		}
 		// Owned by current player - do nothing
@@ -225,7 +232,7 @@ public class Controller {
 	 * @param player
 	 */
 	private void processTaxSpace(TaxSpace space, Player player) {
-		int cost = space.getAmountOfCostToChargePlayer(player);
+		int cost = space.getCostToCharge(player);
 		player.addCash(-cost);
 	}
 

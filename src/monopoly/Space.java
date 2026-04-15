@@ -8,12 +8,11 @@ public abstract class Space {
 	
 	public Space nextSpace;
 	public String name;
-	public String description;
 	public Set<Player> playersOnSpace;
 	protected Color color = Color.NONE; //default to none
 	public enum Color{
 		NONE,
-		BROWN(),
+		BROWN,
 		LIGHTBLUE,
 		PINK,
 		ORANGE,
@@ -30,7 +29,6 @@ public abstract class Space {
 	public Space() {
 		nextSpace = null;
 		name = "Nameless";
-		description = "Descriptionless";
 		playersOnSpace = new HashSet<Player>();
 	}
 	
@@ -41,7 +39,6 @@ public abstract class Space {
 	public Space(String name) {
 		nextSpace = null;
 		this.name = name;
-		description = "Descriptionless";
 		playersOnSpace = new HashSet<Player>();
 	}
 	
@@ -94,4 +91,6 @@ public abstract class Space {
         }
         
     }
+
+	protected abstract void processSpace(Player player, Model model);
 }

@@ -5,7 +5,7 @@ public class GoSpace extends Space {
 	private int amountEarnedWhenPassingGo = 200;
 	
 	public GoSpace() {
-		super("GoSpace");
+		super("GO");
 	}
 	
 	public int getAmountEarnedWhenPassingGo() {

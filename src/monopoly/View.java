@@ -9,14 +9,12 @@ import java.util.Observer;
 import java.util.Random;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
@@ -39,13 +37,13 @@ import javafx.stage.Stage;
 
 /**
  * File: View.java Purpose: This class holds the java fx view of the class. it
- * will handel user input logic and pass results to the controller. It will
+ * will handle user input logic and pass results to the controller. It will
  * animate the dice. It will also show different views of the player
  * 
  * @author Alex Myers
  * @author Jake
  */
-public class View extends Application implements Observer{
+public class View extends Application implements Observer {
 
 	private Controller controller;
 	private int widthOfPropertySpaceCards = 30;
@@ -485,7 +483,6 @@ public class View extends Application implements Observer{
 			endTurnButton.setDisable(false);
 		} else { //must have rolled doubles
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
-
 		}
 		
 		
@@ -731,6 +728,19 @@ public class View extends Application implements Observer{
 			endTurnButton.setDisable(false);
 		}
 		
+		else if (message instanceof PurchasePromptMessage) {
+			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
+			
+			Alert a = new Alert(Alert.AlertType.ERROR);
+			a.setTitle("FOR SALE");
+			a.setHeaderText("Do you want to purchase " + purchasePromptMsg.getProperty().getName() + "?");
+			a.setContentText("YES/NO Cost: $" + purchasePromptMsg.getProperty().getPurchaseAmount());
+			a.showAndWait();
+			
+			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
+			
+			//TODO if user clicks "yes"... call controller.executePropertySale
+		}
 		
 	}
 

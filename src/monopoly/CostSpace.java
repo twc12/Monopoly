@@ -6,7 +6,7 @@ public abstract class CostSpace extends Space {
 		super(name);
 	}
 	
-	public abstract int getAmountOfCostToChargePlayer(Player player);
+	public abstract int getCostToCharge(Player player);
 
 	
 }

@@ -17,7 +17,7 @@ public class TaxSpace extends CostSpace{
 		this.taxSpaceType = type;
 	}
 
-	public int getAmountOfCostToChargePlayer(Player player) {
+	public int getCostToCharge(Player player) {
 		
 		if (taxSpaceType.equals(TaxSpaceType.LUXURY)) {
 			return luxuryTaxFlatAmount;
@@ -33,4 +33,11 @@ public class TaxSpace extends CostSpace{
 		}
 		
 	}
+
+	protected void processSpace(Player player, Model model) {
+		player.addCash(-getCostToCharge(player));
+		//TODO ank.addCash(getCostToCharge(player));
+		
+	}
+
 }

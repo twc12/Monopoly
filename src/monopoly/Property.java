@@ -16,6 +16,10 @@ public abstract class Property extends CostSpace {
 		return owner;
 	}
 	
+	public void setOwner(Player player) {
+		this.owner = player;
+	}
+	
 	public boolean getIsMortgaged() {
 		return isMortgaged;
 	}

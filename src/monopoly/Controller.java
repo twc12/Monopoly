@@ -49,7 +49,11 @@ public class Controller {
 	}
 	
 	public void executePropertySale (Player player, Property property) {
+		
+		player.addCash(-property.getPurchaseAmount());		
 		player.addProperty(property);
+		property.setOwner(player);
+		
 	}
 	
 	

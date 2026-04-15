@@ -485,6 +485,7 @@ public class View extends Application implements Observer {
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
 		}
 		
+		populatePlayerCardWithNewInfo(currentPlayer);  //refresh player card after dice-roll phase resolves
 		
 		return;
 	}
@@ -730,16 +731,20 @@ public class View extends Application implements Observer {
 		
 		else if (message instanceof PurchasePromptMessage) {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
+			Player player = purchasePromptMsg.getCurrentPlayer();
+			Property property = purchasePromptMsg.getProperty();
+			
 			
 			Alert a = new Alert(Alert.AlertType.ERROR);
 			a.setTitle("FOR SALE");
-			a.setHeaderText("Do you want to purchase " + purchasePromptMsg.getProperty().getName() + "?");
-			a.setContentText("YES/NO Cost: $" + purchasePromptMsg.getProperty().getPurchaseAmount());
+			a.setHeaderText("Do you want to purchase " + property.getName() + "?");
+			a.setContentText("YES/NO Cost: $" + property.getPurchaseAmount());
 			a.showAndWait();
 			
 			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
 			
-			//TODO if user clicks "yes"... call controller.executePropertySale
+			//TODO if player clicks yes, execute the below. currently always assuming yes
+			controller.executePropertySale(player, property);
 		}
 		
 	}

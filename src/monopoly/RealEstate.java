@@ -8,6 +8,8 @@ public class RealEstate extends Property {
 	}
 
 	public int getCostToCharge(Player player) {
+		
+		System.out.println("get cost to charge not implemented yet, sorry");
 		// TODO Auto-generated method stub
 		return 0;
 	}

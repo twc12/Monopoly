@@ -67,6 +67,7 @@ public class View extends Application implements Observer {
 	
 	private Button rollDiceButton; // used to grey out when unavailable 
 	private Button endTurnButton; // used to grey out unavailable
+	private Label currPlayerLabel;
 	
 	/**
 	 * This is to tell the user any important messages
@@ -139,6 +140,7 @@ public class View extends Application implements Observer {
  
 		// Set the monopoly title at the top
 		VBox topLabelSection = createTopLabelSection();
+
 		mainScreen.setTop(topLabelSection);
 		
 
@@ -178,11 +180,10 @@ public class View extends Application implements Observer {
 		root.getChildren().add(cardOverlay);
 
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 800, 600);
+		Scene scene = new Scene(root, 800, 800);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
-
 	}
 	
 	
@@ -192,6 +193,7 @@ public class View extends Application implements Observer {
 	 * @return VBox: IT holds top: "MOPOLY", middle: "User error info", bottom: VBox: Ai logger
 	 */
 	private VBox createTopLabelSection() {
+		
 		VBox topLabelSection = new VBox(10);
 		topLabelSection.setAlignment(Pos.CENTER);
 		
@@ -199,6 +201,11 @@ public class View extends Application implements Observer {
 		Label titleLabel = new Label("MONOPOLY");
 		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
 		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
+		
+		// CURR PLAYER LABEL
+		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
+		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		this.currPlayerLabel = currPlayerLabel;
 		
 		// PLAYER INFO LABEL for when there are errors
 		Label infoToTellPlayer = new Label("");
@@ -209,7 +216,7 @@ public class View extends Application implements Observer {
 		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
 		this.aiLoggerVBox = aiLoggerVBox;
 		
-		topLabelSection.getChildren().addAll(titleLabel, infoToTellPlayer, aiLoggerVBox);
+		topLabelSection.getChildren().addAll(titleLabel, currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
 		
 		return topLabelSection;
 	}
@@ -456,7 +463,7 @@ public class View extends Application implements Observer {
 		rollDiceButton.setOnAction(event -> handleDiceRoll());
 
 		Button tradeButton = new Button("Trade");
-		Button mortgagePropertyButton = new Button("Mortgage");
+		Button buildButton = new Button("Build");
 		Button endTurnButton = new Button("End Turn");
 		this.endTurnButton = endTurnButton;
 		endTurnButton.setDisable(true); //initially will be disabled until dice roll
@@ -465,7 +472,7 @@ public class View extends Application implements Observer {
 		});
 
 		FlowPane buttonPane = new FlowPane();
-		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, mortgagePropertyButton, endTurnButton);
+		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
 
 		// returning full bottom section
 		BorderPane bottomBorderPane = new BorderPane(); // player info card left, buttons right
@@ -785,6 +792,8 @@ public class View extends Application implements Observer {
 			
 			// at the start of another player, clear the Ai logger of any potential messages
 			aiLoggerVBox.getChildren().clear();
+
+			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
 		// if the message is the controller asking if the user wants to buy the property

@@ -103,16 +103,35 @@ public class View extends Application implements Observer {
 	 */
 	private Map<Player, Circle> playerObjToPlayerPiece;
 	
+	/**
+	 * This VBox will have messages added to it for every ai decision made.
+	 * It will get populated in the `update()` function when we recieve a 
+	 * `aiDecisionMessage` from the model 
+	 */
+	private VBox aiLoggerVBox;
+	
+	/**
+	 * This Customizes the look of the ai logger text labels
+	 * It is created in the top of `start()`
+	 */
+	private String aiLoggerLabelSetStyle; 
+	
+	/*
+	 * These are used for displaying a card when the player lands on a chance card
+	 */
 	private Label cardLabel;
-	
 	private StackPane cardOverlay;
-	
 	private Label cardTitle;
+	
 	
 	private StackPane root;
 
 	@Override
 	public void start(Stage stage) throws Exception {
+	
+		// Hacker style text
+		aiLoggerLabelSetStyle = "-fx-font-size: 12, -fx-background-color: black, -fx-text-fill: green";
+		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
 		
@@ -120,18 +139,10 @@ public class View extends Application implements Observer {
 		
 
 		BorderPane mainScreen = new BorderPane();
-
+ 
 		// Set the monopoly title at the top
-		VBox topLabelSection = new VBox(10);
-		topLabelSection.setAlignment(Pos.CENTER);
-		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
-		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
-		this.currPlayerLabel = currPlayerLabel;
-		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
-		Label infoToTellPlayer = new Label("");
-		infoToTellPlayer.setFont(new Font(15));
-		this.infoToTellPlayer = infoToTellPlayer;
-		topLabelSection.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
+		VBox topLabelSection = createTopLabelSection();
+
 		mainScreen.setTop(topLabelSection);
 		
 
@@ -154,10 +165,8 @@ public class View extends Application implements Observer {
 			
 			// initualize which pane the player is one 
 			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
-			
-			
 		}
-			
+
 		mainScreen.setCenter(visualGameBoard);
 		
 		// bottom playerinfo+controls
@@ -176,11 +185,45 @@ public class View extends Application implements Observer {
 		
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 800, 600);
+		Scene scene = new Scene(root, 800, 800);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
-
+	}
+	
+	
+	/**
+	 * This will create the top "MONOPOLY" Text, the user error info 
+	 * and the Ai logger 
+	 * @return VBox: IT holds top: "MOPOLY", middle: "User error info", bottom: VBox: Ai logger
+	 */
+	private VBox createTopLabelSection() {
+		
+		VBox topLabelSection = new VBox(10);
+		topLabelSection.setAlignment(Pos.CENTER);
+		
+		// TOP MONOPOLY TEXT 
+		Label titleLabel = new Label("MONOPOLY");
+		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
+		
+		// CURR PLAYER LABEL
+		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
+		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		this.currPlayerLabel = currPlayerLabel;
+		
+		// PLAYER INFO LABEL for when there are errors
+		Label infoToTellPlayer = new Label("");
+		infoToTellPlayer.setFont(new Font(15));
+		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
+		
+		// AI MOVEMENT/DECISION LOGGER
+		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
+		this.aiLoggerVBox = aiLoggerVBox;
+		
+		topLabelSection.getChildren().addAll(titleLabel, currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+		
+		return topLabelSection;
 	}
 
 	/**
@@ -480,8 +523,6 @@ public class View extends Application implements Observer {
 	 */
 	private void handleDiceRoll() {
 
-		
-		
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn. 
 		
 		// TESTING
@@ -734,6 +775,7 @@ public class View extends Application implements Observer {
 	public void update(Observable model, Object message) {
 		// TESTING
 		System.out.println("view: update: received '"+message+"' message");
+		
 		// if the message is a dice roll result, show the dice rolled
 		if (message instanceof DiceRollResultMessage) {
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
@@ -752,9 +794,14 @@ public class View extends Application implements Observer {
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			rollDiceButton.setDisable(false);
 			endTurnButton.setDisable(false);
+			
+			// at the start of another player, clear the Ai logger of any potential messages
+			aiLoggerVBox.getChildren().clear();
+
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
+		// if the message is the controller asking if the user wants to buy the property
 		else if (message instanceof PurchasePromptMessage) {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
@@ -773,9 +820,21 @@ public class View extends Application implements Observer {
 			controller.executePropertySale(player, property);
 		}
 		
-		if (message instanceof CardDrawnMessage) {
+		// if the message is that a chance/chest card was drawn, show the card
+		else if (message instanceof CardDrawnMessage) {
 		    CardDrawnMessage msg = (CardDrawnMessage) message;
 		    showCard(msg.getCard());
+		}
+		
+		// if the message is that a Ai Took an action, display the action to the other players 
+		else if (message instanceof AiActionMessage) {
+			
+			// IMPORTANT NOTE; We must pause between messages some how because the ai will kinda happen instantly, this is a problem.
+			
+			AiActionMessage aiActionMsg = (AiActionMessage) message;
+			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
+			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
+			aiLoggerVBox.getChildren().add(newAiActionLabel);
 		}
 		
 		
@@ -784,6 +843,7 @@ public class View extends Application implements Observer {
 	
 	/**
 	 * Adds an Overlay to the board that can display a card.
+	 * This will show the card right in the middle of the screen.
 	 */
 	private void buildCardOverlay() {
 		// Sizing

@@ -37,15 +37,8 @@ public class Controller {
 		
 		int ammtMoved = dice1Result+dice2Result;
 		
-		// Move player 
 		player.move(ammtMoved);
-		model.notifyViewOfPlayerMoved(player, ammtMoved);
 
-		player.getCurrentSpace().processSpace(player, model);
-		 
-		//TODO
-		//	process on enter space logic
-		
 	}
 	
 	public void executePropertySale (Player player, Property property) {

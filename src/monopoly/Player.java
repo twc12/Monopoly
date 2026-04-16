@@ -64,19 +64,23 @@ public class Player {
     public ArrayList<Property> getListOfProperties(){return listOfProperties;}
     
     /**
-     * moves the player ammt of spaces forward.
+     * moves the player ammt of spaces forward. and processes space
      * 
      * @param ammt: The integer amount of spaces to move forward
      */
     public void move(int ammt) {
+    	
+    	
     	currentSpace.getPlayersOnSpace().remove(this);
     	for (int i = 0; i < ammt; i++) {
     		if(currentSpace instanceof GoSpace)
     			currentSpace.processSpace(this, model);
     		currentSpace = currentSpace.getNextSpace();
     	}
-    	currentSpace.processSpace(this, model);
     	currentSpace.getPlayersOnSpace().add(this);
+    	
+    	model.notifyViewOfPlayerMoved(this, ammt);
+    	currentSpace.processSpace(this, model);
     	
     }
     

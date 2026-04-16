@@ -31,6 +31,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -66,6 +69,7 @@ public class View extends Application implements Observer {
 	
 	private Button rollDiceButton; // used to grey out when unavailable 
 	private Button endTurnButton; // used to grey out unavailable
+	private Label currPlayerLabel;
 	
 	/**
 	 * This is to tell the user any important messages
@@ -98,9 +102,36 @@ public class View extends Application implements Observer {
 	 * we can get the object that should be translated for every move.
 	 */
 	private Map<Player, Circle> playerObjToPlayerPiece;
+	
+	/**
+	 * This VBox will have messages added to it for every ai decision made.
+	 * It will get populated in the `update()` function when we recieve a 
+	 * `aiDecisionMessage` from the model 
+	 */
+	private VBox aiLoggerVBox;
+	
+	/**
+	 * This Customizes the look of the ai logger text labels
+	 * It is created in the top of `start()`
+	 */
+	private String aiLoggerLabelSetStyle; 
+	
+	/*
+	 * These are used for displaying a card when the player lands on a chance card
+	 */
+	private Label cardLabel;
+	private StackPane cardOverlay;
+	private Label cardTitle;
+	
+	
+	private StackPane root;
 
 	@Override
 	public void start(Stage stage) throws Exception {
+	
+		// Hacker style text
+		aiLoggerLabelSetStyle = "-fx-font-size: 12, -fx-background-color: black, -fx-text-fill: green";
+		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
 		
@@ -108,17 +139,10 @@ public class View extends Application implements Observer {
 		
 
 		BorderPane mainScreen = new BorderPane();
-
+ 
 		// Set the monopoly title at the top
-		VBox topLabelSection = new VBox(10);
-		topLabelSection.setAlignment(Pos.CENTER);
-		Label titleLabel = new Label("MONOPOLY");
-		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
-		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
-		Label infoToTellPlayer = new Label("");
-		infoToTellPlayer.setFont(new Font(15));
-		this.infoToTellPlayer = infoToTellPlayer;
-		topLabelSection.getChildren().addAll(titleLabel, infoToTellPlayer);
+		VBox topLabelSection = createTopLabelSection();
+
 		mainScreen.setTop(topLabelSection);
 		
 
@@ -142,20 +166,64 @@ public class View extends Application implements Observer {
 			// initualize which pane the player is one 
 			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
 		}
-		
-		
-		
-		mainScreen.setCenter(visualGameBoard);
 
+		mainScreen.setCenter(visualGameBoard);
+		
 		// bottom playerinfo+controls
 		BorderPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
 
-		Scene scene = new Scene(mainScreen, 800, 600);
+		// ADDED: root StackPane so overlay can sit above mainScreen
+		root = new StackPane();
+		root.getChildren().add(mainScreen);
+
+		
+
+		// For chance and community chests
+		buildCardOverlay();
+		root.getChildren().add(cardOverlay);
+		
+		
+		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
+		Scene scene = new Scene(root, 800, 800);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
-
+	}
+	
+	
+	/**
+	 * This will create the top "MONOPOLY" Text, the user error info 
+	 * and the Ai logger 
+	 * @return VBox: IT holds top: "MOPOLY", middle: "User error info", bottom: VBox: Ai logger
+	 */
+	private VBox createTopLabelSection() {
+		
+		VBox topLabelSection = new VBox(10);
+		topLabelSection.setAlignment(Pos.CENTER);
+		
+		// TOP MONOPOLY TEXT 
+		Label titleLabel = new Label("MONOPOLY");
+		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
+		
+		// CURR PLAYER LABEL
+		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
+		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		this.currPlayerLabel = currPlayerLabel;
+		
+		// PLAYER INFO LABEL for when there are errors
+		Label infoToTellPlayer = new Label("");
+		infoToTellPlayer.setFont(new Font(15));
+		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
+		
+		// AI MOVEMENT/DECISION LOGGER
+		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
+		this.aiLoggerVBox = aiLoggerVBox;
+		
+		topLabelSection.getChildren().addAll(titleLabel, currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+		
+		return topLabelSection;
 	}
 
 	/**
@@ -400,7 +468,7 @@ public class View extends Application implements Observer {
 		rollDiceButton.setOnAction(event -> handleDiceRoll());
 
 		Button tradeButton = new Button("Trade");
-		Button mortgagePropertyButton = new Button("Mortgage");
+		Button buildButton = new Button("Build");
 		Button endTurnButton = new Button("End Turn");
 		this.endTurnButton = endTurnButton;
 		endTurnButton.setDisable(true); //initially will be disabled until dice roll
@@ -409,7 +477,7 @@ public class View extends Application implements Observer {
 		});
 
 		FlowPane buttonPane = new FlowPane();
-		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, mortgagePropertyButton, endTurnButton);
+		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
 
 		// returning full bottom section
 		BorderPane bottomBorderPane = new BorderPane(); // player info card left, buttons right
@@ -455,8 +523,6 @@ public class View extends Application implements Observer {
 	 */
 	private void handleDiceRoll() {
 
-		
-		
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn. 
 		
 		// TESTING
@@ -709,6 +775,7 @@ public class View extends Application implements Observer {
 	public void update(Observable model, Object message) {
 		// TESTING
 		System.out.println("view: update: received '"+message+"' message");
+		
 		// if the message is a dice roll result, show the dice rolled
 		if (message instanceof DiceRollResultMessage) {
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
@@ -727,8 +794,14 @@ public class View extends Application implements Observer {
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			rollDiceButton.setDisable(false);
 			endTurnButton.setDisable(false);
+			
+			// at the start of another player, clear the Ai logger of any potential messages
+			aiLoggerVBox.getChildren().clear();
+
+			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
+		// if the message is the controller asking if the user wants to buy the property
 		else if (message instanceof PurchasePromptMessage) {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
@@ -747,6 +820,172 @@ public class View extends Application implements Observer {
 			controller.executePropertySale(player, property);
 		}
 		
+		// if the message is that a chance/chest card was drawn, show the card
+		else if (message instanceof CardDrawnMessage) {
+		    CardDrawnMessage msg = (CardDrawnMessage) message;
+		    showCard(msg.getCard());
+		}
+		
+		// if the message is that a Ai Took an action, display the action to the other players 
+		else if (message instanceof AiActionMessage) {
+			
+			// IMPORTANT NOTE; We must pause between messages some how because the ai will kinda happen instantly, this is a problem.
+			
+			AiActionMessage aiActionMsg = (AiActionMessage) message;
+			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
+			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
+			aiLoggerVBox.getChildren().add(newAiActionLabel);
+		}
+		
+		
+		
+	}
+	
+	/**
+	 * Adds an Overlay to the board that can display a card.
+	 * This will show the card right in the middle of the screen.
+	 */
+	private void buildCardOverlay() {
+		// Sizing
+		int width = 350;
+		int height = 220;
+		
+	    StackPane overlay = new StackPane();
+	    overlay.setVisible(false);
+	    overlay.setStyle("-fx-background-color: rgba(0,0,0,0);");
+
+	    VBox cardBox = new VBox();
+	    cardBox.setAlignment(Pos.CENTER);
+	
+	    cardBox.setMaxWidth(width); 
+	    cardBox.setMaxHeight(height);
+	    
+	    // Change style here
+	    cardBox.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: 3;" +
+	        "-fx-padding: 20;"
+	    );
+	    
+	    // Title label
+	    cardTitle = new Label();
+	    cardTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+
+	    // Card description
+	    cardLabel = new Label();
+	    cardLabel.setWrapText(true);
+	    cardLabel.setTextAlignment(TextAlignment.CENTER);
+	    cardLabel.setAlignment(Pos.CENTER);
+	    cardLabel.setStyle("-fx-font-size: 16px;");
+
+	    Label continueLabel = new Label("Click to continue");
+	    continueLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
+
+	    cardBox.getChildren().addAll(cardTitle, cardLabel, continueLabel);
+	    overlay.getChildren().add(cardBox);
+
+
+	    cardOverlay = overlay;
+	}
+	
+	/**
+	 * Used for displaying and updating the card Overlay when a card
+	 * space is hit.
+	 * 
+	 * @param card
+	 */
+	public void showCard(Card card) {
+		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
+			cardTitle.setText("Chance");		
+		else
+			cardTitle.setText("Community Chest");
+	    cardLabel.setText(card.getDescription());
+	    cardOverlay.setVisible(true);
+	    if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+			// disable the roll dice button because they finished rolling
+			rollDiceButton.setDisable(true);
+			endTurnButton.setDisable(false);
+	    }
+
+	    cardOverlay.setOnMouseClicked(e -> {
+	        cardOverlay.setVisible(false);
+	        cardOverlay.setOnMouseClicked(null);
+	        controller.resolveCard(card, controller.getCurrentPlayer());
+	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+	        e.consume();
+	    });
+	}
+	
+	/**
+	 * Builds a resizable stackframe for viewing property cards.
+	 * used for tracking rent prices and general space info
+	 * 
+	 * @param space the space that the card is basing itself on
+	 * @param cardWidth the width of the card to scale from
+	 * @return StackPane the card image
+	 */
+	public StackPane buildSpaceCard(Space space, int cardWidth) {
+		double cardHeight = cardWidth * 1.6;
+	    double borderWidth = Math.max(1, cardWidth * 0.016);
+	    double borderInset = cardWidth * 0.05;
+	    double headerHeight = cardHeight * 0.20;
+	    double titleDeedFont = cardWidth * 0.045;
+	    double nameFont = cardWidth * 0.08;
+	    double innerWidthOffset = borderInset * 2 + borderWidth * 2;
+
+	    StackPane root = new StackPane();
+
+	    VBox card = new VBox();
+	    card.setAlignment(Pos.TOP_CENTER);
+	    card.setPrefWidth(cardWidth);
+	    card.setMaxWidth(cardWidth);
+	    card.setPrefHeight(cardHeight);
+
+	    card.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: " + borderWidth + ";" +
+	        "-fx-border-insets: " + borderInset + ";"
+	    );
+
+	    List<String> lines = new ArrayList<>();
+
+	    // Property Cards
+	    if (space instanceof Property) {
+	    	StackPane headerBox = new StackPane();
+	    	headerBox.setMaxWidth(Double.MAX_VALUE);
+	    	headerBox.setPrefHeight(headerHeight);
+	    	headerBox.setAlignment(Pos.CENTER);
+
+	    	Rectangle colorRect = new Rectangle();
+	    	colorRect.setHeight(headerHeight);
+	    	colorRect.setFill(space.getFXColor());
+	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
+
+	    	Text t1 = new Text("TITLE DEED\n");
+	    	t1.setStyle("-fx-font-size: " + titleDeedFont + "px;");
+
+	    	Text t2 = new Text(space.getName().toUpperCase());
+	    	t2.setStyle("-fx-font-size: " + nameFont + "px; -fx-font-weight: bold;");
+
+	    	TextFlow flow = new TextFlow(t1, t2);
+	    	flow.setTextAlignment(TextAlignment.CENTER);
+	    	flow.setMaxWidth(cardWidth - innerWidthOffset - 8);
+
+	    	headerBox.getChildren().addAll(colorRect, flow);
+	    	card.getChildren().add(headerBox);
+		}
+		
+		if(space instanceof Railroad) {
+			//TODO prices
+		}
+		
+		if(space instanceof Utility) {
+			//TODO prices
+		}
+		root.getChildren().add(card);
+		return  root;
 	}
 
 }

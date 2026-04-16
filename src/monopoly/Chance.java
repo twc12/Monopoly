@@ -8,6 +8,8 @@ public class Chance extends Space {
 
 	@Override
 	protected void processSpace(Player player, Model model) {
-		System.out.println("sory Not yet implemented!");
+		Card card = model.getChanceCards().pop();
+		model.notifyViewCardDrawn(player, card);
 	}
+	
 }

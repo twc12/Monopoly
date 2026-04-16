@@ -34,8 +34,8 @@ public abstract class Property extends CostSpace {
 	
 	public void processSpace(Player player, Model model) {
 		
-		//do nothing if mortgaged
-		if (this.getIsMortgaged()) return;
+		//do nothing if mortgaged, or the player is the owner
+		if (this.getIsMortgaged() || this.getOwner() == player) return;
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {

@@ -37,15 +37,8 @@ public class Controller {
 		
 		int ammtMoved = dice1Result+dice2Result;
 		
-		// Move player 
 		player.move(ammtMoved);
-		model.notifyViewOfPlayerMoved(player, ammtMoved);
 
-		player.getCurrentSpace().processSpace(player, model);
-		 
-		//TODO
-		//	process on enter space logic
-		
 	}
 	
 	public void executePropertySale (Player player, Property property) {
@@ -239,6 +232,10 @@ public class Controller {
 		int cost = space.getCostToCharge(player);
 		player.addCash(-cost);
 	}
+	
+	public void resolveCard(Card card, Player player) {
+		card.apply(player, model);
+	}
 
 	/**
 	 * 
@@ -291,5 +288,7 @@ public class Controller {
 	public List<Player> getAllPlayers(){
 		return model.getPlayers();
 	}
+	
+	
 	
 }

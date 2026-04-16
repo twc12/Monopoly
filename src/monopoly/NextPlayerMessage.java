@@ -5,6 +5,8 @@ package monopoly;
  * from the model that the next players turn 
  * is up. This class will hold the player object 
  * whos turn it is NOW
+ * 
+ * @author Alex Myers
  */
 public class NextPlayerMessage {
 	

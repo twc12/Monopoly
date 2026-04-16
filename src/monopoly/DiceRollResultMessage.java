@@ -7,6 +7,8 @@ package monopoly;
  * Fields:
  * 	int dice1Result
  * 	int dice2Result
+ * 
+ * @author Alex Myers
  */
 public class DiceRollResultMessage {
 	private int dice1Result;

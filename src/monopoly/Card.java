@@ -6,11 +6,11 @@
  * @author Tyler Carpenter
  */
 package monopoly;
-
+import javafx.scene.image.Image;
 public class Card {
 	private String description;
 	private CardEffect effect;
-	
+
 	/**
 	 * Constructor Class for the Card Object
 	 * 
@@ -19,6 +19,7 @@ public class Card {
 	 */
 	public Card(String description, CardEffect effect) {
 		this.description = description;
+
 		this.effect = effect;
 	}
 	
@@ -38,6 +39,8 @@ public class Card {
 	public String getDescription() {
 		return description;
 	}
+	
+
 }
 
 

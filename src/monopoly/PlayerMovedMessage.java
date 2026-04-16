@@ -9,6 +9,8 @@ package monopoly;
  * Attributes:
  * 	currPlayer (Player): The player that moved
  * 	ammtMoved (int): The amount of spaces they moved
+ * 
+ * @author Alex Myers
  */
 public class PlayerMovedMessage {
 	private Player currPlayer;

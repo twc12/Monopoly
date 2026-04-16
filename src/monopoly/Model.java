@@ -130,17 +130,45 @@ public class Model extends Observable {
 		this.clearChanged();
 	}
 
-	public void notifyViewPurchasePrompt(Player currentPlayer, Property property) {
-		PurchasePromptMessage purchasePromptMessage = new PurchasePromptMessage(currentPlayer, property);
+	/**
+	 * notifyViewPurchasePrompt(currPlayer, propertyObj): This function 
+	 * will tell the view class that a property could be purchased and it will
+	 * notify the player if they want to buy it 
+	 * @param currentPlayer (Player): the current player whos turn it is 
+	 * @param property (Property): The property that they could buy
+	 */
+	public void notifyViewPurchasePrompt(Player currPlayer, Property property) {
+		PurchasePromptMessage purchasePromptMessage = new PurchasePromptMessage(currPlayer, property);
 		this.setChanged();
 		this.notifyObservers(purchasePromptMessage);
 		this.clearChanged();		
 	}
 	
-	public void notifyViewCardDrawn(Player player, Card card) {
-	    CardDrawnMessage cardDrawnMessage = new CardDrawnMessage(player, card);
+	/**
+	 * notifyViewCardDrawn(currPlayer, card): 
+	 * This function will tell the view class that a card was drawn so it 
+	 * should display the card drawn
+	 * @param currPlayer (Player): The current player whos turn it is and will have the 
+	 * 								cards action acted on (the view doesnt do the "acting on")
+	 * @param card (Card): the card that was drawn
+	 */
+	public void notifyViewCardDrawn(Player currPlayer, Card card) {
+	    CardDrawnMessage cardDrawnMessage = new CardDrawnMessage(currPlayer, card);
 	    this.setChanged();
 	    this.notifyObservers(cardDrawnMessage);
+	    this.clearChanged();
+	}
+	
+	/**
+	 * notifyViewOfAiAction(theAiActionTaken): This function will notify the view
+	 * that an ai took an action and this will have the view show the action taken 
+	 * by the ai 
+	 * @param theAiActionTaken (String): A BRIEF string explaining the AI action 
+	 */
+	public void notifyViewOfAiAction(String theAiActionTaken) {
+		AiActionMessage aiActionMsg = new AiActionMessage(theAiActionTaken);
+	    this.setChanged();
+	    this.notifyObservers(aiActionMsg);
 	    this.clearChanged();
 	}
 	

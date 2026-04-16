@@ -31,7 +31,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -153,11 +155,9 @@ public class View extends Application implements Observer {
 			
 			
 		}
-		
-		
-		
+			
 		mainScreen.setCenter(visualGameBoard);
-
+		
 		// bottom playerinfo+controls
 		BorderPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
@@ -166,10 +166,13 @@ public class View extends Application implements Observer {
 		root = new StackPane();
 		root.getChildren().add(mainScreen);
 
-		// ADDED: build and attach the card overlay
+		
+
+		// For chance and community chests
 		buildCardOverlay();
 		root.getChildren().add(cardOverlay);
-
+		
+		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
 		Scene scene = new Scene(root, 800, 600);
 		stage.setScene(scene);
@@ -849,6 +852,77 @@ public class View extends Application implements Observer {
 	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
 	        e.consume();
 	    });
+	}
+	
+	/**
+	 * Builds a resizable stackframe for viewing property cards.
+	 * used for tracking rent prices and general space info
+	 * 
+	 * @param space the space that the card is basing itself on
+	 * @param cardWidth the width of the card to scale from
+	 * @return StackPane the card image
+	 */
+	public StackPane buildSpaceCard(Space space, int cardWidth) {
+		double cardHeight = cardWidth * 1.6;
+	    double borderWidth = Math.max(1, cardWidth * 0.016);
+	    double borderInset = cardWidth * 0.05;
+	    double headerHeight = cardHeight * 0.20;
+	    double titleDeedFont = cardWidth * 0.045;
+	    double nameFont = cardWidth * 0.08;
+	    double innerWidthOffset = borderInset * 2 + borderWidth * 2;
+
+	    StackPane root = new StackPane();
+
+	    VBox card = new VBox();
+	    card.setAlignment(Pos.TOP_CENTER);
+	    card.setPrefWidth(cardWidth);
+	    card.setMaxWidth(cardWidth);
+	    card.setPrefHeight(cardHeight);
+
+	    card.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: " + borderWidth + ";" +
+	        "-fx-border-insets: " + borderInset + ";"
+	    );
+
+	    List<String> lines = new ArrayList<>();
+
+	    // Property Cards
+	    if (space instanceof Property) {
+	    	StackPane headerBox = new StackPane();
+	    	headerBox.setMaxWidth(Double.MAX_VALUE);
+	    	headerBox.setPrefHeight(headerHeight);
+	    	headerBox.setAlignment(Pos.CENTER);
+
+	    	Rectangle colorRect = new Rectangle();
+	    	colorRect.setHeight(headerHeight);
+	    	colorRect.setFill(space.getFXColor());
+	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
+
+	    	Text t1 = new Text("TITLE DEED\n");
+	    	t1.setStyle("-fx-font-size: " + titleDeedFont + "px;");
+
+	    	Text t2 = new Text(space.getName().toUpperCase());
+	    	t2.setStyle("-fx-font-size: " + nameFont + "px; -fx-font-weight: bold;");
+
+	    	TextFlow flow = new TextFlow(t1, t2);
+	    	flow.setTextAlignment(TextAlignment.CENTER);
+	    	flow.setMaxWidth(cardWidth - innerWidthOffset - 8);
+
+	    	headerBox.getChildren().addAll(colorRect, flow);
+	    	card.getChildren().add(headerBox);
+		}
+		
+		if(space instanceof Railroad) {
+			//TODO prices
+		}
+		
+		if(space instanceof Utility) {
+			//TODO prices
+		}
+		root.getChildren().add(card);
+		return  root;
 	}
 
 }

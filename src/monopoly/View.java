@@ -428,10 +428,12 @@ public class View extends Application implements Observer {
 		spaceCardPane.getChildren().add(baseBottomRect);
 
 		// TEST The top color of properties
+		if (space instanceof RealEstate) {
 		Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
 				space.getFXColor());
 		topColorBandRect.setTranslateY(-23);
 		spaceCardPane.getChildren().add(topColorBandRect);
+		}
 
 		// Rotate the
 		spaceCardPane.getTransforms().add(new Rotate(rotateAmmt, 33, 9));

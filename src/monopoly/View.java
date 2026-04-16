@@ -67,6 +67,7 @@ public class View extends Application implements Observer {
 	
 	private Button rollDiceButton; // used to grey out when unavailable 
 	private Button endTurnButton; // used to grey out unavailable
+	private Label currPlayerLabel;
 	
 	/**
 	 * This is to tell the user any important messages
@@ -121,13 +122,14 @@ public class View extends Application implements Observer {
 		// Set the monopoly title at the top
 		VBox topLabelSection = new VBox(10);
 		topLabelSection.setAlignment(Pos.CENTER);
-		Label titleLabel = new Label("MONOPOLY");
-		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
+		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		this.currPlayerLabel = currPlayerLabel;
 		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
 		Label infoToTellPlayer = new Label("");
 		infoToTellPlayer.setFont(new Font(15));
 		this.infoToTellPlayer = infoToTellPlayer;
-		topLabelSection.getChildren().addAll(titleLabel, infoToTellPlayer);
+		topLabelSection.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 		mainScreen.setTop(topLabelSection);
 		
 
@@ -420,7 +422,7 @@ public class View extends Application implements Observer {
 		rollDiceButton.setOnAction(event -> handleDiceRoll());
 
 		Button tradeButton = new Button("Trade");
-		Button mortgagePropertyButton = new Button("Mortgage");
+		Button buildButton = new Button("Build");
 		Button endTurnButton = new Button("End Turn");
 		this.endTurnButton = endTurnButton;
 		endTurnButton.setDisable(true); //initially will be disabled until dice roll
@@ -429,7 +431,7 @@ public class View extends Application implements Observer {
 		});
 
 		FlowPane buttonPane = new FlowPane();
-		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, mortgagePropertyButton, endTurnButton);
+		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
 
 		// returning full bottom section
 		BorderPane bottomBorderPane = new BorderPane(); // player info card left, buttons right
@@ -747,6 +749,7 @@ public class View extends Application implements Observer {
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			rollDiceButton.setDisable(false);
 			endTurnButton.setDisable(false);
+			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
 		else if (message instanceof PurchasePromptMessage) {

@@ -36,7 +36,7 @@ public class TaxSpace extends CostSpace{
 
 	protected void processSpace(Player player, Model model) {
 		player.addCash(-getCostToCharge(player, 0));
-		System.out.println("TAX: Player charged $" + getCostToCharge(player, 0));
+		System.out.println(player.toString() + " taxed $" + getCostToCharge(player, 0));
 	}
 
 }

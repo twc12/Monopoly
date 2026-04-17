@@ -10,7 +10,7 @@ public class Jail extends Space {
 	private Map<Player, Integer> playerAttemptsToGetOutMap;
 	
 	public Jail() {
-		super("JailSpace");
+		super("Jail");
 	}
 	
 	public Set<Player> getCurrentPlayersInJail(){

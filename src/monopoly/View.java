@@ -14,7 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
@@ -25,13 +24,16 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -50,8 +52,8 @@ public class View extends Application implements Observer {
 	private int widthOfPropertySpaceCards = 30;
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
-	private int playerCircleRadius = 15;
-	
+	private int playerCircleRadius = 10;
+	private final Color defaultSpaceColor = Color.WHITE;
 	/**
 	 * This group will change from holding a grid pane for dice results,
 	 * and a stack pane to show a OTHER players card to do trading.
@@ -121,6 +123,8 @@ public class View extends Application implements Observer {
 	private StackPane cardOverlay;
 	private Label cardTitle;
 	
+	//similar to cards, for purchaseprompts
+	private StackPane purchaseOverlay;
 	
 	private StackPane root;
 
@@ -165,9 +169,9 @@ public class View extends Application implements Observer {
 			// initualize which pane the player is one 
 			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
 		}
-		
-		mainScreen.setCenter(visualGameBoard);
 
+		mainScreen.setCenter(visualGameBoard);
+		
 		// bottom playerinfo+controls
 		BorderPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
@@ -176,12 +180,20 @@ public class View extends Application implements Observer {
 		root = new StackPane();
 		root.getChildren().add(mainScreen);
 
-		// ADDED: build and attach the card overlay
+		
+
+		// For chance and community chests
 		buildCardOverlay();
 		root.getChildren().add(cardOverlay);
-
+		// For purchase prompts
+		StackPane purchaseOverlay = new StackPane();
+		purchaseOverlay.setVisible(false);
+		this.purchaseOverlay = purchaseOverlay;
+		root.getChildren().add(purchaseOverlay);
+		
+		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 800, 800);
+		Scene scene = new Scene(root, 1280, 720);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
@@ -231,8 +243,13 @@ public class View extends Application implements Observer {
 	 */
 	public GridPane buildMonopolyBoard() {
 		
+		//creating empty list of size 40
 		listOfSpacesPanes = new ArrayList<StackPane>();
-
+		for(int i = 0; i < controller.getSpaces().size(); i++) {
+	        listOfSpacesPanes.add(null);
+	    }
+		
+		
 		GridPane mainBoardGridPane = new GridPane();
 
 		// TESTING --
@@ -279,7 +296,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoSpace) && !(currSpace instanceof Jail)) {
 					int col = boardWidth - spaceIdx - 1;
 					int row = boardWidth - 1; // 0 BASED INDEXING 11-1 = INDEX 10
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 0);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 0, spaceIdx);
 				}
 			}
 
@@ -290,7 +307,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof FreeParking)) {
 					int col = 0; // far left side
 					int row = 9 - (spaceIdx - boardHeight); // gets us to right above jail; (12 - 11) + 9, then 13 - 11
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 90);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 90, spaceIdx);
 				}
 			}
 
@@ -301,7 +318,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoToJailSpace)) {
 					int col = spaceIdx - 20; // 23 - 22; 24 - 22 gets the column of the top
 					int row = 0; // top of the board
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 180);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 180, spaceIdx);
 				}
 			}
 
@@ -312,7 +329,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoSpace)) {
 					int col = boardWidth - 1;
 					int row = spaceIdx - 30;
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, -90);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, -90, spaceIdx);
 				}
 			}
 		}
@@ -350,7 +367,7 @@ public class View extends Application implements Observer {
 		
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
-		listOfSpacesPanes.add(20, freeParkingStackPane); // this list is used for player movement later
+		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
 		Label freeParkingText = new Label("Free Parking");
@@ -361,33 +378,33 @@ public class View extends Application implements Observer {
 
 		// GO SPACE
 		StackPane goSpaceStackPane = new StackPane();
-		listOfSpacesPanes.add(0, goSpaceStackPane); // this list is used for player movement later 
+		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goSpaceText = new Label("Go!");
-		goSpaceText.setFont(new Font(10));
+		Label goSpaceText = new Label("GO");
+		goSpaceText.setFont(new Font(20));
 		goSpaceStackPane.getChildren().add(baseBottomRect);
 		goSpaceStackPane.getChildren().add(goSpaceText);
 		mainBoardGridPane.add(goSpaceStackPane, 10, 10);
 		
 		// JAIL SPACE
 		StackPane jailStackPane = new StackPane();
-		listOfSpacesPanes.add(10, jailStackPane); // this list is used for player movement later 
+		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label jailText = new Label("Jail: Just Visiting");
-		jailText.setFont(new Font(7));
+		Label jailText = new Label("Jail/Just Visiting");
+		jailText.setFont(new Font(8));
 		jailStackPane.getChildren().add(baseBottomRect);
 		jailStackPane.getChildren().add(jailText);
 		mainBoardGridPane.add(jailStackPane, 0, 10);
 		
 		// GO TO JAIL SPACE
 		StackPane goToJailStackPane = new StackPane();
-		listOfSpacesPanes.add(30, goToJailStackPane); // this list is used for player movement later
+		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goToJailText = new Label("GO TO JAIL LOSER");
-		goToJailText.setFont(new Font(6));
+		Label goToJailText = new Label("Go to Jail");
+		goToJailText.setFont(new Font(13));
 		goToJailStackPane.getChildren().add(baseBottomRect);
 		goToJailStackPane.getChildren().add(goToJailText);
 		mainBoardGridPane.add(goToJailStackPane, 10, 0);
@@ -409,7 +426,7 @@ public class View extends Application implements Observer {
 	 * @param rotateAmmt        (int): Some spaces are rotated so this will be
 	 *                          inputed based on the side of the board
 	 */
-	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt) {
+	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
 		// TESTING
 		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
@@ -418,17 +435,19 @@ public class View extends Application implements Observer {
 		
 		StackPane spaceCardPane = new StackPane();
 		
-		listOfSpacesPanes.add(spaceCardPane); // This list is used for player movement in the future
+		listOfSpacesPanes.set(spaceIdx, spaceCardPane); // This list is used for player movement in the future
 
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, Color.BISQUE);
 		spaceCardPane.getChildren().add(baseBottomRect);
 
 		// TEST The top color of properties
+		if (space instanceof RealEstate) {
 		Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
-				space.getFXColor());
+				((RealEstate)space).getFXColor());
 		topColorBandRect.setTranslateY(-23);
 		spaceCardPane.getChildren().add(topColorBandRect);
+		}
 
 		// Rotate the
 		spaceCardPane.getTransforms().add(new Rotate(rotateAmmt, 33, 9));
@@ -800,23 +819,12 @@ public class View extends Application implements Observer {
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
-		// if the message is the controller asking if the user wants to buy the property
+		// if the message is that a player landed on an unowned property, buying is optional
 		else if (message instanceof PurchasePromptMessage) {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
 			Property property = purchasePromptMsg.getProperty();
-			
-			
-			Alert a = new Alert(Alert.AlertType.ERROR);
-			a.setTitle("FOR SALE");
-			a.setHeaderText("Do you want to purchase " + property.getName() + "?");
-			a.setContentText("YES/NO Cost: $" + property.getPurchaseAmount());
-			a.showAndWait();
-			
-			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
-			
-			//TODO if player clicks yes, execute the below. currently always assuming yes
-			controller.executePropertySale(player, property);
+			showPurchasePrompt(player, property);
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card
@@ -915,6 +923,128 @@ public class View extends Application implements Observer {
 	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
 	        e.consume();
 	    });
+	}
+
+	//purchaseprompt hbox with property infocard on left, buttons on right
+	public void showPurchasePrompt(Player player, Property property) {
+		
+	    this.purchaseOverlay.getChildren().clear();//clear old version
+	    
+	    //copying style from cardprompt
+		int width = 350;
+		int height = 220;
+	    HBox hboxContainer = new HBox();
+	    hboxContainer.setAlignment(Pos.CENTER);
+	    hboxContainer.setMaxWidth(width); //avoid stackpane taking up whole screen
+	    hboxContainer.setMaxHeight(height);
+	    hboxContainer.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: 3;" +
+	        "-fx-padding: 20;"
+	    );
+
+	    //adding card to the left spot in the hbox
+	    StackPane spaceCard = this.buildSpaceCard(property, 150);
+	    hboxContainer.getChildren().add(spaceCard);
+
+	    //adding buttons to the right spot in the hbox
+	    VBox buttonBox = new VBox();
+	    buttonBox.setAlignment(Pos.CENTER);
+	    Button buyButton = new Button("Buy");
+	    buyButton.setOnAction(e -> {		//On click, buy property, update playerinfo, hide overlay
+	        controller.purchaseProperty(player, property);
+	        populatePlayerCardWithNewInfo(player);
+	        this.purchaseOverlay.setVisible(false);
+	    });
+	    Button skipButton = new Button("Skip"); //On click for skip, just hide overlay
+	    skipButton.setOnAction(e -> {
+	    	this.purchaseOverlay.setVisible(false);
+	    });
+	    buttonBox.getChildren().addAll(buyButton, skipButton);
+	    hboxContainer.getChildren().add(buttonBox);
+
+	    //add hbox to stackpane atribute
+	    this.purchaseOverlay.getChildren().add(hboxContainer);
+	    this.purchaseOverlay.setVisible(true);
+	}
+	
+	/**
+	 * Builds a resizable stackframe for viewing property cards.
+	 * used for tracking rent prices and general space info
+	 * 
+	 * @param space the space that the card is basing itself on
+	 * @param cardWidth the width of the card to scale from
+	 * @return StackPane the card image
+	 */
+	public StackPane buildSpaceCard(Space space, int cardWidth) {
+		double cardHeight = cardWidth * 1.6;
+	    double borderWidth = Math.max(1, cardWidth * 0.016);
+	    double borderInset = cardWidth * 0.05;
+	    double headerHeight = cardHeight * 0.20;
+	    double titleDeedFont = cardWidth * 0.045;
+	    double nameFont = cardWidth * 0.08;
+	    double innerWidthOffset = borderInset * 2 + borderWidth * 2;
+
+	    StackPane root = new StackPane();
+
+	    VBox card = new VBox();
+	    card.setAlignment(Pos.TOP_CENTER);
+	    card.setPrefWidth(cardWidth);
+	    card.setMaxWidth(cardWidth);
+	    card.setPrefHeight(cardHeight);
+
+	    card.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: " + borderWidth + ";" +
+	        "-fx-border-insets: " + borderInset + ";"
+	    );
+
+	    List<String> lines = new ArrayList<>();
+
+	    // Property Cards
+	    if (space instanceof Property) {
+	    	StackPane headerBox = new StackPane();
+	    	headerBox.setMaxWidth(Double.MAX_VALUE);
+	    	headerBox.setPrefHeight(headerHeight);
+	    	headerBox.setAlignment(Pos.CENTER);
+
+	    	Rectangle colorRect = new Rectangle();
+	    	colorRect.setHeight(headerHeight);
+	    	
+	    	//only realestate has colors
+	    	if (space instanceof RealEstate) {
+	    	colorRect.setFill(((RealEstate)space).getFXColor()); //cast to realestate obj so can get javafx color
+	    	} else {
+	    		colorRect.setFill(defaultSpaceColor);
+	    	}
+	    
+	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
+
+	    	Text t1 = new Text("TITLE DEED\n");
+	    	t1.setStyle("-fx-font-size: " + titleDeedFont + "px;");
+
+	    	Text t2 = new Text(space.getName().toUpperCase());
+	    	t2.setStyle("-fx-font-size: " + nameFont + "px; -fx-font-weight: bold;");
+
+	    	TextFlow flow = new TextFlow(t1, t2);
+	    	flow.setTextAlignment(TextAlignment.CENTER);
+	    	flow.setMaxWidth(cardWidth - innerWidthOffset - 8);
+
+	    	headerBox.getChildren().addAll(colorRect, flow);
+	    	card.getChildren().add(headerBox);
+		}
+		
+		if(space instanceof Railroad) {
+			//TODO prices
+		}
+		
+		if(space instanceof Utility) {
+			//TODO prices
+		}
+		root.getChildren().add(card);
+		return  root;
 	}
 
 }

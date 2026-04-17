@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.*;
 public class Controller {
 
-	private Model model;
+	public Model model;
 	
 	
 	public Controller(View viewClassObj) {
@@ -37,24 +37,14 @@ public class Controller {
 		
 		int ammtMoved = dice1Result+dice2Result;
 		
-		// Move player 
+		model.setLastDiceRollAmmt(ammtMoved);
+		
 		player.move(ammtMoved);
-		model.notifyViewOfPlayerMoved(player, ammtMoved);
 
-		player.getCurrentSpace().processSpace(player, model);
- 
-		
-		//TODO
-		//	process on enter space logic
-		
 	}
 	
-	public void executePropertySale (Player player, Property property) {
-		
-		player.addCash(-property.getPurchaseAmount());		
-		player.addProperty(property);
-		property.setOwner(player);
-		
+	public void purchaseProperty (Player player, Property property) {
+		property.purchaseProperty(player);		
 	}
 	
 	
@@ -178,7 +168,7 @@ public class Controller {
 		}
 		// Owned by someone else - Calculate player payment
 		if (!owner.equals(player)) {
-			int cost = utility.getCostToCharge(player);
+//			int cost = utility.getCostToCharge(player);
 			// TODO: Apply the exchange of money to both the player and the owner
 		}
 		// Owned by current player - do nothing
@@ -237,7 +227,7 @@ public class Controller {
 	 * @param player
 	 */
 	private void processTaxSpace(TaxSpace space, Player player) {
-		int cost = space.getCostToCharge(player);
+		int cost = space.getCostToCharge(player, 0);
 		player.addCash(-cost);
 	}
 	

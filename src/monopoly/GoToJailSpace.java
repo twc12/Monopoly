@@ -5,11 +5,8 @@ public class GoToJailSpace extends Space {
 	
 	private Jail jailSpaceObject;
 	
-	public GoToJailSpace() {
-		super("GoToJailSpace");
-	}
-	
 	public GoToJailSpace(Jail jailSpaceInModel) {
+		super("Go to Jail");
 		jailSpaceObject = jailSpaceInModel;
 	}
 	

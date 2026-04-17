@@ -535,6 +535,7 @@ public class View extends Application implements Observer {
 		else{
 			// TESTING
 			System.out.println("handleDiceRol: calling controller.rollDice(currPlayer)");
+			
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
 		}
@@ -789,6 +790,7 @@ public class View extends Application implements Observer {
 		else if (message instanceof NextPlayerMessage) {
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
+			
 			rollDiceButton.setDisable(false);
 			endTurnButton.setDisable(false);
 			

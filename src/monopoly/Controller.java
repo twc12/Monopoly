@@ -43,8 +43,8 @@ public class Controller {
 
 	}
 	
-	public void executePropertySale (Player player, Property property) {
-		property.executePropertySale(player);		
+	public void purchaseProperty (Player player, Property property) {
+		property.purchaseProperty(player);		
 	}
 	
 	

@@ -38,6 +38,8 @@ public class Player {
         isDoneRollingDice = false;
     }
     
+    public String toString() {return "Player " + this.getId();}
+    
     /**
      * @return The player id integer
      */
@@ -129,7 +131,8 @@ public class Player {
      */
     public void removeProperty(Property property) {
     	listOfProperties.remove(property);
-    	
+    	updatePropertiesMatches(property);
+
     }
     
     /**
@@ -139,24 +142,8 @@ public class Player {
      */
     public void addProperty(Property property) {
     	listOfProperties.add(property);
-    	
-    	
-    	
-//    	//updating other properties of the same type that i own to have increased rents
-//   		int matchedPropertiesCount = 0;
-//		for (Property myProperty: this.getListOfProperties()) {
-//			if (myProperty.getClass().equals(this.getClass())){
-//				matchedPropertiesCount+=1;
-//			}
-//		}
-//		
-//		for (Property myProperty: this.getListOfProperties()) {
-//			if (myProperty.getClass().equals(this.getClass())){
-//				property.applyMatchedPropertyEffect(matchedPropertiesCount); // override for real estate
-//			}
-//		}		
-    	//TODO: I need to factor in real estate colors when seeing if they're monopolies, can't just check instanceof
-    	
+    	updatePropertiesMatches(property);
+   	
     }
     
     /**
@@ -236,6 +223,51 @@ public class Player {
      */
     public void setIsDoneRollingDice(boolean playerIsDoneRollingDice) {
     	isDoneRollingDice = playerIsDoneRollingDice;
+    }
+    
+    private void updatePropertiesMatches(Property property) {
+       	
+    	//updating other properties of the same type that i own to have increased rents
+    	if (!(property instanceof RealEstate)) {//only railroads+utility
+	   		
+    		//scanning for matching properties
+    		int matchedPropertiesCount = 0;
+			for (Property myProperty: this.getListOfProperties()) {
+				if (myProperty.getClass().equals(this.getClass())){
+					matchedPropertiesCount+=1;
+				}
+			}
+			
+			//applying effect of matching properties (rent will increase/decrease)
+			for (Property myProperty: this.getListOfProperties()) {
+				if (myProperty.getClass().equals(this.getClass())){
+					property.applyMatchedPropertyEffect(matchedPropertiesCount);
+				}
+			} 
+		}else {// only real-estate
+	   		int matchedPropertiesCount = 0;
+	   		RealEstate realEstate = (RealEstate)property;
+	   		
+    		//scanning for matching colors
+			for (Property myProperty: this.getListOfProperties()) {
+				if (myProperty instanceof RealEstate) {
+			   		RealEstate myRealEstate = (RealEstate)myProperty;
+					if (myRealEstate.getColor().equals(realEstate.getColor())){
+						matchedPropertiesCount+=1;
+					}
+				}
+			}
+
+			//applying effect to owned properties with matching colors
+			for (Property myProperty: this.getListOfProperties()) {
+				if (myProperty instanceof RealEstate) {
+			   		RealEstate myRealEstate = (RealEstate)myProperty;
+					if (myRealEstate.getColor().equals(realEstate.getColor())){
+						property.applyMatchedPropertyEffect(matchedPropertiesCount);
+					}
+				}
+			} 
+		}  
     }
     
 }

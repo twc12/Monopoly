@@ -822,7 +822,7 @@ public class View extends Application implements Observer {
 			
 			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
 			//TODO if player clicks yes, execute the below
-			//controller.executePropertySale(player, property);
+			//controller.purchaseProperty(player, property);
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card

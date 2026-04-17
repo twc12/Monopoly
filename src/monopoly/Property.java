@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public abstract class Property extends CostSpace {
 	private int purchaseAmount;
 	private Player owner;
-	private boolean isMortgaged;
+	private boolean isMortgaged = false;
 	protected ArrayList<Integer> rentStages;
 	protected int rentStageIndex = 0;
 	
@@ -28,34 +28,52 @@ public abstract class Property extends CostSpace {
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
-			
-		//if rule=optional property sale:
+			//if rule=optional property sale:
 			model.notifyViewPurchasePrompt(player, this);
-		//else:
-			this.executePropertySale(player);
-	
-						
+			//else:
+			this.purchaseProperty(player);
+			
 		//otherwise, charge/transfer $
 		} else {
-			
 			// need to pass diceroll if landed on Utilities object
 			int recentDiceRoll = 0;
 			if (this instanceof Utility) {
 				recentDiceRoll = model.getLastDiceRollAmmt();
 			}
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
-		
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			System.out.println("RENT: Player charged $" + cost);
+			System.out.println(player.toString() + " charged rent $" + cost + " on " + this.getName() + ". Given to " + this.getOwner().toString());
+
 		}
 
 	}
 	
-	public void executePropertySale(Player player) {
+	public void purchaseProperty(Player player) {
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
+		System.out.println(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount());
+	}
+	
+	public void mortgageProperty(Player player) {
+		
+		// can only mortgage if all building sold
+		if (((RealEstate)this).getBuildingStage() > 0){
+			int mortgageAmount = this.getPurchaseAmount()/2;
+			player.addCash(mortgageAmount);		
+			this.setIsMortgaged(true);
+			System.out.println(player.toString() + " mortgaged " + this.getName() + " for $" + mortgageAmount);
+
+		} else {
+			System.out.println("Must sell all buildings before mortgaging!");
+		}
+		
+		
+	}
+	
+	public void unmortgageProperty(Player player) {
+		
 	}
 	
 	
@@ -75,6 +93,10 @@ public abstract class Property extends CostSpace {
 		return isMortgaged;
 	}
 	
+	public void setIsMortgaged(boolean val) {
+		this.isMortgaged = val;
+	}
+	
 	public int getMortgageAmount() {
 		return purchaseAmount/2;
 	}
@@ -83,8 +105,8 @@ public abstract class Property extends CostSpace {
 		return purchaseAmount;
 	}
 	
-	//helper function when player buys a property, will check if matching properties and update rent stage
-//	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
+	//helper function when player buys a property, will check if matching properties and update rent stage/enable building,etc.
+	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
 
 
 

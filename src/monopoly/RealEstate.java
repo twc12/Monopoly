@@ -1,5 +1,7 @@
 package monopoly;
 
+import java.util.ArrayList;
+
 public class RealEstate extends Property {
 	
 	private int buildPrice;
@@ -94,35 +96,82 @@ public class RealEstate extends Property {
     	return canBuild;
     }
     
+    public void buildHouseHotel(Player player) {
+    	
+    	if (this.canBuild && this.buildingStage < 5) {
+
+	    	//monopoly rule where you can only build houses/hotels evenly across properties, checking if violation
+	    	ArrayList<Property> myProperties = this.getOwner().getListOfProperties();
+	    	for (Property p: myProperties) {
+	    		if (p instanceof RealEstate) {
+	    			RealEstate checkRealEstate = (RealEstate)p;
+	    			
+	    			if (checkRealEstate.getColor().equals(this.getColor())) {
+	    				//if i have another realestate of the same color that has a lower buildstage, can't buy
+	        			if(checkRealEstate.getBuildingStage()<this.getBuildingStage()) { 
+	        				return; //Throw exception?
+	        			}
+	    			}	
+	    		}
+	    	}
+    
+        	player.addCash(-buildPrice);
+        	this.rentStageIndex += 1;
+        	this.buildingStage += 1;
+    	}
+    }
+    
+    public void sellHouseHotel(Player player) {
+    	
+    	if (this.buildingStage > 0) {
+    	
+    	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
+    	ArrayList<Property> myProperties = this.getOwner().getListOfProperties();
+    	for (Property p: myProperties) {
+    		if (p instanceof RealEstate) {
+    			RealEstate checkRealEstate = (RealEstate)p;
+    			
+    			if (checkRealEstate.getColor().equals(this.getColor())) {
+    				//if i have another realestate of the same color that has a higher buildstage, can't sell
+        			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
+        				return; //Throw exception?
+        			}
+    			}	
+    		}
+    	}
+    	
+    	//if found no conflicts, sell
+    	int sellPrice = buildPrice/2;
+    	player.addCash(sellPrice);
+    	this.rentStageIndex -= 1;
+    	this.buildingStage -= 1;
+    	System.out.println(player.toString() + " successfully sold house/hotel for " + sellPrice);
+    	}
+    }
     
     
-    
-    
-//	@Override
-//	//checks for monopolies. if no monopoly, makes sure that rents are reset to first stage and can't build
-//	protected void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount) {
-//		
-//		//brown and blue are only groups of 2
-//		if (matchedOwnedPropertiesCount == 2 && (this.color.equals(Color.BROWN) || this.color.equals(Color.BLUE))) {
-//			if (this.rentStageIndex == 0) {
-//				this.rentStageIndex = 1;
-//				this.canBuild = true;
-//			}
-//		}
-//
-//		//all other colors are groups of 3
-//		else if (matchedOwnedPropertiesCount == 3) {
-//			if (this.rentStageIndex == 0) {
-//				this.rentStageIndex = 1;
-//				this.canBuild = true;
-//
-//			}
-//		} else {
-//			this.rentStageIndex = 0;
-//			this.canBuild = false;
-//		}
-//		
-//	}
+	//checks for monopolies. if no monopoly, makes sure that rents are reset to first stage and can't build
+	public void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount) {
+		//brown and blue are only groups of 2
+		if (matchedOwnedPropertiesCount == 2 && (this.color.equals(Color.BROWN) || this.color.equals(Color.BLUE))) {
+			if (this.rentStageIndex == 0) {
+				this.rentStageIndex = 1;
+				this.canBuild = true;
+			}
+		}
+
+		//all other colors are groups of 3
+		else if (matchedOwnedPropertiesCount == 3) {
+			if (this.rentStageIndex == 0) {
+				this.rentStageIndex = 1;
+				this.canBuild = true;
+			}
+		} else {
+			this.rentStageIndex = 0;
+			this.canBuild = false;
+		}
+		
+	}
 
 
 }

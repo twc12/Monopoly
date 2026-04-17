@@ -16,7 +16,7 @@ public class Board extends Observable {
 	public Space firstSpace;
 	public Jail jailSpace;
 	
-	private final int[] testArrayList = new int[]{1,2,3,4,5,6}; //placeholder for actual rent/progressions for real estate
+	private final int[] testArrayList = new int[]{1,2,3,4,5,6,7}; //placeholder for actual rent/progressions for real estate
 	
     public Board() {
         spacesLinkedList = new LinkedList<>();

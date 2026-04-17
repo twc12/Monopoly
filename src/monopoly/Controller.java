@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.*;
 public class Controller {
 
-	private Model model;
+	public Model model;
 	
 	
 	public Controller(View viewClassObj) {

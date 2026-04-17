@@ -137,6 +137,23 @@ public class Player {
      */
     public void addProperty(Property property) {
     	listOfProperties.add(property);
+    	
+    	
+    	
+    	//updating other properties of the same type that i own to have increased rents
+   		int matchedPropertiesCount = 0;
+		for (Property myProperty: this.getListOfProperties()) {
+			if (myProperty.getClass().equals(this.getClass())){
+				matchedPropertiesCount+=1;
+			}
+		}
+		
+		for (Property myProperty: this.getListOfProperties()) {
+			if (myProperty.getClass().equals(this.getClass())){
+				property.applyMatchedPropertyEffect(matchedPropertiesCount); // override for real estate
+			}
+		}		
+    	
     }
     
     /**

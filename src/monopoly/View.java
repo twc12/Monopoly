@@ -53,7 +53,7 @@ public class View extends Application implements Observer {
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 15;
-	
+	private final Color defaultSpaceColor = Color.PALEGREEN;
 	/**
 	 * This group will change from holding a grid pane for dice results,
 	 * and a stack pane to show a OTHER players card to do trading.
@@ -430,7 +430,7 @@ public class View extends Application implements Observer {
 		// TEST The top color of properties
 		if (space instanceof RealEstate) {
 		Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
-				space.getFXColor());
+				((RealEstate)space).getFXColor());
 		topColorBandRect.setTranslateY(-23);
 		spaceCardPane.getChildren().add(topColorBandRect);
 		}
@@ -962,7 +962,13 @@ public class View extends Application implements Observer {
 
 	    	Rectangle colorRect = new Rectangle();
 	    	colorRect.setHeight(headerHeight);
-	    	colorRect.setFill(space.getFXColor());
+	    	
+	    	if (space instanceof RealEstate) {
+	    	colorRect.setFill(((RealEstate)space).getFXColor()); //cast to realestate obj so can get javafx color
+	    	} else {
+	    		colorRect.setFill(defaultSpaceColor);
+	    	}
+	    
 	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
 
 	    	Text t1 = new Text("TITLE DEED\n");

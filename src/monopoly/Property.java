@@ -28,10 +28,10 @@ public abstract class Property extends CostSpace {
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
-			//if rule=optional property sale:
+			//if rule=optional property sale=true AND currplayer not AI:
 			model.notifyViewPurchasePrompt(player, this);
 			//else:
-			this.purchaseProperty(player);
+			//this.purchaseProperty(player);
 			
 		//otherwise, charge/transfer $
 		} else {

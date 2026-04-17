@@ -14,7 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
@@ -25,6 +24,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -53,7 +53,7 @@ public class View extends Application implements Observer {
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 10;
-	private final Color defaultSpaceColor = Color.PALEGREEN;
+	private final Color defaultSpaceColor = Color.WHITE;
 	/**
 	 * This group will change from holding a grid pane for dice results,
 	 * and a stack pane to show a OTHER players card to do trading.
@@ -123,6 +123,8 @@ public class View extends Application implements Observer {
 	private StackPane cardOverlay;
 	private Label cardTitle;
 	
+	//similar to cards, for purchaseprompts
+	private StackPane purchaseOverlay;
 	
 	private StackPane root;
 
@@ -182,6 +184,11 @@ public class View extends Application implements Observer {
 		// For chance and community chests
 		buildCardOverlay();
 		root.getChildren().add(cardOverlay);
+		// For purchase prompts
+		StackPane purchaseOverlay = new StackPane();
+		purchaseOverlay.setVisible(false);
+		this.purchaseOverlay = purchaseOverlay;
+		root.getChildren().add(purchaseOverlay);
 		
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
@@ -813,16 +820,7 @@ public class View extends Application implements Observer {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
 			Property property = purchasePromptMsg.getProperty();
-			
-			Alert a = new Alert(Alert.AlertType.ERROR);
-			a.setTitle("FOR SALE");
-			a.setHeaderText("Do you want to purchase " + property.getName() + "?");
-			a.setContentText("YES/NO Cost: $" + property.getPurchaseAmount());
-			a.showAndWait();
-			
-			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
-			//TODO if player clicks yes, execute the below
-			//controller.purchaseProperty(player, property);
+			showPurchasePrompt(player, property);
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card
@@ -921,6 +919,50 @@ public class View extends Application implements Observer {
 	        e.consume();
 	    });
 	}
+
+	//purchaseprompt hbox with property infocard on left, buttons on right
+	public void showPurchasePrompt(Player player, Property property) {
+		
+	    this.purchaseOverlay.getChildren().clear();//clear old version
+	    
+	    //copying style from cardprompt
+		int width = 350;
+		int height = 220;
+	    HBox hboxContainer = new HBox();
+	    hboxContainer.setAlignment(Pos.CENTER);
+	    hboxContainer.setMaxWidth(width); //avoid stackpane taking up whole screen
+	    hboxContainer.setMaxHeight(height);
+	    hboxContainer.setStyle(
+	        "-fx-background-color: white;" +
+	        "-fx-border-color: black;" +
+	        "-fx-border-width: 3;" +
+	        "-fx-padding: 20;"
+	    );
+
+	    //adding card to the left spot in the hbox
+	    StackPane spaceCard = this.buildSpaceCard(property, 150);
+	    hboxContainer.getChildren().add(spaceCard);
+
+	    //adding buttons to the right spot in the hbox
+	    VBox buttonBox = new VBox();
+	    buttonBox.setAlignment(Pos.CENTER);
+	    Button buyButton = new Button("Buy");
+	    buyButton.setOnAction(e -> {		//On click, buy property, update playerinfo, hide overlay
+	        controller.purchaseProperty(player, property);
+	        populatePlayerCardWithNewInfo(player);
+	        this.purchaseOverlay.setVisible(false);
+	    });
+	    Button skipButton = new Button("Skip"); //On click for skip, just hide overlay
+	    skipButton.setOnAction(e -> {
+	    	this.purchaseOverlay.setVisible(false);
+	    });
+	    buttonBox.getChildren().addAll(buyButton, skipButton);
+	    hboxContainer.getChildren().add(buttonBox);
+
+	    //add hbox to stackpane atribute
+	    this.purchaseOverlay.getChildren().add(hboxContainer);
+	    this.purchaseOverlay.setVisible(true);
+	}
 	
 	/**
 	 * Builds a resizable stackframe for viewing property cards.
@@ -966,6 +1008,7 @@ public class View extends Application implements Observer {
 	    	Rectangle colorRect = new Rectangle();
 	    	colorRect.setHeight(headerHeight);
 	    	
+	    	//only realestate has colors
 	    	if (space instanceof RealEstate) {
 	    	colorRect.setFill(((RealEstate)space).getFXColor()); //cast to realestate obj so can get javafx color
 	    	} else {

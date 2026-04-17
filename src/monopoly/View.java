@@ -128,7 +128,8 @@ public class View extends Application implements Observer {
 	public void start(Stage stage) throws Exception {
 	
 		// Hacker style text
-		aiLoggerLabelSetStyle = "-fx-font-size: 12, -fx-background-color: black, -fx-text-fill: green";
+		aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px;";
+						//f		fx-background-color: lightblue; -fx-padding: 10px;
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
@@ -214,6 +215,7 @@ public class View extends Application implements Observer {
 		
 		// AI MOVEMENT/DECISION LOGGER
 		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
+		aiLoggerVBox.setAlignment(Pos.CENTER);
 		this.aiLoggerVBox = aiLoggerVBox;
 		
 		topLabelSection.getChildren().addAll(titleLabel, currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
@@ -829,6 +831,7 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
+			//newAiActionLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 10px;");
 			aiLoggerVBox.getChildren().add(newAiActionLabel);
 		}
 		

@@ -35,14 +35,24 @@ public class Controller {
 		
 		model.notifyViewOfDiceResult(dice1Result, dice2Result);
 		
+		// TESTING AI ACTIONS
+				model.notifyViewOfAiAction("Dice Roled");
+		
 		int ammtMoved = dice1Result+dice2Result;
 		
 		// Move player 
 		player.move(ammtMoved);
 		model.notifyViewOfPlayerMoved(player, ammtMoved);
+		
+		// TESTING AI ACTIONS
+			model.notifyViewOfAiAction("Player moved "+ammtMoved+" spaces");
 
 		player.getCurrentSpace().processSpace(player, model);
-		 
+
+		// TESTING AI ACTIONS
+			model.notifyViewOfAiAction("processings a "+player.getCurrentSpace().name+" space");
+ 
+		
 		//TODO
 		//	process on enter space logic
 		

@@ -10,16 +10,6 @@ public abstract class Space {
 	public String name;
 	public Set<Player> playersOnSpace;
 
-	
-	/**
-	 * Constructor: Initualizes a space to null everything
-	 */
-	public Space() {
-		nextSpace = null;
-		name = "Nameless";
-		playersOnSpace = new HashSet<Player>();
-	}
-	
 	/**
 	 * Constructor: Initualizes a space 
 	 * @param name (String): The name of the space "BoardWalk"

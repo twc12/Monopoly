@@ -52,7 +52,7 @@ public class View extends Application implements Observer {
 	private int widthOfPropertySpaceCards = 30;
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
-	private int playerCircleRadius = 15;
+	private int playerCircleRadius = 10;
 	private final Color defaultSpaceColor = Color.PALEGREEN;
 	/**
 	 * This group will change from holding a grid pane for dice results,
@@ -234,8 +234,13 @@ public class View extends Application implements Observer {
 	 */
 	public GridPane buildMonopolyBoard() {
 		
+		//creating empty list of size 40
 		listOfSpacesPanes = new ArrayList<StackPane>();
-
+		for(int i = 0; i < controller.getSpaces().size(); i++) {
+	        listOfSpacesPanes.add(null);
+	    }
+		
+		
 		GridPane mainBoardGridPane = new GridPane();
 
 		// TESTING --
@@ -282,7 +287,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoSpace) && !(currSpace instanceof Jail)) {
 					int col = boardWidth - spaceIdx - 1;
 					int row = boardWidth - 1; // 0 BASED INDEXING 11-1 = INDEX 10
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 0);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 0, spaceIdx);
 				}
 			}
 
@@ -293,7 +298,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof FreeParking)) {
 					int col = 0; // far left side
 					int row = 9 - (spaceIdx - boardHeight); // gets us to right above jail; (12 - 11) + 9, then 13 - 11
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 90);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 90, spaceIdx);
 				}
 			}
 
@@ -304,7 +309,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoToJailSpace)) {
 					int col = spaceIdx - 20; // 23 - 22; 24 - 22 gets the column of the top
 					int row = 0; // top of the board
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 180);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, 180, spaceIdx);
 				}
 			}
 
@@ -315,7 +320,7 @@ public class View extends Application implements Observer {
 				if (!(currSpace instanceof GoSpace)) {
 					int col = boardWidth - 1;
 					int row = spaceIdx - 30;
-					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, -90);
+					addPropertySpaceObjToBoard(mainBoardGridPane, allSpaces.get(spaceIdx), col, row, -90, spaceIdx);
 				}
 			}
 		}
@@ -353,7 +358,7 @@ public class View extends Application implements Observer {
 		
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
-		listOfSpacesPanes.add(20, freeParkingStackPane); // this list is used for player movement later
+		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
 		Label freeParkingText = new Label("Free Parking");
@@ -364,33 +369,33 @@ public class View extends Application implements Observer {
 
 		// GO SPACE
 		StackPane goSpaceStackPane = new StackPane();
-		listOfSpacesPanes.add(0, goSpaceStackPane); // this list is used for player movement later 
+		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goSpaceText = new Label("Go!");
-		goSpaceText.setFont(new Font(10));
+		Label goSpaceText = new Label("GO");
+		goSpaceText.setFont(new Font(20));
 		goSpaceStackPane.getChildren().add(baseBottomRect);
 		goSpaceStackPane.getChildren().add(goSpaceText);
 		mainBoardGridPane.add(goSpaceStackPane, 10, 10);
 		
 		// JAIL SPACE
 		StackPane jailStackPane = new StackPane();
-		listOfSpacesPanes.add(10, jailStackPane); // this list is used for player movement later 
+		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label jailText = new Label("Jail: Just Visiting");
-		jailText.setFont(new Font(7));
+		Label jailText = new Label("Jail/Just Visiting");
+		jailText.setFont(new Font(8));
 		jailStackPane.getChildren().add(baseBottomRect);
 		jailStackPane.getChildren().add(jailText);
 		mainBoardGridPane.add(jailStackPane, 0, 10);
 		
 		// GO TO JAIL SPACE
 		StackPane goToJailStackPane = new StackPane();
-		listOfSpacesPanes.add(30, goToJailStackPane); // this list is used for player movement later
+		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goToJailText = new Label("GO TO JAIL LOSER");
-		goToJailText.setFont(new Font(6));
+		Label goToJailText = new Label("Go to Jail");
+		goToJailText.setFont(new Font(13));
 		goToJailStackPane.getChildren().add(baseBottomRect);
 		goToJailStackPane.getChildren().add(goToJailText);
 		mainBoardGridPane.add(goToJailStackPane, 10, 0);
@@ -412,7 +417,7 @@ public class View extends Application implements Observer {
 	 * @param rotateAmmt        (int): Some spaces are rotated so this will be
 	 *                          inputed based on the side of the board
 	 */
-	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt) {
+	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
 		// TESTING
 		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
@@ -421,7 +426,7 @@ public class View extends Application implements Observer {
 		
 		StackPane spaceCardPane = new StackPane();
 		
-		listOfSpacesPanes.add(spaceCardPane); // This list is used for player movement in the future
+		listOfSpacesPanes.set(spaceIdx, spaceCardPane); // This list is used for player movement in the future
 
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, Color.BISQUE);

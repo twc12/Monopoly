@@ -80,6 +80,7 @@ public class Player {
     	currentSpace.getPlayersOnSpace().add(this);
     	
     	model.notifyViewOfPlayerMoved(this, ammt);
+    	System.out.println("Processing Space: " + currentSpace.getName());
     	currentSpace.processSpace(this, model);
     	
     }
@@ -128,6 +129,7 @@ public class Player {
      */
     public void removeProperty(Property property) {
     	listOfProperties.remove(property);
+    	
     }
     
     /**
@@ -140,19 +142,20 @@ public class Player {
     	
     	
     	
-    	//updating other properties of the same type that i own to have increased rents
-   		int matchedPropertiesCount = 0;
-		for (Property myProperty: this.getListOfProperties()) {
-			if (myProperty.getClass().equals(this.getClass())){
-				matchedPropertiesCount+=1;
-			}
-		}
-		
-		for (Property myProperty: this.getListOfProperties()) {
-			if (myProperty.getClass().equals(this.getClass())){
-				property.applyMatchedPropertyEffect(matchedPropertiesCount); // override for real estate
-			}
-		}		
+//    	//updating other properties of the same type that i own to have increased rents
+//   		int matchedPropertiesCount = 0;
+//		for (Property myProperty: this.getListOfProperties()) {
+//			if (myProperty.getClass().equals(this.getClass())){
+//				matchedPropertiesCount+=1;
+//			}
+//		}
+//		
+//		for (Property myProperty: this.getListOfProperties()) {
+//			if (myProperty.getClass().equals(this.getClass())){
+//				property.applyMatchedPropertyEffect(matchedPropertiesCount); // override for real estate
+//			}
+//		}		
+    	//TODO: I need to factor in real estate colors when seeing if they're monopolies, can't just check instanceof
     	
     }
     

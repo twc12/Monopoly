@@ -16,7 +16,7 @@ public class Model extends Observable {
 	
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
-	
+	private int lastDiceRollAmmt;
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
@@ -170,6 +170,14 @@ public class Model extends Observable {
 	    this.setChanged();
 	    this.notifyObservers(aiActionMsg);
 	    this.clearChanged();
+	}
+
+	public void setLastDiceRollAmmt(int ammtMoved) {
+		this.lastDiceRollAmmt = ammtMoved;
+	}
+	
+	public int getLastDiceRollAmmt() {
+		return this.lastDiceRollAmmt;
 	}
 	
 }

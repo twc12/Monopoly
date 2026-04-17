@@ -17,7 +17,7 @@ public class TaxSpace extends CostSpace{
 		this.taxSpaceType = type;
 	}
 
-	public int getCostToCharge(Player player) {
+	public int getCostToCharge(Player player, int diceRoll) {
 		
 		if (taxSpaceType.equals(TaxSpaceType.LUXURY)) {
 			return luxuryTaxFlatAmount;
@@ -35,9 +35,8 @@ public class TaxSpace extends CostSpace{
 	}
 
 	protected void processSpace(Player player, Model model) {
-		player.addCash(-getCostToCharge(player));
-		//TODO ank.addCash(getCostToCharge(player));
-		
+		player.addCash(-getCostToCharge(player, 0));
+		System.out.println("TAX: Player charged $" + getCostToCharge(player, 0));
 	}
 
 }

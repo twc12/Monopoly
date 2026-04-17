@@ -16,7 +16,7 @@ public class Board extends Observable {
 	public Space firstSpace;
 	public Jail jailSpace;
 	
-	private final int[] testArrayList = new int[]{1,2,3,4,5,6};
+	private final int[] testArrayList = new int[]{1,2,3,4,5,6}; //placeholder for actual rent/progressions for real estate
 	
     public Board() {
         spacesLinkedList = new LinkedList<>();
@@ -25,11 +25,11 @@ public class Board extends Observable {
         
         //building full board
         Space[] spacesArray = {
-            new GoSpace(),									//1
+            new GoSpace(),																			//1
             new RealEstate(Color.BROWN, "Mediterranean Avenue", 60, testArrayList),					//2
-            new CommunityChest(),							//3
-            new RealEstate(Color.BROWN, "Baltic Avenue", 60, testArrayList),					//4
-            new TaxSpace(TaxSpace.TaxSpaceType.INCOME),		//5
+            new CommunityChest(),																	//3
+            new RealEstate(Color.BROWN, "Baltic Avenue", 60, testArrayList),						//4
+            new TaxSpace(TaxSpace.TaxSpaceType.INCOME),												//5
             new Railroad("Reading Railroad"),									
             new RealEstate(Color.LIGHTBLUE, "Oriental Avenue", 100, testArrayList),
             new Chance(),

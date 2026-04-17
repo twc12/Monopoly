@@ -13,18 +13,54 @@ public abstract class Property extends CostSpace {
 		super(name);
 		this.purchaseAmount = purchaseAmount;
 		
-		//converting the primitive arraylist to arraylist obj. using the primitive since its easier to copy/paste for now
+		//converting the primitive arraylist to arraylist obj. using the primitive since its easier to copy/paste in builder for now
 		ArrayList<Integer> arrayListObj = new ArrayList<Integer>();
 		for (int i=0; i<rentStages.length; i++) {
 			arrayListObj.add(rentStages[i]);
 		}
-		
-		
-		
-		
-		
-		
 		this.rentStages = arrayListObj;
+	}
+	
+	public void processSpace(Player player, Model model) {
+		
+		//do nothing if mortgaged, or the player is the owner
+		if (this.getIsMortgaged() || this.getOwner() == player) return;
+		
+		//if unowned, prompt player to purchase
+		if (this.getOwner() == null) {
+			
+		//if rule=optional property sale:
+			model.notifyViewPurchasePrompt(player, this);
+		//else:
+			this.executePropertySale(player);
+	
+						
+		//otherwise, charge/transfer $
+		} else {
+			
+			// need to pass diceroll if landed on Utilities object
+			int recentDiceRoll = 0;
+			if (this instanceof Utility) {
+				recentDiceRoll = model.getLastDiceRollAmmt();
+			}
+			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
+		
+			player.addCash(-cost);
+			this.getOwner().addCash(cost);
+			System.out.println("RENT: Player charged $" + cost);
+		}
+
+	}
+	
+	public void executePropertySale(Player player) {
+		player.addCash(-this.getPurchaseAmount());		
+		player.addProperty(this);
+		this.setOwner(player);		
+	}
+	
+	
+	public int getCostToCharge(Player player, int diceRoll) {
+		return rentStages.get(rentStageIndex);
 	}
 	
 	public Player getOwner() {
@@ -47,56 +83,9 @@ public abstract class Property extends CostSpace {
 		return purchaseAmount;
 	}
 	
-	
-
-	
-	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
-
-	
-	public void processSpace(Player player, Model model) {
-		
-		//do nothing if mortgaged, or the player is the owner
-		if (this.getIsMortgaged() || this.getOwner() == player) return;
-		
-		//if unowned, prompt player to purchase
-		if (this.getOwner() == null) {
-			model.notifyViewPurchasePrompt(player, this);
-		
-			
-			//TODO check if purchasing a property increments the rent via monopoly or owning multiple utilities, railroads, etc
-			
-		//otherwise, charge/transfer $
-		} else {
-
-			
-			
-
-			player.addCash(-getCostToCharge(player));
-			this.getOwner().addCash(getCostToCharge(player));
-		}
-
-	}
-	
-
-	public void incrementRentStage(Player player) {
-		if (rentStageIndex < (rentStages.size()-1)) {
-			rentStageIndex += 1;
-		}
-	}
-	
-	public void decrementRentStage() {
-		if (rentStageIndex > 0) {
-			rentStageIndex -=1;
-		}
-	}
-	
-	public int getCostToCharge(Player player) {
-
-		
+	//helper function when player buys a property, will check if matching properties and update rent stage
+//	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
 
 
-		return rentStages.get(rentStageIndex);
-		
-	}
-	
+
 }

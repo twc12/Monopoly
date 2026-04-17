@@ -185,7 +185,7 @@ public class View extends Application implements Observer {
 		
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 800, 800);
+		Scene scene = new Scene(root, 1280, 720);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
@@ -803,12 +803,11 @@ public class View extends Application implements Observer {
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 		}
 		
-		// if the message is the controller asking if the user wants to buy the property
+		// if the message is that a player landed on an unowned property, buying is optional
 		else if (message instanceof PurchasePromptMessage) {
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
 			Property property = purchasePromptMsg.getProperty();
-			
 			
 			Alert a = new Alert(Alert.AlertType.ERROR);
 			a.setTitle("FOR SALE");
@@ -817,9 +816,8 @@ public class View extends Application implements Observer {
 			a.showAndWait();
 			
 			//TODO add buttons, or prevent user from closing the show/wait prompt, maybe use another method
-			
-			//TODO if player clicks yes, execute the below. currently always assuming yes
-			controller.executePropertySale(player, property);
+			//TODO if player clicks yes, execute the below
+			//controller.executePropertySale(player, property);
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card

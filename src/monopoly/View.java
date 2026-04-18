@@ -239,7 +239,7 @@ public class View extends Application implements Observer {
 		// loop over all the players, adding their rectangle to the right size with their color and Id 
 		for (Player player : allPlayers) {
 			Rectangle newRectangle;
-			Label currPlayerLabel;
+			Label currPlayerLabel; 
 			StackPane currPlayerStackPane;
 			
 			// for the current player, create a empty white box for them

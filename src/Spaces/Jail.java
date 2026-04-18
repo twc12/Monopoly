@@ -36,16 +36,8 @@ public class Jail extends Space {
 		}
 		return playerAttemptsToGetOutMapping.get(playerInJail);
 	}
-	
 
-	@Override
-	protected void processSpace(Player player, Model model) {
-		// TODO Auto-generated method stub
-		
+	public void processSpace(Player player, Model model) {
+
 	}
-	
-	
-	
-	
-
 }

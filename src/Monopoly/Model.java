@@ -10,6 +10,7 @@ import Cards.Deck;
 import Messages.AiActionMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
+import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -199,6 +200,18 @@ public class Model extends Observable {
 	    this.setChanged();
 	    this.notifyObservers(aiActionMsg);
 	    this.clearChanged();
+	}
+
+	/**
+	 * Notifies the view that a player has landed on the "go to jail" space
+	 * @param player
+	 */
+	public void notifyViewOfPlayerGoingToJail(Player player) {
+		GoToJailMessage jailMsg = new GoToJailMessage(player);
+		this.setChanged();
+		this.notifyObservers(jailMsg);
+		this.clearChanged();
+		
 	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {

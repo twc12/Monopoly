@@ -56,6 +56,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import monopoly.Controller.JAIL_CHOICE;
 
 
 /**
@@ -103,6 +104,9 @@ public class View extends Application implements Observer {
 	 */
 	private Group bottomLeftPlayerCardGroup;
 	
+	// THE MAIN BUTTONS IN BOTTOM RIGHT 
+	private Group mainButtonsGroup; // This will be used to change the buttons to present the jail options
+	private FlowPane coreButtonsFlowPane; // This will save the core buttons so the jail logic can revert them back 
 	private Button rollDiceButton; // used to grey out when unavailable 
 	private Button endTurnButton; // used to grey out unavailable
 	private Label currPlayerLabel;
@@ -595,9 +599,11 @@ public class View extends Application implements Observer {
 		sudoEmptyGridPane.setPrefHeight(118);
 		bottomMiddleOfScreenGroup.getChildren().add(sudoEmptyGridPane);
 		
-		
-
 		// Buttons
+		// FUTURE NOTE - The get out of jail options will replace the children of this group with its own buttons
+		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsFlowPane` attribute 
+		Group mainButtonsGroup = new Group();
+		this.mainButtonsGroup = mainButtonsGroup; // This will be used to change the buttons to present the jail options
 		Button rollDiceButton = new Button("Roll Dice");
 		this.rollDiceButton = rollDiceButton;
 		rollDiceButton.setOnAction(event -> handleDiceRoll());
@@ -611,14 +617,16 @@ public class View extends Application implements Observer {
 			handleEndTurnButton();
 		});
 
-		FlowPane buttonPane = new FlowPane();
-		buttonPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
-
+		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
+		FlowPane coreButtonsFlowPane = new FlowPane();
+		this.coreButtonsFlowPane = coreButtonsFlowPane; // I need this saved so the getOutOfJailLogic can bring these buttons back 
+		coreButtonsFlowPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
+		mainButtonsGroup.getChildren().add(coreButtonsFlowPane);
 		// returning full bottom section
 		BorderPane bottomBorderPane = new BorderPane(); // player info card left, buttons right
 		bottomBorderPane.setLeft(bottomLeftPlayerCardGroup);
 		bottomBorderPane.setCenter(bottomMiddleOfScreenGroup);
-		bottomBorderPane.setRight(buttonPane);
+		bottomBorderPane.setRight(mainButtonsGroup);
 		return bottomBorderPane;
 	}
 	
@@ -990,6 +998,58 @@ public class View extends Application implements Observer {
 	}
 	
 	
+	/**
+	 * showOptionsForGettingOutOfJail(currentPlayer): This function will 
+	 * determine which options are available for getting out of jail for this player 
+	 * based on what the player has 
+	 * @param currentPlayer (Player): the current player whos turn it is, who is found to be in jail 
+	 */
+	private void showOptionsForGettingOutOfJail(Player currentPlayer) {
+		int doublesAttempts = controller.getAmmtOfJailAttempts(currentPlayer);
+		mainButtonsGroup.getChildren().clear(); // remove core buttons
+		
+		FlowPane getOutOfJailButtonChoices = new FlowPane();
+		mainButtonsGroup.getChildren().add(getOutOfJailButtonChoices);
+		
+		int playersCashTotal = currentPlayer.getCashAmmt();
+		// if the player can still attempt to roll doubles then add a button for it, but if they dont have $50 then they must roll doubles
+		if (doublesAttempts < 3 || playersCashTotal < 50) {
+			Button rollDoublesButton = new Button("Roll Doubles");
+			rollDoublesButton.setOnMouseClicked((e) -> {
+				controller.processJailLogic(currentPlayer, JAIL_CHOICE.ROLL_DUBLES);
+				mainButtonsGroup.getChildren().clear(); // remove the jail options
+				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+			});
+			getOutOfJailButtonChoices.getChildren().add(rollDoublesButton);
+		}
+		
+		// if the user has enough to pay money then show that button 
+		if (playersCashTotal >= 50) {
+			Button payCashButton = new Button("Pay $50");
+			payCashButton.setOnMouseClicked((e) -> {
+				controller.processJailLogic(currentPlayer, JAIL_CHOICE.PAY_FIFTY);
+				mainButtonsGroup.getChildren().clear(); // remove the jail options
+				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+			});
+			getOutOfJailButtonChoices.getChildren().add(payCashButton);
+		}
+		
+		// if the player has atleast 1 get out of jail free card, show that button 
+		if (currentPlayer.getAmmtOfGOOJCards() >= 1) {
+			Button useGOOJCard = new Button("Use Get Out Of Jail Free Card");
+			useGOOJCard.setOnMouseClicked((e) -> {
+				controller.processJailLogic(currentPlayer, JAIL_CHOICE.OUT_OF_JAIL_CARD);
+				mainButtonsGroup.getChildren().clear(); // remove the jail options
+				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+			});
+			getOutOfJailButtonChoices.getChildren().add(useGOOJCard);
+		}
+		
+		
+		
+	}
+	
+	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -1017,15 +1077,23 @@ public class View extends Application implements Observer {
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			
-			rollDiceButton.setDisable(false);
-			endTurnButton.setDisable(false);
-			
 			// at the start of another player, clear the Ai logger of any potential messages
 			aiLoggerVBox.getChildren().clear();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 			
 			buildRightPlayerPicker(nextPlayerMsg.getNextPlayer());
+			
+			// if the next player is in jail, show their next options for getting out of jail 
+			Player currentPlayer = nextPlayerMsg.getNextPlayer();
+			if (currentPlayer.isInJail()) {
+				showOptionsForGettingOutOfJail(currentPlayer); // this will change the buttons in the bottom right 
+			}
+			else {
+				rollDiceButton.setDisable(false);
+				endTurnButton.setDisable(false);
+			}
+			
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional

@@ -18,6 +18,10 @@ import Spaces.Utility;
 
 import java.util.*;
 public class Controller {
+	
+	public enum JAIL_CHOICE{
+		ROLL_DUBLES, PAY_FIFTY, OUT_OF_JAIL_CARD
+	}
 
 	public Model model;
 	
@@ -56,6 +60,16 @@ public class Controller {
 		
 		player.move(ammtMoved);
 
+	}
+	
+	/**
+	 * This function is NOT THE TRUE IMPLEMENTATION, Needs to be rewrote
+	 * @param choice (JAIL_CHOICE): the valid choice from the user 
+	 */
+	public void processJailLogic(Player playerInJail, JAIL_CHOICE choice) {
+		// no matter the choice lets just say hes removed and he gets go roll dice for the mean time
+		playerInJail.getOutOfJail();
+		model.notifyViewOfNextPlayersTurn(playerInJail);
 	}
 	
 	public void purchaseProperty (Player player, Property property) {
@@ -300,6 +314,20 @@ public class Controller {
 	
 	public List<Player> getAllPlayers(){
 		return model.getPlayers();
+	}
+	
+	/**
+	 * Getter: it will ask the Jail space in the model how many times a player has 
+	 * attempted to get out of jail.
+	 * This function is only called in the view if the player.isInJail() return true
+	 * so that means they MUST be in the jail.playerAttemptsToGetOutMapping. If not
+	 * that is major problem, send debug message hopefully they see
+	 * @param playerInJail (Player): The player that should be in jail
+	 * @return int: the number of times the player has tried to roll doubles to get out of jail
+	 */
+	public int getAmmtOfJailAttempts(Player playerInJail) {
+		int attemptsAmmount = model.getAmmtOfJailAttempts(playerInJail);
+		return attemptsAmmount;
 	}
 	
 	

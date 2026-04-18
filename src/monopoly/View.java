@@ -66,6 +66,11 @@ public class View extends Application implements Observer {
 	// Large detailed property info cards constants
 	private int widthOfLargeDetailedPropertyCards = 200;
 	
+	// Player information picker on the right side constants
+	private int widthOfRightSideRectangle = 100;
+	private int heightOfRightSideRectangle = 50;
+	private Group rightSidePlayerPickerGroup; // This holds the VBox of Player clickable rectangles to populate the center with their player card
+	
 	private final Color defaultSpaceColor = Color.WHITE;
 	/**
 	 * This group will change from holding a grid pane for dice results,
@@ -164,9 +169,9 @@ public class View extends Application implements Observer {
 		// Create the board
 		GridPane visualGameBoard = buildMonopolyBoard();
 		
-		// Go over all the Spaces panes, add them to list, to allow for easier movement when player moves
-		StackPane goSpacePane = listOfSpacesPanes.get(0);
 		
+		// Put all the players pieces on the go space, then track which space the players are on 
+		StackPane goSpacePane = listOfSpacesPanes.get(0);
 		List<Player> allPlayers = controller.getAllPlayers();
 		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
 		for (Player currPlayer: allPlayers) {
@@ -176,11 +181,16 @@ public class View extends Application implements Observer {
 			// Move the circles into the GO SPACE
 			goSpacePane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
 			
-			// initualize which pane the player is one 
+			// initualize which pane the player is on 
 			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
 		}
 
 		mainScreen.setCenter(visualGameBoard);
+		
+		Group rightSidePlayerPickerGroup = new Group();	
+		this.rightSidePlayerPickerGroup = rightSidePlayerPickerGroup;
+		buildRightPlayerPicker(controller.getCurrentPlayer()); // THIS FUNCTION WILL ADD TO THE GROUP ONE LINE ABOVE!
+		mainScreen.setRight(rightSidePlayerPickerGroup);
 		
 		// bottom playerinfo+controls
 		BorderPane bottomArea = buildBottomSection();
@@ -211,6 +221,66 @@ public class View extends Application implements Observer {
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
+	}
+	
+	/**
+	 * buildRightPlayerPicker(): This function will create the right side
+	 * rectangles for selecting a player to see their properties and information
+	 * Instead of returning it overwrites the VBox that is in the right side group 
+	 * so it displays the current "other players" meaning it WONT show the `currPlayer` rectangle
+	 * 
+	 * @param currPlayer (Player): The current player in the game to not show their box 
+	 */
+	private void buildRightPlayerPicker(Player currPlayer) {
+		
+		VBox playersRectangleStack = new VBox();
+		List<Player> allPlayers = controller.getAllPlayers();
+		
+		// loop over all the players, adding their rectangle to the right size with their color and Id 
+		for (Player player : allPlayers) {
+			Rectangle newRectangle;
+			Label currPlayerLabel;
+			StackPane currPlayerStackPane;
+			
+			// for the current player, create a empty white box for them
+			if (player.equals(currPlayer)) {
+				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, Color.GREY);
+				currPlayerLabel = new Label("Current Player");
+				currPlayerStackPane = new StackPane();
+			}
+			// if its not he current player then make the fully feature rich rectangle with color and rectangle
+			else {
+				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, player.getColor());
+				currPlayerLabel = new Label("Player "+player.getId());
+				
+				currPlayerStackPane = new StackPane();
+				currPlayerStackPane.setUserData(player);
+				currPlayerStackPane.setOnMouseClicked((e) -> {
+					showOtherPlayersInfoInTheMiddle((Player)currPlayerStackPane.getUserData());
+				});
+			}
+			
+			currPlayerStackPane.getChildren().addAll(newRectangle, currPlayerLabel);
+			playersRectangleStack.getChildren().add(currPlayerStackPane);
+		}
+		
+		rightSidePlayerPickerGroup.getChildren().clear();
+		rightSidePlayerPickerGroup.getChildren().add(playersRectangleStack);
+	}
+	
+	
+	/**
+	 * showOtherPlayersInfoInTheMiddle(): This function will be called when the player card on the right side 
+	 * is clicked. This function will place the selected other players info card in the middle of the screen to replace 
+	 * the dice area temporally until roll dice happens again 
+	 * 
+	 * @param selectedOtherPlayer (Player): The object of the selected other player chosen to be shown
+	 */
+	private void showOtherPlayersInfoInTheMiddle(Player selectedOtherPlayer) {
+		String otherPlayersColor = colorObjectToString(selectedOtherPlayer.getColor());
+		Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer, otherPlayersColor);
+		bottomMiddleOfScreenGroup.getChildren().clear();
+		bottomMiddleOfScreenGroup.getChildren().add(othersInfoCard);
 	}
 	
 	
@@ -492,7 +562,7 @@ public class View extends Application implements Observer {
 		
 		// Build player card to go in the bottom left
 		Player currPlayer = controller.getCurrentPlayer();
-		Node visualPlayerCard = createVisualPlayerInfoCard(currPlayer);
+		Node visualPlayerCard = createVisualPlayerInfoCard(currPlayer, playerCardBackgroundColor);
 		
 		bottomLeftPlayerCardGroup.getChildren().add(visualPlayerCard);
 		
@@ -543,12 +613,12 @@ public class View extends Application implements Observer {
 	 * 
 	 * @return Node: The Java fx pane that will be a visual representation of a player card
 	 */
-	private Node createVisualPlayerInfoCard(Player currPlayer) {
+	private Node createVisualPlayerInfoCard(Player currPlayer, String colorOfBackground) {
 		GridPane visualPlayerCardGridPane = new GridPane(10, 10);
 		visualPlayerCardGridPane.setPrefWidth(widthOfPlayerInfoCard);
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
 		String currPlayersColor = colorObjectToString(currPlayer.getColor());
-		visualPlayerCardGridPane.setStyle("-fx-border-color: "+currPlayersColor+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+playerCardBackgroundColor+";");
+		visualPlayerCardGridPane.setStyle("-fx-border-color: "+currPlayersColor+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+colorOfBackground+";");
 		
 		
 		Label playerName = new Label("Player Id: "+currPlayer.getId());
@@ -894,7 +964,7 @@ public class View extends Application implements Observer {
 	 * @param theNextPlayer (Player): The player object of the next player 
 	 */
 	private void populatePlayerCardWithNewInfo(Player theNextPlayer) {
-		Node playerCard = createVisualPlayerInfoCard(theNextPlayer);
+		Node playerCard = createVisualPlayerInfoCard(theNextPlayer, playerCardBackgroundColor);
 		// REMEMBER TO CLEAN THE OLD PLAYING CARD
 		bottomLeftPlayerCardGroup.getChildren().clear();
 		bottomLeftPlayerCardGroup.getChildren().add(playerCard);
@@ -935,6 +1005,8 @@ public class View extends Application implements Observer {
 			aiLoggerVBox.getChildren().clear();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
+			
+			buildRightPlayerPicker(nextPlayerMsg.getNextPlayer());
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional

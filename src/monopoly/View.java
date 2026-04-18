@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -53,6 +54,11 @@ public class View extends Application implements Observer {
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 10;
+	
+	// PLAYER CARD CONSTANTS
+	private int widthOfPlayerCardProperties = 70;
+	private int widthOfPlayerCardPropertiesScrollPane = 200;
+	
 	private final Color defaultSpaceColor = Color.WHITE;
 	/**
 	 * This group will change from holding a grid pane for dice results,
@@ -465,18 +471,27 @@ public class View extends Application implements Observer {
 	 */
 	private BorderPane buildBottomSection() {
 		
-		// Player info
+		// Player info group - This group is used to change the property card that is held in the bottom left
 		Group bottomLeftPlayerCardGroup = new Group();
-		this.bottomLeftPlayerCardGroup = bottomLeftPlayerCardGroup;
-		Player currPlayer = controller.getCurrentPlayer();
-		Node playerCard = createBottomLeftPlayerCard(currPlayer);
-		bottomLeftPlayerCardGroup.getChildren().add(playerCard);
+		this.bottomLeftPlayerCardGroup = bottomLeftPlayerCardGroup;  
 		
+		// Build player card to go in the bottom left
+		Player currPlayer = controller.getCurrentPlayer();
+		Node visualPlayerCard = createVisualPlayerCard(currPlayer);
+		
+		bottomLeftPlayerCardGroup.getChildren().add(visualPlayerCard);
 		
 		
 		// Middle dice roll area
 		Group bottomMiddleOfScreenGroup = new Group();
 		this.bottomMiddleOfScreenGroup = bottomMiddleOfScreenGroup;
+		
+		// This will put a gridpane object in the bottom center group, it will fill that group so when the dice get populated, its not a sudon jolt up 
+		GridPane sudoEmptyGridPane = new GridPane();
+		sudoEmptyGridPane.setPrefHeight(118);
+		bottomMiddleOfScreenGroup.getChildren().add(sudoEmptyGridPane);
+		
+		
 
 		// Buttons
 		Button rollDiceButton = new Button("Roll Dice");
@@ -504,23 +519,56 @@ public class View extends Application implements Observer {
 	}
 	
 	/**
-	 * createBottomLeftPlayerCard(currPlayer): This function will
-	 * create the info shown in the bottom left. It will have the players 
-	 * name (id), the amount of money the player has, and the properties owned by the player
+	 * createVisualPlayerCard(currPlayer): This function will
+	 * create a visual player card, showing ammount of money, player name
+	 * a scroll pane of properties. This visual card is usually placed in the bottom 
+	 * left of the screen to show the current players info 
 	 * 
-	 * Parameters:
-	 * 	currPlayer (Player): The new player that will have their info shown 
+	 * @param currPlayer (Player): The new player that will have their info shown 
 	 * 
-	 * Returns:
-	 * 	Node: The Java fx pane that will be added to the bottom left
+	 * @return Node: The Java fx pane that will be a visual representation of a player card
 	 */
-	private Node createBottomLeftPlayerCard(Player currPlayer) {
+	private Node createVisualPlayerCard(Player currPlayer) {
 		Label playerName = new Label("Player Id:"+currPlayer.getId());
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
 		Label playerProps = new Label("PROPERTIES OWNED LIST");
-		VBox playerCard = new VBox(playerName, playerCash, playerProps);
+		ScrollPane playersVisualProperties = createScrollPaneOfPlayersProperties(currPlayer);
+		VBox playerCard = new VBox(playerName, playerCash, playerProps, playersVisualProperties);
 		playerCard.setMinWidth(300);
 		return playerCard;
+	}
+	
+	/**
+	 * createScrollPaneOfPlayersProperties(player): This function will create a visual
+	 * java fx scroll pane that will be horizontal. It will show the players owned properties 
+	 * with details on how much they get per house they own how much rent will they get.
+	 * 
+	 * @param player (Player): The player we are basing the owned properties of 
+	 * @return ScrollPane: A horizontal scroll pane showing the properies of the player
+	 */
+	private ScrollPane createScrollPaneOfPlayersProperties(Player player) {
+		int paddingAmmtAroundProperties = 10;
+		List<Property> playersProperties = player.getListOfProperties();
+		
+		GridPane propertiesGridPane = new GridPane(10, 0); // holds the stack pane property info cards
+		propertiesGridPane.setPadding(new Insets(paddingAmmtAroundProperties));
+		
+		// This sets the default height of a EMPTY properties scroll pane to be the same as if there were properties so there isnt a suddon jolt when a property is purchased
+		propertiesGridPane.setPrefHeight(widthOfPlayerCardProperties*1.6 + paddingAmmtAroundProperties); // the 1.6 is to convert width to height because of the `buildSpaceCard()` height rule
+		
+		int gridPaneIdx = 0; // this will move each property to to the next column in the grid pane
+		
+		// go over every property they have, create a visual stack pane for it, add it to the grid pane
+		for (Property currProperty : playersProperties) {
+			StackPane visualPropertyInfoCard = buildSpaceCard(currProperty, widthOfPlayerCardProperties);
+			propertiesGridPane.add(visualPropertyInfoCard, gridPaneIdx, 0);
+			gridPaneIdx++;
+		}
+		ScrollPane scrollablePropertiesPane = new ScrollPane(propertiesGridPane);
+		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
+		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // dont show the scroll bars
+		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		return scrollablePropertiesPane;
 	}
 	
 	/**
@@ -776,7 +824,7 @@ public class View extends Application implements Observer {
 	 * @param theNextPlayer (Player): The player object of the next player 
 	 */
 	private void populatePlayerCardWithNewInfo(Player theNextPlayer) {
-		Node playerCard = createBottomLeftPlayerCard(theNextPlayer);
+		Node playerCard = createVisualPlayerCard(theNextPlayer);
 		// REMEMBER TO CLEAN THE OLD PLAYING CARD
 		bottomLeftPlayerCardGroup.getChildren().clear();
 		bottomLeftPlayerCardGroup.getChildren().add(playerCard);
@@ -977,7 +1025,7 @@ public class View extends Application implements Observer {
 	 * @param cardWidth the width of the card to scale from
 	 * @return StackPane the card image
 	 */
-	public StackPane buildSpaceCard(Space space, int cardWidth) {
+	public StackPane buildSpaceCard(Property space, int cardWidth) {
 		double cardHeight = cardWidth * 1.6;
 	    double borderWidth = Math.max(1, cardWidth * 0.016);
 	    double borderInset = cardWidth * 0.05;
@@ -1004,7 +1052,7 @@ public class View extends Application implements Observer {
 	    List<String> lines = new ArrayList<>();
 
 	    // Property Cards
-	    if (space instanceof Property) {
+	    if (space instanceof RealEstate) {
 	    	StackPane headerBox = new StackPane();
 	    	headerBox.setMaxWidth(Double.MAX_VALUE);
 	    	headerBox.setPrefHeight(headerHeight);

@@ -14,7 +14,7 @@ public class Player {
     private boolean inJail;
     private int cashAmmt;
     private Space currentSpace;
-    private ArrayList<Property> listOfProperties;
+    private List<Property> listOfProperties;
     private int outOfJailCards; 
     private Model model;
     private boolean isDoneRollingDice;
@@ -63,7 +63,7 @@ public class Player {
     /**
      * @return The list of the players owned properties
      */
-    public ArrayList<Property> getListOfProperties(){return listOfProperties;}
+    public List<Property> getListOfProperties(){return listOfProperties;}
     
     /**
      * moves the player ammt of spaces forward. and processes space

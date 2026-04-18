@@ -56,7 +56,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import monopoly.Controller.JAIL_CHOICE;
+import Monopoly.Controller.JAIL_CHOICE;
 
 
 /**

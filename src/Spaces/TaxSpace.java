@@ -37,7 +37,16 @@ public class TaxSpace extends CostSpace{
 	}
 
 	protected void processSpace(Player player, Model model) {
-		player.addCash(-getCostToCharge(player, 0));
+		int costToCharge = getCostToCharge(player, 0);
+		player.addCash(-costToCharge);	
+
+		// If the rule for taxes to go to free parking is enabled, it will add
+		// the deducted amount from the player to the reward pool
+		// Currently this is very janky, feel free to change as needed
+		if (model.getRuleSet().getFreeParkingRule()) {
+			model.getRuleSet().addToReward(costToCharge);
+		}
+
 		System.out.println(player.toString() + " taxed $" + getCostToCharge(player, 0));
 	}
 

@@ -34,9 +34,13 @@ public class Model extends Observable {
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
 	private int lastDiceRollAmmt;
+
+	private Rules ruleSet; // Placeholder for Jake
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
+
+		ruleSet = new Rules(); // Placeholder for Jake
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
 		List<Color> playerColorsToPickFrom = new ArrayList<>();
@@ -85,6 +89,9 @@ public class Model extends Observable {
 		this.notifyViewOfNextPlayersTurn(currentPlayer);
 	}
 	
+	public Rules getRuleSet() {
+		return ruleSet;
+	}
 	
 	public List<Space> getSpaces() {
 	    return board.getSpaces();

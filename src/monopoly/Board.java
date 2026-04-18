@@ -2,12 +2,11 @@ package monopoly;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
 
 import monopoly.RealEstate.Color;
 
 //11x11 board
-public class Board extends Observable {
+public class Board {
 	
 	private int totalSpaces = 40;	
 	private int boardWidth = 11;	

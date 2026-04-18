@@ -32,6 +32,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
@@ -57,7 +58,10 @@ public class View extends Application implements Observer {
 	
 	// PLAYER CARD CONSTANTS
 	private int widthOfPlayerCardProperties = 70;
-	private int widthOfPlayerCardPropertiesScrollPane = 200;
+	private int widthOfPlayerCardPropertiesScrollPane = 300;
+	private int widthOfPlayerInfoCard = 320;
+	private int heighOfPlayerInfoCard = 310;
+	private String playerCardBackgroundColor = "lightblue";
 	
 	private final Color defaultSpaceColor = Color.WHITE;
 	/**
@@ -167,7 +171,7 @@ public class View extends Application implements Observer {
 		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
 		for (Player currPlayer: allPlayers) {
 			// Create a new circle for each player 
-			playerObjToPlayerPiece.put(currPlayer, new Circle(0, 0, playerCircleRadius, Color.color(rand.nextDouble(), rand.nextDouble(), rand.nextDouble())));
+			playerObjToPlayerPiece.put(currPlayer, new Circle(0, 0, playerCircleRadius, currPlayer.getColor()));
 			
 			// Move the circles into the GO SPACE
 			goSpacePane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
@@ -477,7 +481,7 @@ public class View extends Application implements Observer {
 		
 		// Build player card to go in the bottom left
 		Player currPlayer = controller.getCurrentPlayer();
-		Node visualPlayerCard = createVisualPlayerCard(currPlayer);
+		Node visualPlayerCard = createVisualPlayerInfoCard(currPlayer);
 		
 		bottomLeftPlayerCardGroup.getChildren().add(visualPlayerCard);
 		
@@ -519,8 +523,8 @@ public class View extends Application implements Observer {
 	}
 	
 	/**
-	 * createVisualPlayerCard(currPlayer): This function will
-	 * create a visual player card, showing ammount of money, player name
+	 * createVisualPlayerInfoCard(currPlayer): This function will
+	 * create a visual player card, showing amount of money, player name
 	 * a scroll pane of properties. This visual card is usually placed in the bottom 
 	 * left of the screen to show the current players info 
 	 * 
@@ -528,14 +532,62 @@ public class View extends Application implements Observer {
 	 * 
 	 * @return Node: The Java fx pane that will be a visual representation of a player card
 	 */
-	private Node createVisualPlayerCard(Player currPlayer) {
-		Label playerName = new Label("Player Id:"+currPlayer.getId());
+	private Node createVisualPlayerInfoCard(Player currPlayer) {
+		GridPane visualPlayerCardGridPane = new GridPane(10, 10);
+		visualPlayerCardGridPane.setPrefWidth(widthOfPlayerInfoCard);
+		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
+		String currPlayersColor = colorObjectToString(currPlayer.getColor());
+		visualPlayerCardGridPane.setStyle("-fx-border-color: "+currPlayersColor+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+playerCardBackgroundColor+";");
+		
+		
+		Label playerName = new Label("Player Id: "+currPlayer.getId());
+		playerName.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 25));
+		
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
-		Label playerProps = new Label("PROPERTIES OWNED LIST");
+		playerCash.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 20));
+		playerCash.setTextFill(Color.DARKGREEN);
+		
+		int seperationBetweenNameAndCash = 90;
+		HBox playerNameAndCashHBox = new HBox(seperationBetweenNameAndCash);
+		playerNameAndCashHBox.getChildren().addAll(playerName, playerCash);
+		
+		
+		Label playerGetOutOfJailCardsAmmtLabel = new Label("Ammount of Get out of jail cards: "+currPlayer.getAmmtOfGOOJCards());
+		
+		Label playerPropsLabel = new Label("Properties Owned List");
+		playerPropsLabel.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 20));
+		
 		ScrollPane playersVisualProperties = createScrollPaneOfPlayersProperties(currPlayer);
-		VBox playerCard = new VBox(playerName, playerCash, playerProps, playersVisualProperties);
-		playerCard.setMinWidth(300);
-		return playerCard;
+		
+		
+		
+		visualPlayerCardGridPane.add(playerNameAndCashHBox, 0, 0);
+		visualPlayerCardGridPane.add(playerGetOutOfJailCardsAmmtLabel, 0, 1);
+		visualPlayerCardGridPane.add(playerPropsLabel, 0, 2);
+		visualPlayerCardGridPane.add(playersVisualProperties, 0, 3);
+		
+		
+		return visualPlayerCardGridPane;
+	}
+	
+	
+	/**
+	 * This is a helper fucntion to `Node createVisualPlayerInfoCard(currPlyaer)` because I needed the string 
+	 * of a color name and I didnt want the large switch statement in that function 
+	 * @param color (Color): Javafx color object
+	 * @return String, the lowercase name of the color object
+	 */
+	private String colorObjectToString(Color color) {
+		if (color.equals(Color.RED)) return "red";
+		if (color.equals(Color.BLUE)) return "blue";
+		if (color.equals(Color.GREEN)) return "green";
+		if (color.equals(Color.YELLOW)) return "yellow";
+		if (color.equals(Color.PURPLE)) return "purple";
+		if (color.equals(Color.PINK)) return "pink";
+		if (color.equals(Color.BLACK)) return "black";
+		if (color.equals(Color.ORANGE)) return "orange";
+		return "black"; // if no color here then black is fine 
+		
 	}
 	
 	/**
@@ -824,7 +876,7 @@ public class View extends Application implements Observer {
 	 * @param theNextPlayer (Player): The player object of the next player 
 	 */
 	private void populatePlayerCardWithNewInfo(Player theNextPlayer) {
-		Node playerCard = createVisualPlayerCard(theNextPlayer);
+		Node playerCard = createVisualPlayerInfoCard(theNextPlayer);
 		// REMEMBER TO CLEAN THE OLD PLAYING CARD
 		bottomLeftPlayerCardGroup.getChildren().clear();
 		bottomLeftPlayerCardGroup.getChildren().add(playerCard);

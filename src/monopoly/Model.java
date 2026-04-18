@@ -5,12 +5,18 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
 
+import javafx.scene.paint.Color;
+
 
 // game state
 public class Model extends Observable {
 
-	private int totalPlayers = 4;
-	public Board board;
+	private int totalPlayers = 4; // FOR THE FUTURE THIS SHOULD BE CHANGEABLE BASED ON USER INPUT FROM START SCREEN
+	/**
+	 * This holds the spaces of the monopoly board
+	 */
+	public Board board; 
+	
 	private List<Player> players;
 	private Player currentPlayer;
 	
@@ -20,6 +26,12 @@ public class Model extends Observable {
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
+		
+		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
+		List<Color> playerColorsToPickFrom = new ArrayList<>();
+		playerColorsToPickFrom.add(Color.RED); playerColorsToPickFrom.add(Color.BLUE); playerColorsToPickFrom.add(Color.GREEN); playerColorsToPickFrom.add(Color.YELLOW); 
+		playerColorsToPickFrom.add(Color.PURPLE); playerColorsToPickFrom.add(Color.PINK); playerColorsToPickFrom.add(Color.BLACK); playerColorsToPickFrom.add(Color.ORANGE); 
+		
 		this.addObserver(viewClassObj);
 		board = new Board();
 		
@@ -28,11 +40,10 @@ public class Model extends Observable {
 		chanceCards = deck.getChanceCards();
 		communityChestCards = deck.getCommunityChestCards();
 
-		
+		// Create all the players 
 		players = new ArrayList<>();
-		
 		for (int i=0; i<totalPlayers; i++) {
-			players.add(new Player(i+1,this));
+			players.add(new Player(i+1,playerColorsToPickFrom.get(i), this));
 		}
 		
 		currentPlayer = players.get(0);

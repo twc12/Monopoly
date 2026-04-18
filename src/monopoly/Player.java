@@ -8,6 +8,8 @@
 package monopoly;
 
 import java.util.*;
+
+import javafx.scene.paint.Color;
 public class Player {
 	
     private int playerId;
@@ -15,9 +17,10 @@ public class Player {
     private int cashAmmt;
     private Space currentSpace;
     private List<Property> listOfProperties;
-    private int outOfJailCards; 
+    private int ammtOfGetOutOfJailCards; 
     private Model model;
     private boolean isDoneRollingDice;
+    private Color playersColor; 
     
     /**
      * Constructor for the Player Class
@@ -25,16 +28,17 @@ public class Player {
      * @param id the player identification
      * @param model the model for the player class to interact with
      */
-    public Player(int id, Model model) {
+    public Player(int id, Color playersColor, Model model) {
         playerId = id;
         this.model = model;
         inJail = false;
-        cashAmmt = 1500;
+        cashAmmt = 1500; // FUTURE - This should be updateable from user input on the start screen 
+        this.playersColor = playersColor;
        
         // TODO get model method
         currentSpace = model.board.getFirstSpace();
         listOfProperties = new ArrayList<Property>();
-        outOfJailCards = 0;
+        ammtOfGetOutOfJailCards = 0;
         isDoneRollingDice = false;
     }
     
@@ -49,6 +53,11 @@ public class Player {
      * @return The players total cash integer
      */
     public int getCashAmmt() {return cashAmmt;}
+    
+    /**
+     * @return The players JavaFx color
+     */
+    public Color getColor() { return playersColor; }
     
     /**
      * @return The players jail status boolean
@@ -100,7 +109,14 @@ public class Player {
      * Gives the player a get out of jail free card
      */
     public void addJailCard() {
-    	outOfJailCards++;
+    	ammtOfGetOutOfJailCards++;
+    }
+    
+    /**
+     * @return int: The number of get out of jail cards this player has
+     */
+    public int getAmmtOfGOOJCards() {
+    	return ammtOfGetOutOfJailCards;
     }
     
     /**
@@ -121,7 +137,7 @@ public class Player {
      * Removes the player from jail
      */
     public void getOutOfJail() {
-    	inJail = false;
+    	inJail = false; // ERROR - This function doesnt consider removing the player from the "playersInJail" attribute of the Jail space class
     }
     
     /**

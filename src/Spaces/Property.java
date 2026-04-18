@@ -1,6 +1,8 @@
-package monopoly;
+package Spaces;
 
 import java.util.ArrayList;
+
+import Monopoly.Model;
 
 public abstract class Property extends CostSpace {
 	private int purchaseAmount;

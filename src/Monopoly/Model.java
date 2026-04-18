@@ -1,10 +1,21 @@
-package monopoly;
+package Monopoly;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
 
+import Cards.Card;
+import Cards.Deck;
+import Messages.AiActionMessage;
+import Messages.CardDrawnMessage;
+import Messages.DiceRollResultMessage;
+import Messages.NextPlayerMessage;
+import Messages.PlayerMovedMessage;
+import Messages.PurchasePromptMessage;
+import Spaces.Player;
+import Spaces.Property;
+import Spaces.Space;
 import javafx.scene.paint.Color;
 
 

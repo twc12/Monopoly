@@ -5,7 +5,9 @@
  *
  * @author Tyler Carpenter
  */
-package monopoly;
+package Cards;
+import Monopoly.Model;
+import Spaces.Player;
 import javafx.scene.image.Image;
 public class Card {
 	private String description;

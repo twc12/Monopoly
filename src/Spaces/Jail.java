@@ -1,7 +1,9 @@
-package monopoly;
+package Spaces;
 
 import java.util.Map;
 import java.util.Set;
+
+import Monopoly.Model;
 
 public class Jail extends Space {
 	

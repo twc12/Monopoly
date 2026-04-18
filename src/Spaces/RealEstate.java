@@ -1,6 +1,6 @@
-package monopoly;
+package Spaces;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class RealEstate extends Property {
 	
@@ -101,7 +101,7 @@ public class RealEstate extends Property {
     	if (this.canBuild && this.buildingStage < 5) {
 
 	    	//monopoly rule where you can only build houses/hotels evenly across properties, checking if violation
-	    	ArrayList<Property> myProperties = this.getOwner().getListOfProperties();
+	    	List<Property> myProperties = this.getOwner().getListOfProperties();
 	    	for (Property p: myProperties) {
 	    		if (p instanceof RealEstate) {
 	    			RealEstate checkRealEstate = (RealEstate)p;
@@ -126,7 +126,7 @@ public class RealEstate extends Property {
     	if (this.buildingStage > 0) {
     	
     	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
-    	ArrayList<Property> myProperties = this.getOwner().getListOfProperties();
+    	List<Property> myProperties = this.getOwner().getListOfProperties();
     	for (Property p: myProperties) {
     		if (p instanceof RealEstate) {
     			RealEstate checkRealEstate = (RealEstate)p;

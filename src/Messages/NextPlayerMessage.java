@@ -1,4 +1,6 @@
-package monopoly;
+package Messages;
+
+import Spaces.Player;
 
 /**
  * This class is made to notify the view 

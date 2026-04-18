@@ -1,4 +1,4 @@
-package monopoly;
+package Messages;
 
 /**
  * This classes purpose is to return the dice 

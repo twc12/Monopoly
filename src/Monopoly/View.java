@@ -1,4 +1,4 @@
-package monopoly;
+package Monopoly;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,24 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+import Cards.Card;
+import Messages.AiActionMessage;
+import Messages.CardDrawnMessage;
+import Messages.DiceRollResultMessage;
+import Messages.NextPlayerMessage;
+import Messages.PlayerMovedMessage;
+import Messages.PurchasePromptMessage;
+import Spaces.Chance;
+import Spaces.FreeParking;
+import Spaces.GoSpace;
+import Spaces.GoToJailSpace;
+import Spaces.Jail;
+import Spaces.Player;
+import Spaces.Property;
+import Spaces.Railroad;
+import Spaces.RealEstate;
+import Spaces.Space;
+import Spaces.Utility;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -196,6 +214,7 @@ public class View extends Application implements Observer {
 		BorderPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
 
+		
 		// ADDED: root StackPane so overlay can sit above mainScreen
 		root = new StackPane();
 		root.getChildren().add(mainScreen);

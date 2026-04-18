@@ -1,5 +1,6 @@
-package monopoly;
+package Spaces;
 
+import Monopoly.Model;
 
 public class GoToJailSpace extends Space {
 	

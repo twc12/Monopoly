@@ -1,6 +1,21 @@
-package monopoly;
+package Monopoly;
 
 import java.util.List;
+
+import Cards.Card;
+import Spaces.Chance;
+import Spaces.CostSpace;
+import Spaces.FreeParking;
+import Spaces.GoSpace;
+import Spaces.Jail;
+import Spaces.Player;
+import Spaces.Property;
+import Spaces.Railroad;
+import Spaces.RealEstate;
+import Spaces.Space;
+import Spaces.TaxSpace;
+import Spaces.Utility;
+
 import java.util.*;
 public class Controller {
 

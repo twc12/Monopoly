@@ -5,10 +5,11 @@
  * 
  * @author Tyler Carpenter
  */
-package monopoly;
+package Spaces;
 
 import java.util.*;
 
+import Monopoly.Model;
 import javafx.scene.paint.Color;
 public class Player {
 	

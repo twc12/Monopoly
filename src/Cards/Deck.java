@@ -5,7 +5,7 @@
  *
  * @author Tyler Carpenter
  */
-package monopoly;
+package Cards;
 import java.util.*;
 
 public class Deck {

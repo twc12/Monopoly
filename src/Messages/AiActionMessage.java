@@ -1,4 +1,4 @@
-package monopoly;
+package Messages;
 
 /**
  * This class will be used for the controller who is operating the 

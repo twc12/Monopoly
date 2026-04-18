@@ -1,4 +1,8 @@
-package monopoly;
+package Messages;
+
+import Cards.Card;
+import Spaces.Player;
+
 /**
  * The purpose of this is to notify the view to display
  * card info

@@ -1,4 +1,7 @@
-package monopoly;
+package Spaces;
+
+import Cards.Card;
+import Monopoly.Model;
 
 public class CommunityChest extends Space {
 
@@ -9,6 +12,7 @@ public class CommunityChest extends Space {
 	@Override
 	protected void processSpace(Player player, Model model) {
 		Card card = model.getChanceCards().pop();
+
 		model.notifyViewCardDrawn(player, card);
 		
 	}

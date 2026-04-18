@@ -1,4 +1,7 @@
-package monopoly;
+package Messages;
+
+import Spaces.Player;
+import Spaces.Property;
 
 /**
  * This Class will be a message sent from the model to the view to ask let the view 

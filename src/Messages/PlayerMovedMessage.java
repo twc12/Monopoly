@@ -1,4 +1,6 @@
-package monopoly;
+package Messages;
+
+import Spaces.Player;
 
 /**
  * PlayerMovedMessage: This class is to send a message from the model.

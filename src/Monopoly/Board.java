@@ -1,9 +1,20 @@
-package monopoly;
+package Monopoly;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import monopoly.RealEstate.Color;
+import Spaces.Chance;
+import Spaces.CommunityChest;
+import Spaces.FreeParking;
+import Spaces.GoSpace;
+import Spaces.GoToJailSpace;
+import Spaces.Jail;
+import Spaces.Railroad;
+import Spaces.RealEstate;
+import Spaces.Space;
+import Spaces.TaxSpace;
+import Spaces.Utility;
+import Spaces.RealEstate.Color;
 
 //11x11 board
 public class Board {

@@ -4,7 +4,10 @@
  *
  * @author Tyler Carpenter
  */
-package monopoly;
+package Cards;
+
+import Monopoly.Model;
+import Spaces.Player;
 
 public interface CardEffect {
 	

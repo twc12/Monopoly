@@ -1,7 +1,9 @@
-package monopoly;
+package Spaces;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import Monopoly.Model;
 import javafx.scene.paint.Color;
 public abstract class Space {
 	
@@ -35,11 +37,10 @@ public abstract class Space {
 	public Space getNextSpace() {
 		return nextSpace;
 	}
-	
-
 
 	protected abstract void processSpace(Player player, Model model);
 
 		
+	
 	
 }

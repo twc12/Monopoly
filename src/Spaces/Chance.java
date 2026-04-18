@@ -1,4 +1,7 @@
-package monopoly;
+package Spaces;
+
+import Cards.Card;
+import Monopoly.Model;
 
 public class Chance extends Space {
 	

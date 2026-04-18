@@ -6,8 +6,10 @@
  *
  * @author Tyler Carpenter
  */
-package monopoly;
+package Cards;
 import java.util.*;
+
+import Spaces.Player;
 
 public class CardBuilder {
 	ArrayList<Card> chanceCards;

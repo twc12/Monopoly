@@ -1,4 +1,4 @@
-package monopoly;
+package Spaces;
 
 public abstract class CostSpace extends Space {
 	

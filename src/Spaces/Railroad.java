@@ -1,4 +1,4 @@
-package monopoly;
+package Spaces;
 
 public class Railroad extends Property {
 	

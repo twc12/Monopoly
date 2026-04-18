@@ -124,12 +124,15 @@ public class Player {
      */
     public void putInJail() {
     	inJail = true;
+    	
     	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (!(currentSpace instanceof Jail)) {
     		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}
+    	Jail jailSpace = (Jail) currentSpace;
+    	jailSpace.playerAttemptsToGetOutMapping.put(this, 0);
     	model.notifyViewOfPlayerMoved(this, ammtMoved);
     }
     
@@ -137,7 +140,8 @@ public class Player {
      * Removes the player from jail
      */
     public void getOutOfJail() {
-    	inJail = false; // ERROR - This function doesnt consider removing the player from the "playersInJail" attribute of the Jail space class
+    	inJail = false; 
+    	model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
     }
     
     /**

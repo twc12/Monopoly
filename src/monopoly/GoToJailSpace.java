@@ -16,8 +16,7 @@ public class GoToJailSpace extends Space {
 
 	@Override
 	protected void processSpace(Player player, Model model) {
-		// TODO Auto-generated method stub
-		
+		player.putInJail();
 	}
 	
 

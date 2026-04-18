@@ -56,12 +56,15 @@ public class View extends Application implements Observer {
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 10;
 	
-	// PLAYER CARD CONSTANTS
+	// PLAYER INFO CARD CONSTANTS
 	private int widthOfPlayerCardProperties = 70;
 	private int widthOfPlayerCardPropertiesScrollPane = 300;
 	private int widthOfPlayerInfoCard = 320;
-	private int heighOfPlayerInfoCard = 310;
+	private int heighOfPlayerInfoCard = 210;
 	private String playerCardBackgroundColor = "lightblue";
+	
+	// Large detailed property info cards constants
+	private int widthOfLargeDetailedPropertyCards = 200;
 	
 	private final Color defaultSpaceColor = Color.WHITE;
 	/**
@@ -122,9 +125,9 @@ public class View extends Application implements Observer {
 	
 	/**
 	 * This Customizes the look of the ai logger text labels
-	 * It is created in the top of `start()`
+	 * Hacker style text
 	 */
-	private String aiLoggerLabelSetStyle; 
+	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px;"; 
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -136,38 +139,35 @@ public class View extends Application implements Observer {
 	//similar to cards, for purchaseprompts
 	private StackPane purchaseOverlay;
 	
+	/**
+	 * This is used for displaying a properties card detailed information when a user clicks on it 
+	 */
+	private StackPane detailedCardInfoOverlay;
+	
 	private StackPane root;
 
 	@Override
 	public void start(Stage stage) throws Exception {
-	
-		// Hacker style text
-		aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px;";
-						//f		fx-background-color: lightblue; -fx-padding: 10px;
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
 		
 		controller = new Controller(this);
-		
-
+	
 		BorderPane mainScreen = new BorderPane();
  
 		// Set the monopoly title at the top
 		VBox topLabelSection = createTopLabelSection();
 
 		mainScreen.setTop(topLabelSection);
-		
 
 		// Create the board
 		GridPane visualGameBoard = buildMonopolyBoard();
-		
 		
 		// Go over all the Spaces panes, add them to list, to allow for easier movement when player moves
 		StackPane goSpacePane = listOfSpacesPanes.get(0);
 		
 		List<Player> allPlayers = controller.getAllPlayers();
-		Random rand = new Random(); // FUTURE REMOVAL - because players will chose their own pieces
 		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
 		for (Player currPlayer: allPlayers) {
 			// Create a new circle for each player 
@@ -190,20 +190,24 @@ public class View extends Application implements Observer {
 		root = new StackPane();
 		root.getChildren().add(mainScreen);
 
-		
-
 		// For chance and community chests
 		buildCardOverlay();
 		root.getChildren().add(cardOverlay);
+		
 		// For purchase prompts
 		StackPane purchaseOverlay = new StackPane();
 		purchaseOverlay.setVisible(false);
 		this.purchaseOverlay = purchaseOverlay;
 		root.getChildren().add(purchaseOverlay);
 		
+		// Build the overlay for the detailed card info on mouse click 
+		StackPane detailedCardInfoOverlay = new StackPane();
+		this.detailedCardInfoOverlay = detailedCardInfoOverlay;
+		detailedCardInfoOverlay.setVisible(false); // dont show anything, not until mouse click 
+		root.getChildren().add(detailedCardInfoOverlay);
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 1280, 720);
+		Scene scene = new Scene(root, 1280, 820);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
@@ -455,7 +459,7 @@ public class View extends Application implements Observer {
 		if (space instanceof RealEstate) {
 		Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
 				((RealEstate)space).getFXColor());
-		topColorBandRect.setTranslateY(-23);
+		topColorBandRect.setTranslateY(-23); // -23 is to put match the corners perfectly
 		spaceCardPane.getChildren().add(topColorBandRect);
 		}
 
@@ -465,6 +469,13 @@ public class View extends Application implements Observer {
 
 		// This is required to keep the rotation effect of the rectangles
 		Group spaceCardGroup = new Group(spaceCardPane);
+		
+		// FUTURE PROOOF CODE: this code should stay after that function above (line 448) is made because we need clickable stuff
+		// Whenever this -- on the board -- property pane is clicked show the detailed stats
+		spaceCardGroup.setUserData(space);
+		spaceCardGroup.setOnMouseClicked((e) -> {
+			showDetailedPropertyInfo((Property) spaceCardGroup.getUserData());
+		});
 
 		mainBoardGridPane.add(spaceCardGroup, col, row);
 	}
@@ -559,8 +570,6 @@ public class View extends Application implements Observer {
 		
 		ScrollPane playersVisualProperties = createScrollPaneOfPlayersProperties(currPlayer);
 		
-		
-		
 		visualPlayerCardGridPane.add(playerNameAndCashHBox, 0, 0);
 		visualPlayerCardGridPane.add(playerGetOutOfJailCardsAmmtLabel, 0, 1);
 		visualPlayerCardGridPane.add(playerPropsLabel, 0, 2);
@@ -606,18 +615,27 @@ public class View extends Application implements Observer {
 		propertiesGridPane.setPadding(new Insets(paddingAmmtAroundProperties));
 		
 		// This sets the default height of a EMPTY properties scroll pane to be the same as if there were properties so there isnt a suddon jolt when a property is purchased
-		propertiesGridPane.setPrefHeight(widthOfPlayerCardProperties*1.6 + paddingAmmtAroundProperties); // the 1.6 is to convert width to height because of the `buildSpaceCard()` height rule
+		propertiesGridPane.setMinHeight(widthOfPlayerCardProperties*1.6 + paddingAmmtAroundProperties); // the 1.6 is to convert width to height because of the `buildSpaceCard()` height rule
 		
 		int gridPaneIdx = 0; // this will move each property to to the next column in the grid pane
 		
 		// go over every property they have, create a visual stack pane for it, add it to the grid pane
 		for (Property currProperty : playersProperties) {
 			StackPane visualPropertyInfoCard = buildSpaceCard(currProperty, widthOfPlayerCardProperties);
+			
+			// Whenever this visual property stack pane is clicked show the detailed stats
+			visualPropertyInfoCard.setUserData(currProperty);
+			visualPropertyInfoCard.setOnMouseClicked((e) -> {
+				showDetailedPropertyInfo((Property) visualPropertyInfoCard.getUserData());
+			});
+			// add this visual card to the underlying gridpane of the scroll pane
 			propertiesGridPane.add(visualPropertyInfoCard, gridPaneIdx, 0);
 			gridPaneIdx++;
 		}
 		ScrollPane scrollablePropertiesPane = new ScrollPane(propertiesGridPane);
+		// Set the default size of the scroll pane
 		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
+		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+20); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
 		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // dont show the scroll bars
 		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		return scrollablePropertiesPane;
@@ -1020,7 +1038,7 @@ public class View extends Application implements Observer {
 	        cardOverlay.setVisible(false);
 	        cardOverlay.setOnMouseClicked(null);
 	        controller.resolveCard(card, controller.getCurrentPlayer());
-	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer()); // incase they get a get out of jail free card
 	        e.consume();
 	    });
 	}
@@ -1070,6 +1088,25 @@ public class View extends Application implements Observer {
 	}
 	
 	/**
+	 * showDetailedPropertyInfo(property): This function will display to the user a 
+	 * larger version of the detailed property info which floats on the board until pressed out  
+	 * @param property (Property): The property we want to show to the user 
+	 */
+	private void showDetailedPropertyInfo(Property property) {
+		detailedCardInfoOverlay.getChildren().clear(); // remove any old detailed cards
+		
+		StackPane largeDetailedCardPane = buildSpaceCard(property, widthOfLargeDetailedPropertyCards);
+		
+		detailedCardInfoOverlay.getChildren().add(largeDetailedCardPane);
+		
+		detailedCardInfoOverlay.setVisible(true);
+		detailedCardInfoOverlay.setOnMouseClicked((e) -> {
+			detailedCardInfoOverlay.setVisible(false);
+			detailedCardInfoOverlay.setOnMouseClicked(null);
+		});
+	}
+	
+	/**
 	 * Builds a resizable stackframe for viewing property cards.
 	 * used for tracking rent prices and general space info
 	 * 
@@ -1093,6 +1130,8 @@ public class View extends Application implements Observer {
 	    card.setPrefWidth(cardWidth);
 	    card.setMaxWidth(cardWidth);
 	    card.setPrefHeight(cardHeight);
+	    
+	    root.setMaxSize(cardWidth, cardHeight);
 
 	    card.setStyle(
 	        "-fx-background-color: white;" +

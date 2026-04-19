@@ -1,12 +1,12 @@
 package Monopoly;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
 import Cards.Card;
 import Messages.AiActionMessage;
@@ -15,6 +15,7 @@ import Messages.DiceRollResultMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
+import Monopoly.Controller.JAIL_CHOICE;
 import Spaces.Chance;
 import Spaces.FreeParking;
 import Spaces.GoSpace;
@@ -35,6 +36,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -56,9 +58,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
-import Monopoly.Controller.JAIL_CHOICE;
-
+import javafx.stage.Stage; 
 
 /**
  * File: View.java Purpose: This class holds the java fx view of the class. it
@@ -71,6 +71,9 @@ import Monopoly.Controller.JAIL_CHOICE;
 public class View extends Application implements Observer {
 
 	private Controller controller;
+	private String theme;
+	private String themeFolder;
+	
 	private int widthOfPropertySpaceCards = 30;
 	private int heightOfPropertySpaceCards = 60;
 	private int heightOfColorOnSpaceCard = 15;
@@ -176,6 +179,8 @@ public class View extends Application implements Observer {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		// theme placeholder
+		theme = "standardTheme";
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
@@ -186,12 +191,15 @@ public class View extends Application implements Observer {
  
 		// Set the monopoly title at the top
 		VBox topLabelSection = createTopLabelSection();
-
-		mainScreen.setTop(topLabelSection);
+		topLabelSection.setAlignment(Pos.TOP_CENTER);
 
 		// Create the board
-		GridPane visualGameBoard = buildMonopolyBoard();
+		StackPane visualGameBoard = buildMonopolyBoard();
 		
+		// __________Position board on screen________________________
+		BorderPane.setMargin(visualGameBoard, new Insets(100, 0, 0, 0));
+		mainScreen.setCenter(visualGameBoard);
+		//____________________________________________________________
 		
 		// Put all the players pieces on the go space, then track which space the players are on 
 		StackPane goSpacePane = listOfSpacesPanes.get(0);
@@ -216,14 +224,40 @@ public class View extends Application implements Observer {
 		mainScreen.setRight(rightSidePlayerPickerGroup);
 		
 		// bottom playerinfo+controls
-		BorderPane bottomArea = buildBottomSection();
+		StackPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
 
 		
 		// ADDED: root StackPane so overlay can sit above mainScreen
 		root = new StackPane();
-		root.getChildren().add(mainScreen);
+		
+		root.setStyle("-fx-background-color: rgb(168, 190, 168,.6);");
 
+		root.getChildren().add(topLabelSection);
+		StackPane.setAlignment(topLabelSection, Pos.TOP_CENTER);		
+		topLabelSection.setMouseTransparent(true);
+		topLabelSection.setTranslateY(15); // move down slightly
+		
+		// ___________________________Right side image___________________________________
+		javafx.scene.image.Image rightImage =
+			    new javafx.scene.image.Image(getClass().getResource("/"+theme+"/uiRight.png").toExternalForm());
+		ImageView rightImageView = new ImageView(rightImage);
+			
+		rightImageView.setFitWidth(1500);
+		rightImageView.setPreserveRatio(true);
+		rightImageView.setMouseTransparent(true);
+		
+		StackPane.setAlignment(rightImageView, Pos.CENTER_RIGHT);
+
+		rightImageView.setTranslateX(700);
+		
+		root.getChildren().add(rightImageView);
+		//________________________________________________________________________________
+		
+		
+		root.getChildren().add(mainScreen);
+		
+		
 		// For chance and community chests
 		buildCardOverlay();
 		root.getChildren().add(cardOverlay);
@@ -274,7 +308,8 @@ public class View extends Application implements Observer {
 			}
 			// if its not he current player then make the fully feature rich rectangle with color and rectangle
 			else {
-				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, player.getColor());
+				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, 
+						player.getColor().interpolate(Color.WHITE,0.20));
 				currPlayerLabel = new Label("Player "+player.getId());
 				
 				currPlayerStackPane = new StackPane();
@@ -284,9 +319,20 @@ public class View extends Application implements Observer {
 				});
 			}
 			
+			// Making rects look pretty
+			newRectangle.setArcWidth(20);
+			newRectangle.setArcHeight(20);
+			newRectangle.setStroke(Color.rgb(0, 0, 0, 0.2));
+			newRectangle.setStrokeWidth(1.5);
+			
+			
+			currPlayerLabel.setFont(Font.font("Futura", FontWeight.BOLD, 15));
+			
 			currPlayerStackPane.getChildren().addAll(newRectangle, currPlayerLabel);
 			playersRectangleStack.getChildren().add(currPlayerStackPane);
 		}
+		
+		BorderPane.setAlignment(rightSidePlayerPickerGroup, Pos.CENTER);
 		
 		rightSidePlayerPickerGroup.getChildren().clear();
 		rightSidePlayerPickerGroup.getChildren().add(playersRectangleStack);
@@ -318,27 +364,19 @@ public class View extends Application implements Observer {
 		VBox topLabelSection = new VBox(10);
 		topLabelSection.setAlignment(Pos.CENTER);
 		
-		// TOP MONOPOLY TEXT 
-		Label titleLabel = new Label("MONOPOLY");
-		titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		//Move down slightly
+		topLabelSection.setPadding(new Insets(-105, 0, 0, 0));
+		
+		javafx.scene.image.Image titleImage =
+			    new javafx.scene.image.Image(getClass().getResource("/"+theme+"/gameTitle.png").toExternalForm());
+
+			ImageView titleImageView = new ImageView(titleImage);
+			titleImageView.setFitWidth(500);
+			titleImageView.setPreserveRatio(true);
+		
 		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
 		
-		// CURR PLAYER LABEL
-		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
-		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
-		this.currPlayerLabel = currPlayerLabel;
-		
-		// PLAYER INFO LABEL for when there are errors
-		Label infoToTellPlayer = new Label("");
-		infoToTellPlayer.setFont(new Font(15));
-		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
-		
-		// AI MOVEMENT/DECISION LOGGER
-		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
-		aiLoggerVBox.setAlignment(Pos.CENTER);
-		this.aiLoggerVBox = aiLoggerVBox;
-		
-		topLabelSection.getChildren().addAll(titleLabel, currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+		topLabelSection.getChildren().addAll(titleImageView);
 		
 		return topLabelSection;
 	}
@@ -349,7 +387,7 @@ public class View extends Application implements Observer {
 	 * 
 	 * @return GridPane: The one to set at the center of the screen
 	 */
-	public GridPane buildMonopolyBoard() {
+	public StackPane buildMonopolyBoard() {
 		
 		//creating empty list of size 40
 		listOfSpacesPanes = new ArrayList<StackPane>();
@@ -361,7 +399,7 @@ public class View extends Application implements Observer {
 		GridPane mainBoardGridPane = new GridPane();
 
 		// TESTING --
-		mainBoardGridPane.setGridLinesVisible(true);
+//		mainBoardGridPane.setGridLinesVisible(true);
 		// ^^^ TESTING
 
 		int boardWidth = controller.getBoardWidth();
@@ -375,7 +413,60 @@ public class View extends Application implements Observer {
 
 		placeGoParkingAndJails(mainBoardGridPane, allSpaces);
 
-		return mainBoardGridPane;
+		StackPane wrapper = new StackPane();
+		
+		
+		
+			
+		// Images
+		javafx.scene.image.Image backgroundImage =
+				new javafx.scene.image.Image(getClass().getResource("/"+theme+"/background.png").toExternalForm());
+	
+		ImageView backgroundImageView = new ImageView(backgroundImage);
+		backgroundImageView.setFitWidth(1000);
+		backgroundImageView.setPreserveRatio(true);
+		backgroundImageView.setManaged(false);
+				
+		//place image at the bottom
+		StackPane.setAlignment(backgroundImageView, Pos.BOTTOM_CENTER);
+		backgroundImageView.setTranslateY(-20);
+		backgroundImageView.setTranslateX(-400);
+		
+		// For center content
+		VBox centerContent = new VBox(10);
+		centerContent.setAlignment(Pos.CENTER);
+		
+		// CURR PLAYER LABEL
+		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
+		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		this.currPlayerLabel = currPlayerLabel;
+				
+		// PLAYER INFO LABEL for when there are errors
+		Label infoToTellPlayer = new Label("");
+		infoToTellPlayer.setFont(new Font(15));
+		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
+				
+		// AI MOVEMENT/DECISION LOGGER
+		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
+		aiLoggerVBox.setAlignment(Pos.CENTER);
+		this.aiLoggerVBox = aiLoggerVBox;
+
+	    StackPane centerOverlay = new StackPane();
+	    centerOverlay.setStyle(
+	        
+	        "-fx-background-radius: 8;"
+	    );
+
+	    // auto-size to center area
+	    centerOverlay.prefWidthProperty().bind(mainBoardGridPane.widthProperty().multiply(0.65));
+	    centerOverlay.prefHeightProperty().bind(mainBoardGridPane.heightProperty().multiply(0.65));
+	    
+	    centerOverlay.getChildren().add(centerContent);
+	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+	    
+	    wrapper.getChildren().addAll(backgroundImageView,mainBoardGridPane, centerOverlay);
+
+	    return wrapper;
 
 	}
 
@@ -578,7 +669,7 @@ public class View extends Application implements Observer {
 	 * This creates and returns the boardpane for the bottom section 
 	 * @return
 	 */
-	private BorderPane buildBottomSection() {
+	private StackPane buildBottomSection() {
 		
 		// Player info group - This group is used to change the property card that is held in the bottom left
 		Group bottomLeftPlayerCardGroup = new Group();
@@ -597,7 +688,7 @@ public class View extends Application implements Observer {
 		
 		// This will put a gridpane object in the bottom center group, it will fill that group so when the dice get populated, its not a sudon jolt up 
 		GridPane sudoEmptyGridPane = new GridPane();
-		sudoEmptyGridPane.setPrefHeight(118);
+		sudoEmptyGridPane.setPrefHeight(110);
 		bottomMiddleOfScreenGroup.getChildren().add(sudoEmptyGridPane);
 		
 		// Buttons
@@ -628,7 +719,41 @@ public class View extends Application implements Observer {
 		bottomBorderPane.setLeft(bottomLeftPlayerCardGroup);
 		bottomBorderPane.setCenter(bottomMiddleOfScreenGroup);
 		bottomBorderPane.setRight(mainButtonsGroup);
-		return bottomBorderPane;
+		
+
+	    
+	    bottomBorderPane.setPrefHeight(220);
+
+	    // background image
+	    javafx.scene.image.Image bottomFrameImage =
+	        new javafx.scene.image.Image(
+	            getClass().getResource("/" + theme + "/uiBottom.png").toExternalForm()
+	        );
+
+	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
+	    bottomFrameImageView.setPreserveRatio(false);
+	    bottomFrameImageView.setFitHeight(500);
+	    bottomFrameImageView.setTranslateY(-110);
+	    bottomFrameImageView.setTranslateX(-30);
+	    bottomFrameImageView.setMouseTransparent(true);
+	    bottomFrameImageView.setManaged(false);
+
+	    // wrapper
+	    StackPane bottomWrapper = new StackPane();
+	    bottomWrapper.setAlignment(Pos.BOTTOM_CENTER);
+
+	    // make image stretch across the whole bottom section width
+	    bottomFrameImageView.fitWidthProperty().bind(bottomWrapper.widthProperty());
+
+	    bottomWrapper.getChildren().addAll(bottomFrameImageView, bottomBorderPane);
+
+	    return bottomWrapper;
+		
+		
+		
+//		return bottomBorderPane;
+		
+		
 	}
 	
 	/**
@@ -646,7 +771,9 @@ public class View extends Application implements Observer {
 		visualPlayerCardGridPane.setPrefWidth(widthOfPlayerInfoCard);
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
 		String currPlayersColor = colorObjectToString(currPlayer.getColor());
-		visualPlayerCardGridPane.setStyle("-fx-border-color: "+currPlayersColor+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+colorOfBackground+";");
+		
+		
+		visualPlayerCardGridPane.setStyle("-fx-border-color: "+"black"+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+colorOfBackground+";");
 		
 		
 		Label playerName = new Label("Player Id: "+currPlayer.getId());

@@ -25,6 +25,7 @@ public class Controller {
 
 	public Model model;
 	
+	private String theme;
 	
 	public Controller(View viewClassObj) {
 		model = new Model(viewClassObj);

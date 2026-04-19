@@ -1,6 +1,7 @@
 package Monopoly;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
@@ -34,9 +35,12 @@ public class Model extends Observable {
 	
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
+	
 	private int lastDiceRollAmmt;
 
 	private Rules ruleSet; // Placeholder for Jake
+	
+	private HashMap<String,Boolean> themes = new HashMap<>();
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
@@ -63,6 +67,9 @@ public class Model extends Observable {
 		}
 		
 		currentPlayer = players.get(0);
+		
+		themes.put("standard", false);
+		themes.put("pirate", false);
 	}
 	
 	/**
@@ -239,6 +246,10 @@ public class Model extends Observable {
 			return -1;
 		}
 		return attemptsAmmount;
+	}
+	
+	public HashMap<String, Boolean> getThemes() {
+		return themes;
 	}
 	
 }

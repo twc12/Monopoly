@@ -861,7 +861,7 @@ public class View extends Application implements Observer {
 		// Set the default size of the scroll pane
 		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
 		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+20); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
-		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // dont show the scroll bars
+		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // dont show the scroll bars
 		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		return scrollablePropertiesPane;
 	}
@@ -1436,11 +1436,10 @@ public class View extends Application implements Observer {
 	    );
 	    // For text lines for pricing
 	    ArrayList<String> lines = new ArrayList<>();
-	    
 	    // Prices
 	    ArrayList<Integer> prices = new ArrayList<>();
-	    
 	    int mortgageVal;
+	    int purchasePrice = testSpace.getPurchaseAmount();
 	    
 	    // Property Cards
 	    if (testSpace instanceof RealEstate) {
@@ -1478,13 +1477,14 @@ public class View extends Application implements Observer {
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
 	    	
 	    	//TODO finish prices, theyre off
-	    	lines.add("Rent					" + prices.get(0)+"\n");
-	    	lines.add("Rent with color set		" + prices.get(1)+"\n");
-	    	lines.add("Rent with 1 house		" + prices.get(2)+"\n");
-	    	lines.add("Rent with 2 houses		" + prices.get(3)+"\n"); 
-	    	lines.add("Rent with 3 houses		" + prices.get(4)+"\n");
-	    	lines.add("Rent with 4 houses		" + prices.get(5)+"\n");
-	    	lines.add("Rent with hotel		" + prices.get(6)+"\n");
+	    	lines.add("Purchase Price           $" + purchasePrice +"\n");
+	    	lines.add("Rent                               $" + prices.get(0)+"\n");
+	    	lines.add("Rent with color set		$" + prices.get(1)+"\n");
+	    	lines.add("Rent with 1 house		$" + prices.get(2)+"\n");
+	    	lines.add("Rent with 2 houses		$" + prices.get(3)+"\n"); 
+	    	lines.add("Rent with 3 houses		$" + prices.get(4)+"\n");
+	    	lines.add("Rent with 4 houses		$" + prices.get(5)+"\n");
+	    	lines.add("Rent with hotel		$" + prices.get(6)+"\n");
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);
 	        bodyBox.setAlignment(Pos.TOP_CENTER);
@@ -1498,6 +1498,8 @@ public class View extends Application implements Observer {
 	        Text line5 = new Text(lines.get(4));
 	        Text line6 = new Text(lines.get(5));
 	        Text line7 = new Text(lines.get(6));
+	        Text line8 = new Text(lines.get(6));
+
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
@@ -1505,7 +1507,8 @@ public class View extends Application implements Observer {
 	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line6.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line7.setStyle("-fx-font-size: " + bodyFont + "px;");
-	        
+	        line8.setStyle("-fx-font-size: " + bodyFont + "px;");
+
 	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5, line6, line7);
 //	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
 	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
@@ -1542,11 +1545,13 @@ public class View extends Application implements Observer {
 	    	
 	    	prices = testSpace.getRentStages();
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
-	    	lines.add("Rent					  " + prices.get(0)+ "\n");
-	    	lines.add("If 2 R,R.'s are owned	  " + prices.get(1)+"\n");
-	    	lines.add("If 3 R.R.'s are owned	" + prices.get(2)+"\n");
-	    	lines.add("If 4 R.R.'s are owned	" + prices.get(3)+"\n"); 
-	    	lines.add("\nMortgage Value		" + mortgageVal);
+	    	
+	    	lines.add("Purchase Price   $" + purchasePrice +"\n");
+	    	lines.add("Rent        $" + prices.get(0)+ "\n");
+	    	lines.add("If 2 R,R.'s are owned	$" + prices.get(1)+"\n");
+	    	lines.add("If 3 R.R.'s are owned	$" + prices.get(2)+"\n");
+	    	lines.add("If 4 R.R.'s are owned	$" + prices.get(3)+"\n"); 
+	    	lines.add("\nMortgage Value		$" + mortgageVal);
 	    	
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);
@@ -1557,12 +1562,16 @@ public class View extends Application implements Observer {
 	        Text line3 = new Text(lines.get(2));
 	        Text line4 = new Text(lines.get(3));
 	        Text line5 = new Text(lines.get(4));
+	        Text line6 = new Text(lines.get(4));
+
 
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line4.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line6.setStyle("-fx-font-size: " + bodyFont + "px;");
+
 
 
 	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5);
@@ -1601,17 +1610,19 @@ public class View extends Application implements Observer {
 	        // Moves body up a bit
 	        VBox.setMargin(bodyBox, new Insets( cardWidth *.05, 0,0 , 0));
 	        
-	        Text line1 = new Text("If one utility is owned\n");
-	        Text line2 = new Text("rent is 4 times amount\n");
-	        Text line3 = new Text("shown on dice.\n\n");
-	        Text line4 = new Text("If both Utilities are owned,\nrent is 10 ");
-	        Text line5 = new Text("times amount shown on dice.");
+	        Text line1 = new Text("Purchase Price: $" + purchasePrice +"\n");
+	        Text line2= new Text("If one utility is owned\n");
+	        Text line3 = new Text("rent is $4 times amount\n");
+	        Text line4 = new Text("shown on dice.\n");
+	        Text line5 = new Text("If both Utilities are owned,\nrent is $10 ");
+	        Text line6 = new Text("times amount shown on dice.");
 
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line4.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line6.setStyle("-fx-font-size: " + bodyFont + "px;");
 
 
 	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5);
@@ -1626,6 +1637,7 @@ public class View extends Application implements Observer {
 		
 		}
 		root.getChildren().add(card);
+		root.setUserData(testSpace);
 		return  root;
 	}
 

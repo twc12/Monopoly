@@ -2,6 +2,9 @@ package Spaces;
 
 import Monopoly.Model;
 
+/**
+ *
+ */
 public class TaxSpace extends CostSpace{
 	
 	private int incomeTaxFlatAmount = 200;
@@ -19,32 +22,42 @@ public class TaxSpace extends CostSpace{
 		this.taxSpaceType = type;
 	}
 
+	/**
+	 * 
+	 */
 	public int getCostToCharge(Player player, int diceRoll) {
-		
+		// Check for if it's a Luxury tax space
 		if (taxSpaceType.equals(TaxSpaceType.LUXURY)) {
+			// Charges flat $200 for luxury tax
 			return luxuryTaxFlatAmount;
-		}
-		
+		}	
+		// If it's an income tax
 		else {
-			
-		int player10Percent = (int) (player.getCashAmmt()/10);
-		if (player10Percent < incomeTaxFlatAmount) return player10Percent;	
-		
-		return incomeTaxFlatAmount;
-
+			// Gets value for 10% tax
+			int player10Percent = (int) (player.getCashAmmt()/10);	
+			// Applies 10% tax to be charged
+			if (player10Percent < incomeTaxFlatAmount) {
+				return player10Percent;	
+			}	
+			// Applies $75 tax
+			return incomeTaxFlatAmount;
 		}
 		
 	}
 
+	/**
+	 * Checks if the freeparking rule is enabled and will add the taken tax money
+	 * and add it to hte freeparking pool based on that
+	 */
+	@Override
 	protected void processSpace(Player player, Model model) {
+
 		int costToCharge = getCostToCharge(player, 0);
 		player.addCash(-costToCharge);	
 
-		// If the rule for taxes to go to free parking is enabled, it will add
-		// the deducted amount from the player to the reward pool
-		// Currently this is very janky, feel free to change as needed
 		if (model.getRuleSet().getFreeParkingRule()) {
-			model.getRuleSet().addToReward(costToCharge);
+			FreeParking parking = model.board.getFreeParking();
+			parking.addCashToFreeParkingReward(costToCharge);
 		}
 
 		System.out.println(player.toString() + " taxed $" + getCostToCharge(player, 0));

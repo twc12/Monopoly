@@ -3,6 +3,9 @@ package Spaces;
 import Monopoly.Model;
 import Monopoly.Rules;
 
+/**
+ * Represents a FreeParking space, it's functionality 
+ */
 public class FreeParking extends Space {
 
 	private int currFreeParkingReward;
@@ -27,6 +30,7 @@ public class FreeParking extends Space {
 	 */
 	@Override
 	protected void processSpace(Player player, Model model) {
+		// Checks if the rule to collect tax money from free parking is enabled
 		if (model.getRuleSet().getFreeParkingRule()) {
 			player.addCash(currFreeParkingReward);
 			currFreeParkingReward = 0;

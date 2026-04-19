@@ -25,13 +25,14 @@ public class Board {
 	private LinkedList<Space> spacesLinkedList;
 	public Space firstSpace;
 	public Jail jailSpace;
+    private FreeParking parking;
 	
 	private final int[] testArrayList = new int[]{1,2,3,4,5,6,7}; //placeholder for actual rent/progressions for real estate
 	
     public Board() {
-        spacesLinkedList = new LinkedList<>();
-        
+        spacesLinkedList = new LinkedList<>(); 
         jailSpace = new Jail();
+        parking = new FreeParking();
         
         //building full board
         Space[] spacesArray = {
@@ -55,7 +56,7 @@ public class Board {
             new CommunityChest(),
             new RealEstate(Color.ORANGE, "Tennessee Avenue", 180, testArrayList),
             new RealEstate(Color.ORANGE, "New York Avenue", 200, testArrayList),					//20
-            new FreeParking(),
+            parking,
             new RealEstate(Color.RED, "Kentucky Avenue", 220, testArrayList),
             new Chance(),
             new RealEstate(Color.RED, "Indiana Avenue", 220, testArrayList),
@@ -92,6 +93,10 @@ public class Board {
         spacesLinkedList.get(spacesLinkedList.size()-1).setNextSpace(firstSpace); // connecting the last space to the first
 
  
+    }
+
+    public FreeParking getFreeParking() {
+        return parking;
     }
 	
 	public int getTotalSpaces() {

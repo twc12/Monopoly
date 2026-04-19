@@ -6,16 +6,16 @@ public class Rules {
     // has been implemented
     
     private boolean freeParking = false;
-    private int freeParkingAmount = 0;
+    private boolean customGoRule = false;
 
-    public boolean getFreeParkingRule() { return freeParking; }
-    public int getFreeParkingRewardAmount() { return freeParkingAmount; }
+    public boolean getFreeParkingRule() { return freeParking; } 
+    public boolean getCustomGoRule() { return customGoRule; }
 
     public void setFreeParkingRule() {
         freeParking = true;
     }
 
-    public void addToReward(int reward) {
-        freeParkingAmount += reward;
+    public void setCustomGoRule() {
+        customGoRule = true;
     }
 }

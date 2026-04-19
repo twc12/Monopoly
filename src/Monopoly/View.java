@@ -234,32 +234,6 @@ public class View extends Application implements Observer {
 		this.purchaseOverlay = purchaseOverlay;
 		root.getChildren().add(purchaseOverlay);
 		
-		// Testing___________________________________________________________
-        StackPane testWrapper = new StackPane();
-
-        // make sure 1 to 1.6 w and h
-        testWrapper.setPrefSize(180, 260);
-        testWrapper.setMaxSize(180, 260);
-        testWrapper.setStyle("-fx-border-color: red; -fx-background-color: lightgray;");
-
-        // get a property space
-        Space testSpace = controller.getSpaces().get(1);
-
-        // build the card
-        StackPane testCard = buildSpaceCard((Property)testSpace,180);
-        testWrapper.setStyle("-fx-border-color: lightgray; -fx-background-color: lightgray;");
-        // put the card inside the wrapper
-        testWrapper.getChildren().add(testCard);
-
-        // test overlay
-        StackPane overlayBox = new StackPane();
-        overlayBox.setMouseTransparent(true);
-        overlayBox.getChildren().add(testWrapper);
-        StackPane.setAlignment(testWrapper, Pos.CENTER);
-
-        root.getChildren().add(overlayBox);
-        //_________________End TEST_________________________________
-		
 		// Build the overlay for the detailed card info on mouse click 
 		StackPane detailedCardInfoOverlay = new StackPane();
 		this.detailedCardInfoOverlay = detailedCardInfoOverlay;

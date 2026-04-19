@@ -78,6 +78,9 @@ public abstract class Property extends CostSpace {
 		
 	}
 	
+	public ArrayList<Integer> getRentStages(){
+		return rentStages;
+	}
 	
 	public int getCostToCharge(Player player, int diceRoll) {
 		return rentStages.get(rentStageIndex);

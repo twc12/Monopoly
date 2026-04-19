@@ -48,6 +48,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -232,6 +233,32 @@ public class View extends Application implements Observer {
 		purchaseOverlay.setVisible(false);
 		this.purchaseOverlay = purchaseOverlay;
 		root.getChildren().add(purchaseOverlay);
+		
+		// Testing___________________________________________________________
+        StackPane testWrapper = new StackPane();
+
+        // make sure 1 to 1.6 w and h
+        testWrapper.setPrefSize(180, 260);
+        testWrapper.setMaxSize(180, 260);
+        testWrapper.setStyle("-fx-border-color: red; -fx-background-color: lightgray;");
+
+        // get a property space
+        Space testSpace = controller.getSpaces().get(1);
+
+        // build the card
+        StackPane testCard = buildSpaceCard((Property)testSpace,180);
+        testWrapper.setStyle("-fx-border-color: lightgray; -fx-background-color: lightgray;");
+        // put the card inside the wrapper
+        testWrapper.getChildren().add(testCard);
+
+        // test overlay
+        StackPane overlayBox = new StackPane();
+        overlayBox.setMouseTransparent(true);
+        overlayBox.getChildren().add(testWrapper);
+        StackPane.setAlignment(testWrapper, Pos.CENTER);
+
+        root.getChildren().add(overlayBox);
+        //_________________End TEST_________________________________
 		
 		// Build the overlay for the detailed card info on mouse click 
 		StackPane detailedCardInfoOverlay = new StackPane();
@@ -1269,19 +1296,27 @@ public class View extends Application implements Observer {
 	 * Builds a resizable stackframe for viewing property cards.
 	 * used for tracking rent prices and general space info
 	 * 
-	 * @param space the space that the card is basing itself on
+	 * @param testSpace the space that the card is basing itself on
 	 * @param cardWidth the width of the card to scale from
 	 * @return StackPane the card image
 	 */
-	public StackPane buildSpaceCard(Property space, int cardWidth) {
+	public StackPane buildSpaceCard(Property testSpace, int cardWidth) {
 		double cardHeight = cardWidth * 1.6;
 	    double borderWidth = Math.max(1, cardWidth * 0.016);
 	    double borderInset = cardWidth * 0.05;
 	    double headerHeight = cardHeight * 0.20;
+	    double centerHeight = cardHeight * .50;
 	    double titleDeedFont = cardWidth * 0.045;
 	    double nameFont = cardWidth * 0.08;
+	    double rNameFont = cardWidth * 0.065;
 	    double innerWidthOffset = borderInset * 2 + borderWidth * 2;
+	    double bodyFont = cardWidth * 0.06;
 
+	    // For lines
+	    double sepWidth = cardWidth * 0.70;
+		double sepThickness = Math.max(1, cardWidth * 0.006);
+		double sepSpacing = cardHeight * 0.015;
+	    
 	    StackPane root = new StackPane();
 
 	    VBox card = new VBox();
@@ -1298,11 +1333,16 @@ public class View extends Application implements Observer {
 	        "-fx-border-width: " + borderWidth + ";" +
 	        "-fx-border-insets: " + borderInset + ";"
 	    );
-
-	    List<String> lines = new ArrayList<>();
-
+	    // For text lines for pricing
+	    ArrayList<String> lines = new ArrayList<>();
+	    
+	    // Prices
+	    ArrayList<Integer> prices = new ArrayList<>();
+	    
+	    int mortgageVal;
+	    
 	    // Property Cards
-	    if (space instanceof RealEstate) {
+	    if (testSpace instanceof RealEstate) {
 	    	StackPane headerBox = new StackPane();
 	    	headerBox.setMaxWidth(Double.MAX_VALUE);
 	    	headerBox.setPrefHeight(headerHeight);
@@ -1312,8 +1352,8 @@ public class View extends Application implements Observer {
 	    	colorRect.setHeight(headerHeight);
 	    	
 	    	//only realestate has colors
-	    	if (space instanceof RealEstate) {
-	    	colorRect.setFill(((RealEstate)space).getFXColor()); //cast to realestate obj so can get javafx color
+	    	if (testSpace instanceof RealEstate) {
+	    	colorRect.setFill(((RealEstate)testSpace).getFXColor()); //cast to realestate obj so can get javafx color
 	    	} else {
 	    		colorRect.setFill(defaultSpaceColor);
 	    	}
@@ -1323,7 +1363,7 @@ public class View extends Application implements Observer {
 	    	Text t1 = new Text("TITLE DEED\n");
 	    	t1.setStyle("-fx-font-size: " + titleDeedFont + "px;");
 
-	    	Text t2 = new Text(space.getName().toUpperCase());
+	    	Text t2 = new Text(testSpace.getName().toUpperCase());
 	    	t2.setStyle("-fx-font-size: " + nameFont + "px; -fx-font-weight: bold;");
 
 	    	TextFlow flow = new TextFlow(t1, t2);
@@ -1332,14 +1372,157 @@ public class View extends Application implements Observer {
 
 	    	headerBox.getChildren().addAll(colorRect, flow);
 	    	card.getChildren().add(headerBox);
+	    	
+	    	prices = testSpace.getRentStages();
+	    	mortgageVal = testSpace.getPurchaseAmount()/2;
+	    	
+	    	//TODO finish prices, theyre off
+	    	lines.add("Rent					" + prices.get(0)+"\n");
+	    	lines.add("Rent with color set		" + prices.get(1)+"\n");
+	    	lines.add("Rent with 1 house		" + prices.get(2)+"\n");
+	    	lines.add("Rent with 2 houses		" + prices.get(3)+"\n"); 
+	    	lines.add("Rent with 3 houses		" + prices.get(4)+"\n");
+	    	lines.add("Rent with 4 houses		" + prices.get(5)+"\n");
+	    	lines.add("Rent with hotel		" + prices.get(6)+"\n");
+	    	StackPane bodyBox = new StackPane();
+	        bodyBox.setMaxWidth(Double.MAX_VALUE);
+	        bodyBox.setAlignment(Pos.TOP_CENTER);
+	        
+	        
+	        
+	        Text line1 = new Text(lines.get(0));
+	        Text line2 = new Text(lines.get(1));
+	        Text line3 = new Text(lines.get(2));
+	        Text line4 = new Text(lines.get(3));
+	        Text line5 = new Text(lines.get(4));
+	        Text line6 = new Text(lines.get(5));
+	        Text line7 = new Text(lines.get(6));
+	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line4.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line6.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line7.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        
+	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5, line6, line7);
+//	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
+	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
+	        bodyFlow.setLineSpacing(cardHeight * 0.0050);
+	        
+	        bodyBox.getChildren().add(bodyFlow);
+
+	        card.getChildren().addAll( bodyBox);
+	    	
 		}
 		
-		if(space instanceof Railroad) {
-			//TODO prices
+		if(testSpace instanceof Railroad) {
+			
+
+			Line topLine = new Line(0, 0, sepWidth, 0);
+			topLine.setStrokeWidth(sepThickness);
+
+			Line bottomLine = new Line(0, 0, sepWidth, 0);
+			bottomLine.setStrokeWidth(sepThickness);
+
+			Text title = new Text(testSpace.getName().toUpperCase());
+			TextFlow titleFlow = new TextFlow(title);
+			titleFlow.setTextAlignment(TextAlignment.CENTER);
+			titleFlow.setStyle("-fx-font-size: " + rNameFont + "px; -fx-font-weight: bold;");
+			
+			VBox railroadTitleBox = new VBox(sepSpacing, topLine, titleFlow, bottomLine);
+			railroadTitleBox.setAlignment(Pos.CENTER);
+
+			// Moves title to center
+			VBox.setMargin(railroadTitleBox, new Insets(cardWidth * 0.50, 0, 0, 0));
+			card.getChildren().add(railroadTitleBox);
+	    	
+	   	
+	    	
+	    	prices = testSpace.getRentStages();
+	    	mortgageVal = testSpace.getPurchaseAmount()/2;
+	    	lines.add("Rent					  " + prices.get(0)+ "\n");
+	    	lines.add("If 2 R,R.'s are owned	  " + prices.get(1)+"\n");
+	    	lines.add("If 3 R.R.'s are owned	" + prices.get(2)+"\n");
+	    	lines.add("If 4 R.R.'s are owned	" + prices.get(3)+"\n"); 
+	    	lines.add("\nMortgage Value		" + mortgageVal);
+	    	
+	    	StackPane bodyBox = new StackPane();
+	        bodyBox.setMaxWidth(Double.MAX_VALUE);
+	        bodyBox.setAlignment(Pos.TOP_CENTER);
+	        
+	        Text line1 = new Text(lines.get(0));
+	        Text line2 = new Text(lines.get(1));
+	        Text line3 = new Text(lines.get(2));
+	        Text line4 = new Text(lines.get(3));
+	        Text line5 = new Text(lines.get(4));
+
+	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line4.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
+
+
+	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5);
+	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
+	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
+	        bodyFlow.setLineSpacing(cardHeight * 0.0033);
+	        
+	        bodyBox.getChildren().add(bodyFlow);
+
+	        card.getChildren().addAll( bodyBox);
+	    	
 		}
 		
-		if(space instanceof Utility) {
-			//TODO prices
+		if(testSpace instanceof Utility) {
+			Line topLine = new Line(0, 0, sepWidth, 0);
+			topLine.setStrokeWidth(sepThickness);
+
+			Line bottomLine = new Line(0, 0, sepWidth, 0);
+			bottomLine.setStrokeWidth(sepThickness);
+			Text title = new Text(testSpace.getName().toUpperCase());
+			TextFlow titleFlow = new TextFlow(title);
+			titleFlow.setTextAlignment(TextAlignment.CENTER);
+			titleFlow.setStyle("-fx-font-size: " + rNameFont + "px; -fx-font-weight: bold;");
+			
+			VBox utilityTitleBox = new VBox(sepSpacing, topLine, titleFlow, bottomLine);
+			utilityTitleBox.setAlignment(Pos.CENTER);
+
+			// Moves title to center
+			VBox.setMargin(utilityTitleBox, new Insets(cardWidth * 0.50, 0, 0, 0));
+			card.getChildren().add(utilityTitleBox);
+	    	
+	    	StackPane bodyBox = new StackPane();
+	        bodyBox.setMaxWidth(Double.MAX_VALUE);
+	        bodyBox.setAlignment(Pos.TOP_CENTER);
+	        
+	        // Moves body up a bit
+	        VBox.setMargin(bodyBox, new Insets( cardWidth *.05, 0,0 , 0));
+	        
+	        Text line1 = new Text("If one utility is owned\n");
+	        Text line2 = new Text("rent is 4 times amount\n");
+	        Text line3 = new Text("shown on dice.\n\n");
+	        Text line4 = new Text("If both Utilities are owned,\nrent is 10 ");
+	        Text line5 = new Text("times amount shown on dice.");
+
+	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line4.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line5.setStyle("-fx-font-size: " + bodyFont + "px;");
+
+
+	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5);
+	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
+	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
+	        bodyFlow.setLineSpacing(cardHeight * 0.0033);
+	        
+	        bodyBox.getChildren().add(bodyFlow);
+
+	        card.getChildren().addAll( bodyBox);
+	    	
+		
 		}
 		root.getChildren().add(card);
 		return  root;

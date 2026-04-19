@@ -1477,8 +1477,8 @@ public class View extends Application implements Observer {
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
 	    	
 	    	//TODO finish prices, theyre off
-	    	lines.add("Purchase Price           $" + purchasePrice +"\n");
-	    	lines.add("Rent                               $" + prices.get(0)+"\n");
+	    	lines.add("Purchase Price             $" + purchasePrice +"\n");
+	    	lines.add("Rent                                 $" + prices.get(0)+"\n");
 	    	lines.add("Rent with color set		$" + prices.get(1)+"\n");
 	    	lines.add("Rent with 1 house		$" + prices.get(2)+"\n");
 	    	lines.add("Rent with 2 houses		$" + prices.get(3)+"\n"); 

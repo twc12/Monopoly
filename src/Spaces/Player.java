@@ -284,7 +284,7 @@ public class Player {
 				if (myProperty instanceof RealEstate) {
 			   		RealEstate myRealEstate = (RealEstate)myProperty;
 					if (myRealEstate.getColor().equals(realEstate.getColor())){
-						property.applyMatchedPropertyEffect(matchedPropertiesCount);
+						myProperty.applyMatchedPropertyEffect(matchedPropertiesCount);
 					}
 				}
 			} 

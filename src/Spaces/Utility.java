@@ -3,12 +3,7 @@ package Spaces;
 public class Utility extends Property {
 	
 	
-	public Utility(String name) {
-		
-		
-		int[] rentStages = new int[] {4, 10};
-
-		
+	public Utility(String name, int[] rentStages) {
 		super(name, 150, rentStages);
 	}
 	
@@ -23,6 +18,7 @@ public class Utility extends Property {
         return this.rentStages.get(rentStageIndex)*diceRoll;
     }
 
+    @Override
 	protected void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount) {
 		
 		switch (matchedOwnedPropertiesCount) {

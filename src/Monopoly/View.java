@@ -1475,21 +1475,21 @@ public class View extends Application implements Observer {
 	    	
 	    	prices = testSpace.getRentStages();
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
+	    	int buildPrice = ((RealEstate) testSpace).getBuildPrice();
 	    	
-	    	//TODO finish prices, theyre off
-	    	lines.add("Purchase Price             $" + purchasePrice +"\n");
-	    	lines.add("Rent                                 $" + prices.get(0)+"\n");
-	    	lines.add("Rent with color set		$" + prices.get(1)+"\n");
-	    	lines.add("Rent with 1 house		$" + prices.get(2)+"\n");
-	    	lines.add("Rent with 2 houses		$" + prices.get(3)+"\n"); 
-	    	lines.add("Rent with 3 houses		$" + prices.get(4)+"\n");
-	    	lines.add("Rent with 4 houses		$" + prices.get(5)+"\n");
-	    	lines.add("Rent with hotel		$" + prices.get(6)+"\n");
+	    	lines.add("Purchase Price         $" + purchasePrice +"\n");
+	    	lines.add("Rent                         $" + prices.get(0)+"\n");
+	    	lines.add("Rent w/ color set     $" + prices.get(1)+"\n");
+	    	lines.add("Rent w/ 1 house      $" + prices.get(2)+"\n");
+	    	lines.add("Rent w/ 2 houses    $" + prices.get(3)+"\n"); 
+	    	lines.add("Rent w/ 3 houses    $" + prices.get(4)+"\n");
+	    	lines.add("Rent w/ 4 houses    $" + prices.get(5)+"\n");
+	    	lines.add("Rent w/ hotel          $" + prices.get(6)+"\n");
+	    	lines.add("Build price               $" + buildPrice +"\n");
+
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);
 	        bodyBox.setAlignment(Pos.TOP_CENTER);
-	        
-	        
 	        
 	        Text line1 = new Text(lines.get(0));
 	        Text line2 = new Text(lines.get(1));
@@ -1498,7 +1498,8 @@ public class View extends Application implements Observer {
 	        Text line5 = new Text(lines.get(4));
 	        Text line6 = new Text(lines.get(5));
 	        Text line7 = new Text(lines.get(6));
-	        Text line8 = new Text(lines.get(6));
+	        Text line8 = new Text(lines.get(7));
+	        Text line9 = new Text(lines.get(8));
 
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
@@ -1508,8 +1509,9 @@ public class View extends Application implements Observer {
 	        line6.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line7.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line8.setStyle("-fx-font-size: " + bodyFont + "px;");
+	        line9.setStyle("-fx-font-size: " + bodyFont + "px;");
 
-	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5, line6, line7);
+	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5, line6, line7, line8, line9);
 //	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
 	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
 	        bodyFlow.setLineSpacing(cardHeight * 0.0050);

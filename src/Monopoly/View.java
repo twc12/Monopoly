@@ -1484,8 +1484,8 @@ public class View extends Application implements Observer {
 	    	lines.add("Rent w/ 2 houses    $" + prices.get(3)+"\n"); 
 	    	lines.add("Rent w/ 3 houses    $" + prices.get(4)+"\n");
 	    	lines.add("Rent w/ 4 houses    $" + prices.get(5)+"\n");
-	    	lines.add("Rent w/ hotel          $" + prices.get(6)+"\n");
-	    	lines.add("Build price               $" + buildPrice +"\n");
+	    	lines.add("Rent w/ hotel          $" + prices.get(6)+"\n\n");
+	    	lines.add("Houses cost             $" + buildPrice +"\n");
 
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);

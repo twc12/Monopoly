@@ -1181,8 +1181,6 @@ public class View extends Application implements Observer {
 			getOutOfJailButtonChoices.getChildren().add(useGOOJCard);
 		}
 		
-		
-		
 	}
 	
 	

@@ -111,9 +111,9 @@ public class View extends Application implements Observer {
 	
 	// THE MAIN BUTTONS IN BOTTOM RIGHT 
 	private Group mainButtonsGroup; // This will be used to change the buttons to present the jail options
-	private FlowPane coreButtonsFlowPane; // This will save the core buttons so the jail logic can revert them back 
-	private Button rollDiceButton; // used to grey out when unavailable 
-	private Button endTurnButton; // used to grey out unavailable
+	private VBox coreButtonsVBox; // This will save the core buttons so the jail logic can revert them back 
+	private Node rollDiceButton; // used to grey out when unavailable 
+	private Node endTurnButton; // used to grey out unavailable
 	private Label currPlayerLabel;
 	
 	/**
@@ -383,7 +383,7 @@ public class View extends Application implements Observer {
 		
 		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
 		
-		topLabelSection.getChildren().addAll(titleImageView);
+		// I DONT WANT THE IMAGE RIGHT NOW UGH ITS DESTRACTINGtopLabelSection.getChildren().addAll(titleImageView);
 		
 		return topLabelSection;
 	}
@@ -471,7 +471,8 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
 	    
-	    wrapper.getChildren().addAll(backgroundImageView,mainBoardGridPane, centerOverlay);
+	    //wrapper.getChildren().addAll(backgroundImageView,mainBoardGridPane, centerOverlay);
+	    wrapper.getChildren().addAll(mainBoardGridPane, centerOverlay);
 
 	    return wrapper;
 
@@ -696,41 +697,19 @@ public class View extends Application implements Observer {
 		
 		// This will put a gridpane object in the bottom center group, it will fill that group so when the dice get populated, its not a sudon jolt up 
 		GridPane sudoEmptyGridPane = new GridPane();
-		sudoEmptyGridPane.setPrefHeight(110);
+		sudoEmptyGridPane.setPrefWidth(200);
 		bottomMiddleOfScreenGroup.getChildren().add(sudoEmptyGridPane);
 		
-		// Buttons
-		// FUTURE NOTE - The get out of jail options will replace the children of this group with its own buttons
-		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsFlowPane` attribute 
-		Group mainButtonsGroup = new Group();
-		this.mainButtonsGroup = mainButtonsGroup; // This will be used to change the buttons to present the jail options
-		Button rollDiceButton = new Button("Roll Dice");
-		this.rollDiceButton = rollDiceButton;
-		rollDiceButton.setOnAction(event -> handleDiceRoll());
+		// Make the Roll Dice, Build, Trade, End Turn buttons
+		Group mainButtonsGroup = buildMainButtons();
 
-		Button tradeButton = new Button("Trade");
-		Button buildButton = new Button("Build");
-		Button endTurnButton = new Button("End Turn");
-		this.endTurnButton = endTurnButton;
-		endTurnButton.setDisable(true); //initially will be disabled until dice roll
-		endTurnButton.setOnAction((event) -> {
-			handleEndTurnButton();
-		});
-
-		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
-		FlowPane coreButtonsFlowPane = new FlowPane();
-		this.coreButtonsFlowPane = coreButtonsFlowPane; // I need this saved so the getOutOfJailLogic can bring these buttons back 
-		coreButtonsFlowPane.getChildren().addAll(rollDiceButton, tradeButton, buildButton, endTurnButton);
-		mainButtonsGroup.getChildren().add(coreButtonsFlowPane);
 		// returning full bottom section
-		BorderPane bottomBorderPane = new BorderPane(); // player info card left, buttons right
-		bottomBorderPane.setLeft(bottomLeftPlayerCardGroup);
-		bottomBorderPane.setCenter(bottomMiddleOfScreenGroup);
-		bottomBorderPane.setRight(mainButtonsGroup);
+		HBox bottomHBox = new HBox(); // player info card left, buttons right
+		bottomHBox.getChildren().add(bottomLeftPlayerCardGroup);
+		bottomHBox.getChildren().add(bottomMiddleOfScreenGroup);
+		bottomHBox.getChildren().add(mainButtonsGroup);
 		
-
-	    
-	    bottomBorderPane.setPrefHeight(220);
+		bottomHBox.setPrefHeight(220);
 
 	    // background image
 	    javafx.scene.image.Image bottomFrameImage =
@@ -753,15 +732,81 @@ public class View extends Application implements Observer {
 	    // make image stretch across the whole bottom section width
 	    bottomFrameImageView.fitWidthProperty().bind(bottomWrapper.widthProperty());
 
-	    bottomWrapper.getChildren().addAll(bottomFrameImageView, bottomBorderPane);
+	    bottomWrapper.getChildren().addAll(bottomFrameImageView, bottomHBox);
 
 	    return bottomWrapper;
 		
+	}
+	
+	/**
+	 * This function will build the group that holds a VBox of buttons as
+	 * rectangles. There will be a Roll dice button, Trade button, build button, and 
+	 * end turn button.
+	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)a
+	 */
+	private Group buildMainButtons() {
+		int coreButtonWidth  = 50;
+		int coreButtonHeight = 50;
+		// Buttons
+		// FUTURE NOTE - The get out of jail options will replace the children of this group with its own buttons
+		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsFlowPane` attribute 
+		Group mainButtonsGroup = new Group();
+		this.mainButtonsGroup = mainButtonsGroup; // This will be used to change the buttons to present the jail options
+		
+		// CREATE ROLL DICE BUTTON
+		Rectangle rollDiceButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		rollDiceButtonRect.setArcWidth(30); 
+		rollDiceButtonRect.setArcHeight(30);
+		Label rollDiceLabel = new Label("Roll Dice");
+		StackPane rollDiceStackPane = new StackPane();
+		rollDiceStackPane.getChildren().addAll(rollDiceButtonRect,rollDiceLabel);
+		rollDiceStackPane.setOnMouseClicked(event -> handleDiceRoll());
+		this.rollDiceButton = rollDiceStackPane; // used for disabling the button later
 		
 		
-//		return bottomBorderPane;
+		// CREATE TRADE HOUSES BUTTON
+		Rectangle tradeButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		tradeButtonRect.setArcWidth(30); 
+		tradeButtonRect.setArcHeight(30);
+		
+		Label tradeLabel = new Label("Trade");
+		StackPane tradeButtonStackPane = new StackPane();
+		tradeButtonStackPane.getChildren().addAll(tradeButtonRect,tradeLabel);
+		tradeButtonStackPane.setOnMouseClicked(event -> handleTradeButton());
 		
 		
+		// CREATE BUILD HOUSES BUTTON
+		Rectangle buildButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		buildButtonRect.setArcWidth(30); 
+		buildButtonRect.setArcHeight(30);
+		
+		Label buildLabel = new Label("Build Houses");
+		StackPane buildButtonStackPane = new StackPane();
+		buildButtonStackPane.getChildren().addAll(buildButtonRect,buildLabel);
+		buildButtonStackPane.setOnMouseClicked(event -> handleBuildButton());
+		
+		
+		// CREATE END TURN BUTTON
+		Rectangle endTurnButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		endTurnButtonRect.setArcWidth(30); 
+		endTurnButtonRect.setArcHeight(30);
+		
+		Label endTurnLabel = new Label("End Turn");
+		StackPane endTurnButtonStackPane = new StackPane();
+		endTurnButtonStackPane.setDisable(true);
+		endTurnButtonStackPane.getChildren().addAll(endTurnButtonRect,endTurnLabel);
+		endTurnButtonStackPane.setOnMouseClicked(event -> handleEndTurnButton());
+		this.endTurnButton = endTurnButtonStackPane;
+		
+
+		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
+		VBox coreButtonsVBox = new VBox(5);
+		
+		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
+		coreButtonsVBox.getChildren().addAll(rollDiceButton, tradeButtonStackPane, buildButtonStackPane, endTurnButton);
+		mainButtonsGroup.getChildren().add(coreButtonsVBox);
+		
+		return mainButtonsGroup;
 	}
 	
 	/**
@@ -922,6 +967,20 @@ public class View extends Application implements Observer {
 		populatePlayerCardWithNewInfo(currentPlayer);  //refresh player card after dice-roll phase resolves
 		
 		return;
+	}
+	
+	/**
+	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) trade button is pressed
+	 */
+	private void handleTradeButton() {
+		
+	}
+	
+	/**
+	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) build button is pressed
+	 */
+	private void handleBuildButton() {
+		
 	}
 	
 	/**

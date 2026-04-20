@@ -15,6 +15,7 @@ public class GoToJailSpace extends Space {
 		return jailSpaceObject;
 	}
 
+	
 	@Override
 	protected void processSpace(Player player, Model model) {
 		player.putInJail();

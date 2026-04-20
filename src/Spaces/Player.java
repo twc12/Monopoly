@@ -121,20 +121,12 @@ public class Player {
     }
     
     /**
-     * Sets the player in jail
+     * putInJail()
      */
     public void putInJail() {
     	inJail = true;
     	
-    	int ammtMoved = 0;
-    	currentSpace.getPlayersOnSpace().remove(this);
-    	while (!(currentSpace instanceof Jail)) {
-    		ammtMoved++;
-    		currentSpace = currentSpace.getNextSpace();
-    	}
-    	Jail jailSpace = (Jail) currentSpace;
-    	jailSpace.playerAttemptsToGetOutMapping.put(this, 0);
-    	model.notifyViewOfPlayerMoved(this, ammtMoved);
+    	model.putPlayerInJail(this);
     }
     
     /**

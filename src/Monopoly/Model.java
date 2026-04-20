@@ -15,6 +15,7 @@ import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
+import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Space;
@@ -220,7 +221,7 @@ public class Model extends Observable {
 
 	/**
 	 * Notifies the view that a player has landed on the "go to jail" space
-	 * @param player
+	 * @param player (Player): The player going to jail
 	 */
 	public void notifyViewOfPlayerGoingToJail(Player player) {
 		GoToJailMessage jailMsg = new GoToJailMessage(player);
@@ -259,6 +260,25 @@ public class Model extends Observable {
 	
 	public HashMap<String, Boolean> getThemes() {
 		return themes;
+	}
+
+	/**
+	 * putPlayerInJail(player): This function will be called when the player 
+	 * should be put into jail, this method should be called for when a player rolls 3 doubles 
+	 * in a row, or pulls a card that says go to jail, or lands on the Go To Jail space 
+	 * @param player (Player): The player object that is going to be placed in jail
+	 */
+	public void putPlayerInJail(Player player) {
+		// Remove the player from jail 
+		Space playersCurrentSpace = player.getCurrentSpace();
+		playersCurrentSpace.getPlayersOnSpace().remove(this);
+		
+    	// Move the player to the jail space
+		Jail jailSpace = board.getJailSpace();
+		jailSpace.addPlayerToJail(player); // adds the player to the jail mapping of attempts to get out 
+		
+    	notifyViewOfPlayerGoingToJail(player);
+		
 	}
 	
 }

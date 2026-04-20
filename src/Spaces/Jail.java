@@ -40,4 +40,23 @@ public class Jail extends Space {
 	public void processSpace(Player player, Model model) {
 
 	}
+
+	/**
+	 * addPlayerToJail(player): This function will add a player
+	 * to the jail. That involves adding them to the mapping of players
+	 * to their attempts to get out. 
+	 * 
+	 * This function assumes their inJail attribute is true already
+	 * 
+	 * @param player (Player): The player being added to jail
+	 */
+	public void addPlayerToJail(Player player) {
+		
+		// if this player is already in jail that is a problem
+		if (playerAttemptsToGetOutMapping.containsKey(player)) {
+			throw new IllegalStateException("Player is already in jail, cannot be put in jail again");
+		}
+		
+		playerAttemptsToGetOutMapping.put(player, 0);
+	}
 }

@@ -12,6 +12,7 @@ import Cards.Card;
 import Messages.AiActionMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
+import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -74,8 +75,8 @@ public class View extends Application implements Observer {
 	private String theme;
 	private String themeFolder;
 	
-	private int widthOfPropertySpaceCards = 30;
-	private int heightOfPropertySpaceCards = 60;
+	private int widthOfPropertySpaceCards = 40;
+	private int heightOfPropertySpaceCards = 80;
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 10;
 	
@@ -176,6 +177,12 @@ public class View extends Application implements Observer {
 	private StackPane detailedCardInfoOverlay;
 	
 	private StackPane root;
+	
+	/**
+	 * This is used for moving the player to jail after they are sent to jail, it will
+	 * hold the stack pane that jail is made out of 
+	 */
+	private StackPane jailSpaceStackPane;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -407,7 +414,7 @@ public class View extends Application implements Observer {
 		List<Space> allSpaces = controller.getSpaces();
 
 		mainBoardGridPane.setAlignment(Pos.CENTER);
-		mainBoardGridPane.setPadding(new Insets(8, 8, 8, 8));
+// TESTING REMOVEING THE PADDING 		mainBoardGridPane.setPadding(new Insets(0, 8, 8, 8));
 
 		placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth, boardHeight);
 
@@ -588,6 +595,7 @@ public class View extends Application implements Observer {
 		
 		// JAIL SPACE
 		StackPane jailStackPane = new StackPane();
+		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
@@ -1183,6 +1191,12 @@ public class View extends Application implements Observer {
 		launch(args);
 	}
 
+	/**
+	 * This function will decipher that type of message is received and then it will act on the message
+	 * with a corresponding function 
+	 * @param model (Model): The state of the model 
+	 * @param message (Object): Could be any type of message from the model
+	 */
 	@Override
 	public void update(Observable model, Object message) {
 		// TESTING
@@ -1246,8 +1260,24 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			//newAiActionLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 10px;");
 			aiLoggerVBox.getChildren().add(newAiActionLabel);
+		}
+		
+		// if the view is notified that a player is going to jail, you can play sounds and animate
+		else if (message instanceof GoToJailMessage) {
+			GoToJailMessage goToJailMsg = (GoToJailMessage) message;
+			Player player = goToJailMsg.getPlayerGoingToJail();
+			// FUTURE NOTE: now you can play a sound of the player going to jail and animate them going there
+			
+			// Move the player to the jail space
+			
+			// get the current pane the player is one, then use it to find the index in the list of all panes
+			StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
+			if (currentSpacesPane == null) System.out.println("ERROR: Player object is not in hash map somehow");
+			Circle playersPeiceToMove = playerObjToPlayerPiece.get(player);
+			currentSpacesPane.getChildren().remove(playersPeiceToMove);
+			
+			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
 		}
 		
 		

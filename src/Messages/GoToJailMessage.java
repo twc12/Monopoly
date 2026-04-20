@@ -6,7 +6,7 @@ import Spaces.Player;
  * @author Jarrod Heyer Martinez
  * 
  * Standard message for a player to go to jail, may need some tweaking as I wrote 
- * it mostly based on what other messages we alrady have.
+ * it mostly based on what other messages we already have.
  */
 public class GoToJailMessage {
 

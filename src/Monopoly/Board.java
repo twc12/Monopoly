@@ -108,7 +108,7 @@ public class Board {
 		return firstSpace;
 	}
 	
-	public Space getJailSpace() {
+	public Jail getJailSpace() {
 		return jailSpace;
 	}
 	

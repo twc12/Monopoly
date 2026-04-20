@@ -6,7 +6,7 @@ public class RealEstate extends Property {
 	
 	private int buildPrice;
 	protected Color color; //default to none
-	private boolean canBuild=false;
+	private boolean canBuild = false;
 	private int buildingStage = 0;
 	public enum Color{
 		BROWN,
@@ -98,32 +98,52 @@ public class RealEstate extends Property {
     
     public void buildHouseHotel(Player player) {
     	
-    	if (this.canBuild && this.buildingStage < 5) {
-
-	    	//monopoly rule where you can only build houses/hotels evenly across properties, checking if violation
+    	//check if this space is owned by the purchaser
+    	if (this.getOwner() == null || !this.getOwner().equals(player)) {
+    		System.out.println(player.toString() + " does not own " + this.getName() + " can't build");
+    		return;
+    	}
+    	
+    	//first must get a color set before can build
+    	if (!this.canBuild) {
+    		System.out.println("Can't build! Must aquire a set!");
+    		return; 
+    	}
+    	
+    	if (this.buildingStage>=5) {
+    		System.out.println("Already fully developed!");
+    		return;
+    	}
+    	
+    	//monopoly rule where you can only build houses/hotels evenly across properties, checking if violation
+			//checking the player's other owned realestate properties of the same color
 	    	List<Property> myProperties = this.getOwner().getListOfProperties();
 	    	for (Property p: myProperties) {
 	    		if (p instanceof RealEstate) {
 	    			RealEstate checkRealEstate = (RealEstate)p;
-	    			
+	 
+    				//if i have another realestate of the same color that has a lower buildstage, can't buy
 	    			if (checkRealEstate.getColor().equals(this.getColor())) {
-	    				//if i have another realestate of the same color that has a lower buildstage, can't buy
 	        			if(checkRealEstate.getBuildingStage()<this.getBuildingStage()) { 
-	        				return; //Throw exception?
+	        		    	System.out.println("Must build evenly!");
+	        				return;
 	        			}
 	    			}	
 	    		}
 	    	}
-    
+	    	
+	    //final check if player can afford it
+    	if (player.getCashAmmt() >= this.buildPrice) {
         	player.addCash(-buildPrice);
         	this.rentStageIndex += 1;
         	this.buildingStage += 1;
+        	System.out.println((player.toString() + " built on " + this.name + " buildstage: " + this.getBuildingStage()));
+	    }else {
+	    	System.out.println("Not enough funds!");
     	}
     }
     
     public void sellHouseHotel(Player player) {
-    	
-    	if (this.buildingStage > 0) {
     	
     	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
     	List<Property> myProperties = this.getOwner().getListOfProperties();
@@ -134,10 +154,16 @@ public class RealEstate extends Property {
     			if (checkRealEstate.getColor().equals(this.getColor())) {
     				//if i have another realestate of the same color that has a higher buildstage, can't sell
         			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
+        				System.out.println("Not selling evenly across properties of same color!");
         				return; //Throw exception?
         			}
     			}	
     		}
+    	}
+    	
+    	if (this.buildingStage < 1) {
+    		System.out.println("Buildstage is less than 1, can't sell buildings!");
+    		return;
     	}
     	
     	//if found no conflicts, sell
@@ -145,8 +171,8 @@ public class RealEstate extends Property {
     	player.addCash(sellPrice);
     	this.rentStageIndex -= 1;
     	this.buildingStage -= 1;
-    	System.out.println(player.toString() + " successfully sold house/hotel for " + sellPrice);
-    	}
+    	System.out.println(player.toString() + " successfully sold house/hotel for $" + sellPrice);
+    	
     }
     
     

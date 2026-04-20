@@ -66,7 +66,7 @@ public class CardBuilder {
 		
 		// #4
 		chanceCards.add(new Card("Pay Poor Tax Of $15", (player,model)->{
-			player.addCash(50);
+			player.addCash(-15);
 		}));
 		
 		// #5

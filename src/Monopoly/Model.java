@@ -42,6 +42,11 @@ public class Model extends Observable {
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
 	
+	//constructor for JUNIT, doesn't create a view
+	public Model() {
+		this(null); 
+		}
+	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
 
@@ -52,7 +57,11 @@ public class Model extends Observable {
 		playerColorsToPickFrom.add(Color.RED); playerColorsToPickFrom.add(Color.BLUE); playerColorsToPickFrom.add(Color.GREEN); playerColorsToPickFrom.add(Color.YELLOW); 
 		playerColorsToPickFrom.add(Color.PURPLE); playerColorsToPickFrom.add(Color.PINK); playerColorsToPickFrom.add(Color.BLACK); playerColorsToPickFrom.add(Color.ORANGE); 
 		
-		this.addObserver(viewClassObj);
+		//required for JUNIT not having view
+		if (viewClassObj != null) {
+			this.addObserver(viewClassObj);
+		}
+		
 		board = new Board();
 		
 		

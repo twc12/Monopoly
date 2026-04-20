@@ -27,6 +27,12 @@ public class Controller {
 	
 	private String theme;
 	
+	//contructor for JUNIT, doesn't create a view
+	public Controller() {
+		this.model = new Model();
+	}
+	
+	
 	public Controller(View viewClassObj) {
 		model = new Model(viewClassObj);
 	}
@@ -331,6 +337,16 @@ public class Controller {
 		return attemptsAmmount;
 	}
 	
+	
+	//called by view when player successfully chooses to build on their property
+	public void buildHouseHotel(Player player, RealEstate property) {
+	        property.buildHouseHotel(player);
+	}
+	
+	//called by view when player successfully chooses to build on their property
+	public void sellHouseHotel(Player player, RealEstate property) {
+	        property.sellHouseHotel(player);
+	}
 	
 	
 }

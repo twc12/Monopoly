@@ -114,7 +114,11 @@ public class View extends Application implements Observer {
 	private FlowPane coreButtonsFlowPane; // This will save the core buttons so the jail logic can revert them back 
 	private Button rollDiceButton; // used to grey out when unavailable 
 	private Button endTurnButton; // used to grey out unavailable
+	private Button buildButton; // disabled until a buildable RealEstate card is selected
 	private Label currPlayerLabel;
+	
+	/** The RealEstate property selected in the player info panel for building. Null = none selected. */
+	private RealEstate selectedPropertyToBuild = null;
 	
 	/**
 	 * This is to tell the user any important messages
@@ -184,15 +188,29 @@ public class View extends Application implements Observer {
 	 */
 	private StackPane jailSpaceStackPane;
 
+	public static void main(String[] args) {
+		launch(args);
+	}
+	
 	@Override
 	public void start(Stage stage) throws Exception {
 		// theme placeholder
 		theme = "standardTheme";
+
+		controller = new Controller(this);
+		
+//		//TEMP TEST CODE FOR TESTING BUILDING ON TURN 1
+//		List<Space> spaces = controller.getSpaces();
+//		RealEstate mediterranean = (RealEstate) spaces.get(1);
+//		RealEstate baltic = (RealEstate) spaces.get(3);
+//		RealEstate broadway = (RealEstate) spaces.get(39);
+//		Player player1 = controller.getCurrentPlayer();
+//		controller.purchaseProperty(player1, mediterranean);
+//		controller.purchaseProperty(player1, baltic);
+//		controller.purchaseProperty(player1, broadway);
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
-		playerObjToPlayerPiece = new HashMap<Player, Circle>();
-		
-		controller = new Controller(this);
+		playerObjToPlayerPiece = new HashMap<Player, Circle>();		
 	
 		BorderPane mainScreen = new BorderPane();
  
@@ -279,6 +297,8 @@ public class View extends Application implements Observer {
 		StackPane detailedCardInfoOverlay = new StackPane();
 		this.detailedCardInfoOverlay = detailedCardInfoOverlay;
 		detailedCardInfoOverlay.setVisible(false); // dont show anything, not until mouse click 
+		detailedCardInfoOverlay.setPickOnBounds(false); // allows "transparent" click thru to the board
+
 		root.getChildren().add(detailedCardInfoOverlay);
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
@@ -710,6 +730,16 @@ public class View extends Application implements Observer {
 
 		Button tradeButton = new Button("Trade");
 		Button buildButton = new Button("Build");
+		this.buildButton = buildButton;
+		buildButton.setDisable(true); // disabled until player selects a buildable RealEstate card
+		buildButton.setOnAction(event -> {
+			if (selectedPropertyToBuild != null) {
+				controller.buildHouseHotel(controller.getCurrentPlayer(), selectedPropertyToBuild);
+				selectedPropertyToBuild = null;
+				buildButton.setDisable(true);
+				populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+			}
+		});
 		Button endTurnButton = new Button("End Turn");
 		this.endTurnButton = endTurnButton;
 		endTurnButton.setDisable(true); //initially will be disabled until dice roll
@@ -858,9 +888,49 @@ public class View extends Application implements Observer {
 			
 			// Whenever this visual property stack pane is clicked show the detailed stats
 			visualPropertyInfoCard.setUserData(currProperty);
+
+			// check if realestate, building the 5 "build-progress-dots" on top of a real estate card and add build-button onclick logic
+			if (currProperty instanceof RealEstate re) {
+				FlowPane buildingDots = new FlowPane(1, 0); // 1 horiz-pixel margin
+				buildingDots.setAlignment(Pos.CENTER);
+				//creating 5 dots, one for each buildstage value on the property
+				int buildStage = re.getBuildingStage();
+				for (int i = 1; i <= 5; i++) {
+					Rectangle dot = new Rectangle(10, 10);
+					if (buildStage >= i) {
+						dot.setFill(Color.ORANGERED);
+					} else {
+						dot.setFill(Color.TRANSPARENT);
+					}
+					//styling and adding to flowpane
+					dot.setStroke(Color.MAROON);
+					dot.setStrokeWidth(1);
+					buildingDots.getChildren().add(dot);
+				}
+				// add dots to the bottom of the card stackpane
+				StackPane.setAlignment(buildingDots, Pos.BOTTOM_CENTER);
+				visualPropertyInfoCard.getChildren().add(buildingDots);
+				
+				// adding on-click selects/deselects for building; enables/disables the Build button
+				visualPropertyInfoCard.setOnMouseClicked((e) -> {
+					selectedPropertyToBuild = re;					
+					if (!re.getIfCanBuild() || re.getBuildingStage() >=5) { //if already fully developed, don't enable the build button when i click a card
+						buildButton.setDisable(true);
+					}
+					
+					buildButton.setDisable(false); //otherwise, enable the build button and show the card info
+					showDetailedPropertyInfo(re);
+	
+				});
+				
+			//if not realestate, will only add an on-click for details and not build any dots
+			} else {
 			visualPropertyInfoCard.setOnMouseClicked((e) -> {
 				showDetailedPropertyInfo((Property) visualPropertyInfoCard.getUserData());
-			});
+				});
+			}
+
+			
 			// add this visual card to the underlying gridpane of the scroll pane
 			propertiesGridPane.add(visualPropertyInfoCard, gridPaneIdx, 0);
 			gridPaneIdx++;
@@ -1185,9 +1255,7 @@ public class View extends Application implements Observer {
 	
 	
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+
 
 	/**
 	 * This function will decipher that type of message is received and then it will act on the message
@@ -1468,9 +1536,13 @@ public class View extends Application implements Observer {
 	    ArrayList<Integer> prices = new ArrayList<>();
 	    int mortgageVal;
 	    int purchasePrice = testSpace.getPurchaseAmount();
+	    int buildPrice;
 	    
 	    // Property Cards
 	    if (testSpace instanceof RealEstate) {
+	    	RealEstate re = (RealEstate) testSpace;
+	    	buildPrice = re.getBuildPrice();
+	    
 	    	StackPane headerBox = new StackPane();
 	    	headerBox.setMaxWidth(Double.MAX_VALUE);
 	    	headerBox.setPrefHeight(headerHeight);
@@ -1503,17 +1575,17 @@ public class View extends Application implements Observer {
 	    	
 	    	prices = testSpace.getRentStages();
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
-	    	int buildPrice = ((RealEstate) testSpace).getBuildPrice();
-	    	
-	    	lines.add("Purchase Price         $" + purchasePrice +"\n");
-	    	lines.add("Rent                         $" + prices.get(0)+"\n");
-	    	lines.add("Rent w/ color set     $" + prices.get(1)+"\n");
-	    	lines.add("Rent w/ 1 house      $" + prices.get(2)+"\n");
-	    	lines.add("Rent w/ 2 houses    $" + prices.get(3)+"\n"); 
-	    	lines.add("Rent w/ 3 houses    $" + prices.get(4)+"\n");
-	    	lines.add("Rent w/ 4 houses    $" + prices.get(5)+"\n");
-	    	lines.add("Rent w/ hotel          $" + prices.get(6)+"\n\n");
-	    	lines.add("Houses cost             $" + buildPrice +"\n");
+
+	    	//TODO finish prices, theyre off
+	    	lines.add("Purchase Price          $" + purchasePrice +"\n");
+	    	lines.add("Price per buiding      $" + buildPrice + "\n");
+	    	lines.add("Rent                          $" + prices.get(0)+"\n");
+	    	lines.add("Rent with color set	 $" + prices.get(1)+"\n");
+	    	lines.add("Rent with 1 house	 $" + prices.get(2)+"\n");
+	    	lines.add("Rent with 2 houses	 $" + prices.get(3)+"\n"); 
+	    	lines.add("Rent with 3 houses	 $" + prices.get(4)+"\n");
+	    	lines.add("Rent with 4 houses	 $" + prices.get(5)+"\n");
+	    	lines.add("Rent with hotel	 $" + prices.get(6)+"\n");
 
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);
@@ -1529,6 +1601,7 @@ public class View extends Application implements Observer {
 	        Text line8 = new Text(lines.get(7));
 	        Text line9 = new Text(lines.get(8));
 
+	        
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line2.setStyle("-fx-font-size: " + bodyFont + "px;");
 	        line3.setStyle("-fx-font-size: " + bodyFont + "px;");
@@ -1576,8 +1649,8 @@ public class View extends Application implements Observer {
 	    	prices = testSpace.getRentStages();
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
 	    	
-	    	lines.add("Purchase Price   $" + purchasePrice +"\n");
-	    	lines.add("Rent        $" + prices.get(0)+ "\n");
+	    	lines.add("Purchase Price $" + purchasePrice +"\n");
+	    	lines.add("Rent    $" + prices.get(0)+ "\n");
 	    	lines.add("If 2 R,R.'s are owned	$" + prices.get(1)+"\n");
 	    	lines.add("If 3 R.R.'s are owned	$" + prices.get(2)+"\n");
 	    	lines.add("If 4 R.R.'s are owned	$" + prices.get(3)+"\n"); 
@@ -1592,7 +1665,7 @@ public class View extends Application implements Observer {
 	        Text line3 = new Text(lines.get(2));
 	        Text line4 = new Text(lines.get(3));
 	        Text line5 = new Text(lines.get(4));
-	        Text line6 = new Text(lines.get(4));
+	        Text line6 = new Text(lines.get(5));
 
 
 	        line1.setStyle("-fx-font-size: " + bodyFont + "px;");

@@ -227,8 +227,11 @@ public class Model extends Observable {
 		GoToJailMessage jailMsg = new GoToJailMessage(player);
 		this.setChanged();
 		this.notifyObservers(jailMsg);
-		this.clearChanged();
-		
+		this.clearChanged();	
+	}
+
+	public void notifyViewOfPlayerTryingToGetOutOfJail(Player player) {
+
 	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {
@@ -269,7 +272,7 @@ public class Model extends Observable {
 	 * @param player (Player): The player object that is going to be placed in jail
 	 */
 	public void putPlayerInJail(Player player) {
-		// Remove the player from jail 
+		// Remove the player from current space
 		Space playersCurrentSpace = player.getCurrentSpace();
 		playersCurrentSpace.getPlayersOnSpace().remove(this);
 		

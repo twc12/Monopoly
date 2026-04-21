@@ -112,6 +112,13 @@ public class Player {
     public void addJailCard() {
     	ammtOfGetOutOfJailCards++;
     }
+
+    /**
+     * Removes the players get out of jail free card when they use it
+     */
+    public void removeJailCard() {
+        ammtOfGetOutOfJailCards--;
+    }
     
     /**
      * @return int: The number of get out of jail cards this player has
@@ -135,6 +142,7 @@ public class Player {
     public void getOutOfJail() {
     	inJail = false; 
     	model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
+        model.setCurrentPlayerToNext();
     }
     
     /**

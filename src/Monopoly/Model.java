@@ -141,8 +141,17 @@ public class Model extends Observable {
 		return chanceCards;
 	}
 	
+	
 	public Stack<Card> getCommunityChestCards(){
 		return communityChestCards;
+	}
+	
+	public void setChanceCards(Stack<Card> stack) {
+		this.chanceCards = stack;
+	}
+	
+	public void setCommunityChestCards(Stack<Card> stack) {
+		this.communityChestCards = stack;
 	}
 	
 	/**

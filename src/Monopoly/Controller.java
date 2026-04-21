@@ -3,6 +3,7 @@ package Monopoly;
 import java.util.List;
 
 import Cards.Card;
+import Cards.Deck;
 import Spaces.Chance;
 import Spaces.CostSpace;
 import Spaces.FreeParking;
@@ -107,6 +108,12 @@ public class Controller {
 	 */
 	public void resolveCard(Card card, Player player) {
 		card.apply(player, model);
+		if(model.getChanceCards().isEmpty()) {
+			model.setChanceCards(new Deck().getChanceCards());
+		}
+		if(model.getCommunityChestCards().isEmpty()) {
+			model.setCommunityChestCards(new Deck().getCommunityChestCards());
+		}
 	}
 
 

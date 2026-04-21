@@ -253,19 +253,11 @@ public class CardBuilder {
 			player.addCash(20);
 		}));
 		
-<<<<<<< HEAD
-		
-		
-//		TODO street repairs, need house implementation
-//		communityChestCards.add(new Card("You Are Assessed For\nStreet Repairs\n", (player,model)->{
-//			;
-//		}));
-=======
+
 		// #14
 		communityChestCards.add(new Card(cardDescription.get(29), (player,model)->{
 			;
 		}));
->>>>>>> refs/heads/main
 		
 		// #15
 		communityChestCards.add(new Card(cardDescription.get(30), (player,model)->{

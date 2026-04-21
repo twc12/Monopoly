@@ -139,6 +139,12 @@ public class View extends Application implements Observer {
 	private VBox coreButtonsVBox; // This will save the core buttons so the jail logic can revert them back 
 	private Node rollDiceButton; // used to grey out when unavailable 
 	private Node endTurnButton; // used to grey out unavailable
+	
+	/**
+	 * These are the sizes of the main buttons also the get out of jail buttons
+	 */
+	private int coreButtonWidth  = 150; 
+	private int coreButtonHeight = 45;
 
 	private StackPane buildButton; // disabled until a buildable RealEstate card is selected
 
@@ -809,8 +815,6 @@ public class View extends Application implements Observer {
 	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)a
 	 */
 	private Group buildMainButtons() {
-		int coreButtonWidth  = 150;
-		int coreButtonHeight = 45;
 		// Buttons
 		// FUTURE NOTE - The get out of jail options will replace the children of this group with its own buttons
 		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsVBox` attribute 
@@ -1062,8 +1066,8 @@ public class View extends Application implements Observer {
 		
 		// if the player is in jail then get the user input and process the user decision
 		if (currentPlayer.isInJail() == true) {
-			// Future issue ! controller.handleJailLogic();
-			// MAYBE CHANGE THIS to when we get a message from the model its the next persons turn they are prompted already with the options for how to get out of jail
+			// lets say they roll doubles for the 3rd time, then they get sent to jail it should be the next players turn 
+			controller.model.notifyViewOfNextPlayersTurn(currentPlayer); // THIS IS WRONG WRONG WRONG, AS SOON AS a player rolls doubles 3 times it has to be detencted somehow, it wasnt so this is a quick fix so after they press roll dice AGAIN after being put in jail it moves on, THIS IS BAD 
 		}
 		else{
 			// TESTING
@@ -1325,43 +1329,73 @@ public class View extends Application implements Observer {
 	 */
 	private void showOptionsForGettingOutOfJail(Player currentPlayer) {
 		int doublesAttempts = controller.getAmmtOfJailAttempts(currentPlayer);
+		System.out.println("View: Showing options for getting out of jail: doublesAttempts = "+doublesAttempts);
 		mainButtonsGroup.getChildren().clear(); // remove core buttons
 		
-		FlowPane getOutOfJailButtonChoices = new FlowPane();
-		mainButtonsGroup.getChildren().add(getOutOfJailButtonChoices);
+		VBox jailButtonsVBox = new VBox(5);
+		jailButtonsVBox.setPadding(new Insets(8));
+		jailButtonsVBox.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		jailButtonsVBox.setPrefHeight(bottomHBoxHeight);
+		
+		mainButtonsGroup.getChildren().add(jailButtonsVBox);
+		
 		
 		int playersCashTotal = currentPlayer.getCashAmmt();
 		// if the player can still attempt to roll doubles then add a button for it, but if they dont have $50 then they must roll doubles
 		if (doublesAttempts < 3 || playersCashTotal < 50) {
-			Button rollDoublesButton = new Button("Roll Doubles");
-			rollDoublesButton.setOnMouseClicked((e) -> {
+			
+			// CREATE ROLL DICE BUTTON
+			Rectangle rollDoublesButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+			rollDoublesButtonRect.setArcWidth(30); 
+			rollDoublesButtonRect.setArcHeight(30);
+			Label rollDoublesLabel = new Label("Roll Doubles");
+			StackPane rollDoublesStackPane = new StackPane();
+			rollDoublesStackPane.getChildren().addAll(rollDoublesButtonRect,rollDoublesLabel);
+			rollDoublesStackPane.setOnMouseClicked(event -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.ROLL_DUBLES);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
-			getOutOfJailButtonChoices.getChildren().add(rollDoublesButton);
+			
+			jailButtonsVBox.getChildren().add(rollDoublesStackPane);
+			
 		}
 		
 		// if the user has enough to pay money then show that button 
 		if (playersCashTotal >= 50) {
-			Button payCashButton = new Button("Pay $50");
-			payCashButton.setOnMouseClicked((e) -> {
+			
+			// CREATE PAY $50 CASH BUTTON
+			Rectangle payCashButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+			payCashButtonRect.setArcWidth(30); 
+			payCashButtonRect.setArcHeight(30);
+			Label payCashLabel = new Label("Pay $50");
+			StackPane payCashStackPane = new StackPane();
+			payCashStackPane.getChildren().addAll(payCashButtonRect,payCashLabel);
+			payCashStackPane.setOnMouseClicked(event -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.PAY_FIFTY);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
-			getOutOfJailButtonChoices.getChildren().add(payCashButton);
+			jailButtonsVBox.getChildren().add(payCashStackPane);
 		}
 		
 		// if the player has atleast 1 get out of jail free card, show that button 
 		if (currentPlayer.getAmmtOfGOOJCards() >= 1) {
-			Button useGOOJCard = new Button("Use Get Out Of Jail Free Card");
-			useGOOJCard.setOnMouseClicked((e) -> {
+			
+			// CREATE USE GET OUT OF JAIL FREE CARD BUTTON
+			Rectangle useGOOJButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+			useGOOJButtonRect.setArcWidth(30); 
+			useGOOJButtonRect.setArcHeight(30);
+			Label useGOOJLabel = new Label("Use Get Out Of Jail Free Card");
+			StackPane useGOOJStackPane = new StackPane();
+			useGOOJStackPane.getChildren().addAll(useGOOJButtonRect,useGOOJLabel);
+			useGOOJStackPane.setOnMouseClicked(event -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.OUT_OF_JAIL_CARD);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
-			getOutOfJailButtonChoices.getChildren().add(useGOOJCard);
+			jailButtonsVBox.getChildren().add(useGOOJStackPane);
+			
 		}
 		
 	}

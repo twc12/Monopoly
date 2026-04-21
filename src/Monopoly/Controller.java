@@ -51,7 +51,7 @@ public class Controller {
 		int dice2Result;
 		
 		// Roll dice, place into list
-		dice1Result = rand.nextInt(6)+1;
+		dice1Result = rand.nextInt(6)+1; 
 		dice2Result = rand.nextInt(6)+1;
 		
 		// if the player did not get doubles then they are DONE ROLLING DICE 

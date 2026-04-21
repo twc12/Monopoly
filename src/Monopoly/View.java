@@ -912,7 +912,7 @@ public class View extends Application implements Observer {
 		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 		
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
-		playerCash.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 20));
+		playerCash.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 15));
 		playerCash.setTextFill(Color.LIMEGREEN);
 		playerCash.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 		

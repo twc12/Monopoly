@@ -92,6 +92,7 @@ public class Controller {
 			if (dice1 == dice2) {
 				System.out.println("The attempt to get out of jail succeded."); // debugging
 				playerInjail.getOutOfJail();
+				System.out.println("The player has moved: " + dice1 + dice2);
 				playerInjail.move(dice1 + dice2);
 			}
 
@@ -107,6 +108,7 @@ public class Controller {
 					System.out.println("Player has failed 3 get out of jail attempts and was charged $50 to get out"); // debugging
 					playerInjail.addCash(-50);
 					playerInjail.getOutOfJail();
+					model.setCurrentPlayerToNext();
 				}
 				
 				else {
@@ -121,6 +123,7 @@ public class Controller {
 			System.out.println("Player has chosen to use a get out of jail free card"); // debugging
 			playerInjail.removeJailCard();
 			playerInjail.getOutOfJail();
+			rollDice(playerInjail);
 		}
 
 		// Player pays $50, gets out of jail
@@ -128,6 +131,10 @@ public class Controller {
 			System.out.println("Player has chosen to pay $50");
 			playerInjail.addCash(-50);
 			playerInjail.getOutOfJail();
+			if (model.getRuleSet().getFreeParkingRule() == true) {
+				model.addToFreeParkingFunds(50);
+			}
+			rollDice(playerInjail);
 		}
 	}
 	

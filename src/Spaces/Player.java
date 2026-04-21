@@ -131,8 +131,8 @@ public class Player {
      * putInJail()
      */
     public void putInJail() {
-    	inJail = true;
-    	
+        setIsDoneRollingDice(true);
+    	inJail = true;	
     	model.putPlayerInJail(this);
     }
     
@@ -142,7 +142,7 @@ public class Player {
     public void getOutOfJail() {
     	inJail = false; 
     	model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
-        model.setCurrentPlayerToNext();
+        // FUTURE PROOF: Call a model.notifyViewthatPlayerisOutOfJail() message so it can do sounds
     }
     
     /**

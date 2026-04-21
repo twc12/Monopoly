@@ -1486,7 +1486,9 @@ public class View extends Application implements Observer {
 	    		colorRect.setFill(defaultSpaceColor);
 	    	}
 	    
-	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
+			// Changed from this to the new line, this was causing cards to expend horizontally to the window edges
+	    	// colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8));
+			colorRect.setWidth(cardWidth - innerWidthOffset * 0.8);
 
 	    	Text t1 = new Text("TITLE DEED\n");
 	    	t1.setStyle("-fx-font-size: " + titleDeedFont + "px;");

@@ -11,6 +11,7 @@ import Spaces.Player;
 import javafx.scene.image.Image;
 public class Card {
 	private String description;
+	private Image image;
 	private CardEffect effect;
 
 	/**
@@ -21,8 +22,12 @@ public class Card {
 	 */
 	public Card(String description, CardEffect effect) {
 		this.description = description;
-
+		
 		this.effect = effect;
+	}
+	
+	private void setImage(String imageFile) {
+		image = new Image(imageFile);
 	}
 	
 	/**
@@ -40,6 +45,10 @@ public class Card {
 	 */
 	public String getDescription() {
 		return description;
+	}
+	
+	public Image getImage() {
+		return image;
 	}
 	
 

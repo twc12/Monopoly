@@ -1,6 +1,6 @@
 package Monopoly;
 
-import java.awt.Image;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +36,12 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -50,6 +54,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -80,8 +85,16 @@ public class View extends Application implements Observer {
 	private int heightOfColorOnSpaceCard = 15;
 	private int playerCircleRadius = 10;
 	
+	// BOTTOM ROW CONSTANTS
+	/**
+	 * This is the height of the bottom controll bar section
+	 * Player info card - Dice ROll Section - Button Section - Other player section
+	 */
+	private int bottomHBoxHeight = 220;
+	private int diceRollAreaWidth = 300;
+	
 	// PLAYER INFO CARD CONSTANTS
-	private int widthOfPlayerCardProperties = 70;
+	private int widthOfPlayerCardProperties = 40;
 	private int widthOfPlayerCardPropertiesScrollPane = 300;
 	private int widthOfPlayerInfoCard = 320;
 	private int heighOfPlayerInfoCard = 210;
@@ -97,10 +110,21 @@ public class View extends Application implements Observer {
 	
 	private final Color defaultSpaceColor = Color.WHITE;
 	/**
-	 * This group will change from holding a grid pane for dice results,
-	 * and a stack pane to show a OTHER players card to do trading.
+	 * This stackPane will be holding a grid pane for dice results,
+	 * hopefully In the future I can make the dice roll around in this pane
 	 */
-	private Group bottomMiddleOfScreenGroup; 
+	private StackPane diceRollStackPane; 
+	
+	/**
+	 * This stackPane will be holding a optional additional 
+	 * player card info from another player in the bottom right 
+	 */
+	private StackPane otherPlayerInfoCardStackPane;
+	/**
+	 * This allows us to detect when the player selects another player again which 
+	 * should remove the other optional additional card 
+	 */
+	private Player previousSelectedOtherPlayer = null; 
 	
 	/**
 	 * This group will hold the player cards in the bottom left
@@ -204,7 +228,7 @@ public class View extends Application implements Observer {
 		StackPane visualGameBoard = buildMonopolyBoard();
 		
 		// __________Position board on screen________________________
-		BorderPane.setMargin(visualGameBoard, new Insets(100, 0, 0, 0));
+		BorderPane.setMargin(visualGameBoard, new Insets(0, 0, 0, -200)); // TOP, RIGHT, BOTTOM, LEFT
 		mainScreen.setCenter(visualGameBoard);
 		//____________________________________________________________
 		
@@ -214,7 +238,10 @@ public class View extends Application implements Observer {
 		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
 		for (Player currPlayer: allPlayers) {
 			// Create a new circle for each player 
-			playerObjToPlayerPiece.put(currPlayer, new Circle(0, 0, playerCircleRadius, currPlayer.getColor()));
+			Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
+			Image playersIconImage = currPlayer.getPlayerIconImage();
+			playersIconCircle.setFill(new ImagePattern(playersIconImage));
+			playerObjToPlayerPiece.put(currPlayer, playersIconCircle);
 			
 			// Move the circles into the GO SPACE
 			goSpacePane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
@@ -282,7 +309,7 @@ public class View extends Application implements Observer {
 		root.getChildren().add(detailedCardInfoOverlay);
 		
 		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 1280, 820);
+		Scene scene = new Scene(root, 1180, 820);
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
@@ -298,7 +325,7 @@ public class View extends Application implements Observer {
 	 */
 	private void buildRightPlayerPicker(Player currPlayer) {
 		
-		VBox playersRectangleStack = new VBox();
+		VBox playersRectangleStack = new VBox(10);
 		List<Player> allPlayers = controller.getAllPlayers();
 		
 		// loop over all the players, adding their rectangle to the right size with their color and Id 
@@ -306,25 +333,33 @@ public class View extends Application implements Observer {
 			Rectangle newRectangle;
 			Label currPlayerLabel; 
 			StackPane currPlayerStackPane;
+			Image playerIconImage = player.getPlayerIconImage();
+			Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
 			
 			// for the current player, create a empty white box for them
 			if (player.equals(currPlayer)) {
 				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, Color.GREY);
 				currPlayerLabel = new Label("Current Player");
 				currPlayerStackPane = new StackPane();
+				
+				
 			}
 			// if its not he current player then make the fully feature rich rectangle with color and rectangle
 			else {
-				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, 
-						player.getColor().interpolate(Color.WHITE,0.20));
-				currPlayerLabel = new Label("Player "+player.getId());
+				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, Color.DARKSLATEGRAY);
+				currPlayerLabel = new Label(player.getPlayerName());
 				
 				currPlayerStackPane = new StackPane();
+				
 				currPlayerStackPane.setUserData(player);
 				currPlayerStackPane.setOnMouseClicked((e) -> {
-					showOtherPlayersInfoInTheMiddle((Player)currPlayerStackPane.getUserData());
+					showOtherPlayersInfoInBottomRight((Player)currPlayerStackPane.getUserData());
 				});
 			}
+			
+			currPlayerLabel.setTextFill(Color.BISQUE);
+			playersIconCircle.setTranslateX(40);
+			playersIconCircle.setTranslateY(-20);
 			
 			// Making rects look pretty
 			newRectangle.setArcWidth(20);
@@ -335,7 +370,7 @@ public class View extends Application implements Observer {
 			
 			currPlayerLabel.setFont(Font.font("Futura", FontWeight.BOLD, 15));
 			
-			currPlayerStackPane.getChildren().addAll(newRectangle, currPlayerLabel);
+			currPlayerStackPane.getChildren().addAll(newRectangle, currPlayerLabel, playersIconCircle);
 			playersRectangleStack.getChildren().add(currPlayerStackPane);
 		}
 		
@@ -353,11 +388,16 @@ public class View extends Application implements Observer {
 	 * 
 	 * @param selectedOtherPlayer (Player): The object of the selected other player chosen to be shown
 	 */
-	private void showOtherPlayersInfoInTheMiddle(Player selectedOtherPlayer) {
-		String otherPlayersColor = colorObjectToString(selectedOtherPlayer.getColor());
-		Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer, otherPlayersColor);
-		bottomMiddleOfScreenGroup.getChildren().clear();
-		bottomMiddleOfScreenGroup.getChildren().add(othersInfoCard);
+	private void showOtherPlayersInfoInBottomRight(Player selectedOtherPlayer) {
+		if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
+			otherPlayerInfoCardStackPane.getChildren().clear();
+			previousSelectedOtherPlayer = null; // allow them to click it again
+			return;
+		}
+		previousSelectedOtherPlayer = selectedOtherPlayer;
+		Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer);
+		otherPlayerInfoCardStackPane.getChildren().clear();
+		otherPlayerInfoCardStackPane.getChildren().add(othersInfoCard);
 	}
 	
 	
@@ -374,16 +414,11 @@ public class View extends Application implements Observer {
 		//Move down slightly
 		topLabelSection.setPadding(new Insets(-105, 0, 0, 0));
 		
-		javafx.scene.image.Image titleImage =
-			    new javafx.scene.image.Image(getClass().getResource("/"+theme+"/gameTitle.png").toExternalForm());
-
-			ImageView titleImageView = new ImageView(titleImage);
-			titleImageView.setFitWidth(500);
-			titleImageView.setPreserveRatio(true);
+		
 		
 		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
 		
-		// I DONT WANT THE IMAGE RIGHT NOW UGH ITS DESTRACTINGtopLabelSection.getChildren().addAll(titleImageView);
+	
 		
 		return topLabelSection;
 	}
@@ -404,17 +439,14 @@ public class View extends Application implements Observer {
 		
 		
 		GridPane mainBoardGridPane = new GridPane();
+		mainBoardGridPane.setAlignment(Pos.CENTER);
+		mainBoardGridPane.setPadding(new Insets(40));
 
-		// TESTING --
-//		mainBoardGridPane.setGridLinesVisible(true);
-		// ^^^ TESTING
 
 		int boardWidth = controller.getBoardWidth();
 		int boardHeight = boardWidth;
 		List<Space> allSpaces = controller.getSpaces();
 
-		mainBoardGridPane.setAlignment(Pos.CENTER);
-// TESTING REMOVEING THE PADDING 		mainBoardGridPane.setPadding(new Insets(0, 8, 8, 8));
 
 		placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth, boardHeight);
 
@@ -422,23 +454,27 @@ public class View extends Application implements Observer {
 
 		StackPane wrapper = new StackPane();
 		
-		
-		
-			
-		// Images
-		javafx.scene.image.Image backgroundImage =
-				new javafx.scene.image.Image(getClass().getResource("/"+theme+"/background.png").toExternalForm());
-	
+		// BACKGROUND IMAGE 
+		Image backgroundImage = new Image("/"+theme+"/background.png");
 		ImageView backgroundImageView = new ImageView(backgroundImage);
 		backgroundImageView.setFitWidth(1000);
 		backgroundImageView.setPreserveRatio(true);
 		backgroundImageView.setManaged(false);
+		backgroundImageView.setTranslateY(120);
+		backgroundImageView.setTranslateX(-200);
 				
 		//place image at the bottom
 		StackPane.setAlignment(backgroundImageView, Pos.BOTTOM_CENTER);
-		backgroundImageView.setTranslateY(-20);
-		backgroundImageView.setTranslateX(-400);
 		
+		
+		// TITLE IMAGE added where the backgrounImage is added
+		Image titleImage = new Image("/"+theme+"/gameTitle.png");
+		ImageView titleImageView = new ImageView(titleImage);
+		titleImageView.setFitWidth(500);
+		titleImageView.setPreserveRatio(true); // don't distort the image 
+		titleImageView.setTranslateY(-110); // move the title image "inside" the board at the top inner part
+		
+
 		// For center content
 		VBox centerContent = new VBox(10);
 		centerContent.setAlignment(Pos.CENTER);
@@ -471,8 +507,8 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
 	    
-	    //wrapper.getChildren().addAll(backgroundImageView,mainBoardGridPane, centerOverlay);
-	    wrapper.getChildren().addAll(mainBoardGridPane, centerOverlay);
+	    wrapper.getChildren().addAll(backgroundImageView,titleImageView,mainBoardGridPane, centerOverlay);
+
 
 	    return wrapper;
 
@@ -686,30 +722,37 @@ public class View extends Application implements Observer {
 		
 		// Build player card to go in the bottom left
 		Player currPlayer = controller.getCurrentPlayer();
-		Node visualPlayerCard = createVisualPlayerInfoCard(currPlayer, playerCardBackgroundColor);
+		Node visualPlayerCard = createVisualPlayerInfoCard(currPlayer);
 		
 		bottomLeftPlayerCardGroup.getChildren().add(visualPlayerCard);
 		
 		
-		// Middle dice roll area
-		Group bottomMiddleOfScreenGroup = new Group();
-		this.bottomMiddleOfScreenGroup = bottomMiddleOfScreenGroup;
+		// --- Middle dice roll area ---
+		StackPane diceRollStackPane = new StackPane();
+		diceRollStackPane.setPrefWidth(diceRollAreaWidth);
+		diceRollStackPane.setPrefHeight(bottomHBoxHeight);
+		diceRollStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		diceRollStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		this.diceRollStackPane = diceRollStackPane;
 		
-		// This will put a gridpane object in the bottom center group, it will fill that group so when the dice get populated, its not a sudon jolt up 
-		GridPane sudoEmptyGridPane = new GridPane();
-		sudoEmptyGridPane.setPrefWidth(200);
-		bottomMiddleOfScreenGroup.getChildren().add(sudoEmptyGridPane);
-		
-		// Make the Roll Dice, Build, Trade, End Turn buttons
+		// --- Make the Roll Dice, Build, Trade, End Turn buttons ---
 		Group mainButtonsGroup = buildMainButtons();
+		
+		StackPane otherPlayerInfoCardStackPane = new StackPane();
+		otherPlayerInfoCardStackPane.setPrefWidth(diceRollAreaWidth);
+		otherPlayerInfoCardStackPane.setPrefHeight(bottomHBoxHeight);
+		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
 
-		// returning full bottom section
+		// !! NOW FILL THE BOTTOM ROW !!
 		HBox bottomHBox = new HBox(); // player info card left, buttons right
 		bottomHBox.getChildren().add(bottomLeftPlayerCardGroup);
-		bottomHBox.getChildren().add(bottomMiddleOfScreenGroup);
+		bottomHBox.getChildren().add(diceRollStackPane);
 		bottomHBox.getChildren().add(mainButtonsGroup);
+		bottomHBox.getChildren().add(otherPlayerInfoCardStackPane);
 		
-		bottomHBox.setPrefHeight(220);
+		bottomHBox.setPrefHeight(bottomHBoxHeight);
 
 	    // background image
 	    javafx.scene.image.Image bottomFrameImage =
@@ -720,8 +763,8 @@ public class View extends Application implements Observer {
 	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
 	    bottomFrameImageView.setPreserveRatio(false);
 	    bottomFrameImageView.setFitHeight(500);
-	    bottomFrameImageView.setTranslateY(-110);
-	    bottomFrameImageView.setTranslateX(-30);
+	    bottomFrameImageView.setTranslateY(-130);
+	    bottomFrameImageView.setTranslateX(-50);
 	    bottomFrameImageView.setMouseTransparent(true);
 	    bottomFrameImageView.setManaged(false);
 
@@ -745,11 +788,11 @@ public class View extends Application implements Observer {
 	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)a
 	 */
 	private Group buildMainButtons() {
-		int coreButtonWidth  = 50;
-		int coreButtonHeight = 50;
+		int coreButtonWidth  = 150;
+		int coreButtonHeight = 45;
 		// Buttons
 		// FUTURE NOTE - The get out of jail options will replace the children of this group with its own buttons
-		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsFlowPane` attribute 
+		// 			   - Then after its done it will replace it back with the object that is stored in the `coreButtonsVBox` attribute 
 		Group mainButtonsGroup = new Group();
 		this.mainButtonsGroup = mainButtonsGroup; // This will be used to change the buttons to present the jail options
 		
@@ -801,6 +844,9 @@ public class View extends Application implements Observer {
 
 		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
 		VBox coreButtonsVBox = new VBox(5);
+		coreButtonsVBox.setPadding(new Insets(8));
+		coreButtonsVBox.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		coreButtonsVBox.setPrefHeight(bottomHBoxHeight);
 		
 		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
 		coreButtonsVBox.getChildren().addAll(rollDiceButton, tradeButtonStackPane, buildButtonStackPane, endTurnButton);
@@ -819,37 +865,43 @@ public class View extends Application implements Observer {
 	 * 
 	 * @return Node: The Java fx pane that will be a visual representation of a player card
 	 */
-	private Node createVisualPlayerInfoCard(Player currPlayer, String colorOfBackground) {
-		GridPane visualPlayerCardGridPane = new GridPane(10, 10);
+	private Node createVisualPlayerInfoCard(Player currPlayer) {
+		GridPane visualPlayerCardGridPane = new GridPane(10, 5);
 		visualPlayerCardGridPane.setPrefWidth(widthOfPlayerInfoCard);
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
-		String currPlayersColor = colorObjectToString(currPlayer.getColor());
 		
 		
-		visualPlayerCardGridPane.setStyle("-fx-border-color: "+"black"+"; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+colorOfBackground+";");
+		visualPlayerCardGridPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: darkslategrey;");
 		
-		
-		Label playerName = new Label("Player Id: "+currPlayer.getId());
+		Label playerName = new Label(currPlayer.getPlayerName());
 		playerName.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 25));
+		playerName.setTextFill(Color.BISQUE);
+		playerName.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
+		
+		Image playerIconImage = currPlayer.getPlayerIconImage();
+		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 		
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
 		playerCash.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 20));
-		playerCash.setTextFill(Color.DARKGREEN);
+		playerCash.setTextFill(Color.LIMEGREEN);
+		playerCash.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 		
-		int seperationBetweenNameAndCash = 90;
+		int seperationBetweenNameAndCash = 40;
 		HBox playerNameAndCashHBox = new HBox(seperationBetweenNameAndCash);
-		playerNameAndCashHBox.getChildren().addAll(playerName, playerCash);
+		playerNameAndCashHBox.getChildren().addAll(playerName, playersCircleIcon, playerCash);
 		
 		
-		Label playerGetOutOfJailCardsAmmtLabel = new Label("Ammount of Get out of jail cards: "+currPlayer.getAmmtOfGOOJCards());
+		Label playerGetOutOfJailCardsAmtLabel = new Label("Ammount of Get out of jail cards: "+currPlayer.getAmmtOfGOOJCards());
+		playerGetOutOfJailCardsAmtLabel.setTextFill(Color.BISQUE);
 		
 		Label playerPropsLabel = new Label("Properties Owned List");
 		playerPropsLabel.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 20));
+		playerPropsLabel.setTextFill(Color.BISQUE);
 		
 		ScrollPane playersVisualProperties = createScrollPaneOfPlayersProperties(currPlayer);
 		
 		visualPlayerCardGridPane.add(playerNameAndCashHBox, 0, 0);
-		visualPlayerCardGridPane.add(playerGetOutOfJailCardsAmmtLabel, 0, 1);
+		visualPlayerCardGridPane.add(playerGetOutOfJailCardsAmtLabel, 0, 1);
 		visualPlayerCardGridPane.add(playerPropsLabel, 0, 2);
 		visualPlayerCardGridPane.add(playersVisualProperties, 0, 3);
 		
@@ -913,7 +965,7 @@ public class View extends Application implements Observer {
 		ScrollPane scrollablePropertiesPane = new ScrollPane(propertiesGridPane);
 		// Set the default size of the scroll pane
 		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
-		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+20); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
+		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+25); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
 		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // dont show the scroll bars
 		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		return scrollablePropertiesPane;
@@ -993,7 +1045,7 @@ public class View extends Application implements Observer {
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
 		// override the group in the bottom center of the screen to be available to show dice
-		bottomMiddleOfScreenGroup.getChildren().clear();
+		diceRollStackPane.getChildren().clear();
 		
 		GridPane diceResultGridPane = new GridPane(20, 0);
 		diceResultGridPane.setPadding(new Insets(20));
@@ -1005,7 +1057,7 @@ public class View extends Application implements Observer {
 			);
 		diceResultGridPane.setBorder(new Border(borderStroke));
 		
-		bottomMiddleOfScreenGroup.getChildren().add(diceResultGridPane);
+		diceRollStackPane.getChildren().add(diceResultGridPane);
 		
 		diceResultGridPane.add(createADice(dice1Result), 0, 0);
 		diceResultGridPane.add(createADice(dice2Result), 1, 0);
@@ -1032,6 +1084,7 @@ public class View extends Application implements Observer {
 			);
 		
 		GridPane newDice = new GridPane(horiontalAmmtBetweenDots, verticalAmmtBetweenDots);
+		newDice.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		newDice.setPadding(new Insets(paddingAroundAllDots));
 		newDice.setBorder(new Border(borderStroke));
 		
@@ -1186,7 +1239,7 @@ public class View extends Application implements Observer {
 	 * @param theNextPlayer (Player): The player object of the next player 
 	 */
 	private void populatePlayerCardWithNewInfo(Player theNextPlayer) {
-		Node playerCard = createVisualPlayerInfoCard(theNextPlayer, playerCardBackgroundColor);
+		Node playerCard = createVisualPlayerInfoCard(theNextPlayer);
 		// REMEMBER TO CLEAN THE OLD PLAYING CARD
 		bottomLeftPlayerCardGroup.getChildren().clear();
 		bottomLeftPlayerCardGroup.getChildren().add(playerCard);
@@ -1213,7 +1266,7 @@ public class View extends Application implements Observer {
 			rollDoublesButton.setOnMouseClicked((e) -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.ROLL_DUBLES);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
-				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
 			getOutOfJailButtonChoices.getChildren().add(rollDoublesButton);
 		}
@@ -1224,7 +1277,7 @@ public class View extends Application implements Observer {
 			payCashButton.setOnMouseClicked((e) -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.PAY_FIFTY);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
-				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
 			getOutOfJailButtonChoices.getChildren().add(payCashButton);
 		}
@@ -1235,7 +1288,7 @@ public class View extends Application implements Observer {
 			useGOOJCard.setOnMouseClicked((e) -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.OUT_OF_JAIL_CARD);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
-				mainButtonsGroup.getChildren().add(coreButtonsFlowPane); // add the core buttons back 
+				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 			});
 			getOutOfJailButtonChoices.getChildren().add(useGOOJCard);
 		}
@@ -1564,15 +1617,15 @@ public class View extends Application implements Observer {
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
 	    	int buildPrice = ((RealEstate) testSpace).getBuildPrice();
 	    	
-	    	lines.add("Purchase Price         $" + purchasePrice +"\n");
-	    	lines.add("Rent                         $" + prices.get(0)+"\n");
-	    	lines.add("Rent w/ color set     $" + prices.get(1)+"\n");
-	    	lines.add("Rent w/ 1 house      $" + prices.get(2)+"\n");
-	    	lines.add("Rent w/ 2 houses    $" + prices.get(3)+"\n"); 
-	    	lines.add("Rent w/ 3 houses    $" + prices.get(4)+"\n");
-	    	lines.add("Rent w/ 4 houses    $" + prices.get(5)+"\n");
-	    	lines.add("Rent w/ hotel          $" + prices.get(6)+"\n\n");
-	    	lines.add("Houses cost             $" + buildPrice +"\n");
+	    	lines.add("Purchase Price          $" + purchasePrice +"\n");
+	    	lines.add("Rent                               $" + prices.get(0)+"\n");
+	    	lines.add("Rent w/ color set      $" + prices.get(1)+"\n");
+	    	lines.add("Rent w/ 1 house        $" + prices.get(2)+"\n");
+	    	lines.add("Rent w/ 2 houses     $" + prices.get(3)+"\n"); 
+	    	lines.add("Rent w/ 3 houses     $" + prices.get(4)+"\n");
+	    	lines.add("Rent w/ 4 houses     $" + prices.get(5)+"\n");
+	    	lines.add("Rent w/ hotel              $" + prices.get(6)+"\n\n");
+	    	lines.add("Houses cost              $" + buildPrice +"\n");
 
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);
@@ -1600,7 +1653,7 @@ public class View extends Application implements Observer {
 
 	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5, line6, line7, line8, line9);
 //	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
-	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
+	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 5); // CHANGED TO -5 so text wouldnt wrap in properties owned lists in player info card
 	        bodyFlow.setLineSpacing(cardHeight * 0.0050);
 	        
 	        bodyBox.getChildren().add(bodyFlow);
@@ -1665,7 +1718,7 @@ public class View extends Application implements Observer {
 
 	        TextFlow bodyFlow = new TextFlow(line1, line2, line3, line4,line5);
 	        bodyFlow.setTextAlignment(TextAlignment.CENTER);
-	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20);
+	        bodyFlow.setMaxWidth(cardWidth - innerWidthOffset - 20); 
 	        bodyFlow.setLineSpacing(cardHeight * 0.0033);
 	        
 	        bodyBox.getChildren().add(bodyFlow);

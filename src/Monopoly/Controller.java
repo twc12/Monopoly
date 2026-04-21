@@ -101,7 +101,7 @@ public class Controller {
 	}
 
 	/**
-	 * What does this function do high level tyler?
+	 * This function applies the card affect to the player from the `cardBuilder` class
 	 * @param card
 	 * @param player
 	 */

@@ -22,6 +22,8 @@ public class Player {
     private Model model;
     private boolean isDoneRollingDice;
     private Color playersColor; 
+    private int houseCount;
+    private int hotelCount;
     
     /**
      * Constructor for the Player Class
@@ -41,6 +43,8 @@ public class Player {
         listOfProperties = new ArrayList<Property>();
         ammtOfGetOutOfJailCards = 0;
         isDoneRollingDice = false;
+        houseCount = 0;
+        hotelCount = 0;
     }
     
     public String toString() {return "Player " + this.getId();}
@@ -76,13 +80,21 @@ public class Player {
     public List<Property> getListOfProperties(){return listOfProperties;}
     
     /**
+     * @return The count of houses
+     */
+    public int getHouseCount() {return houseCount;}
+    
+    /**
+     * @return The count of hotels
+     */
+    public int getHotelCount() {return hotelCount;}
+    
+    /**
      * moves the player ammt of spaces forward. and processes space
      * 
      * @param ammt: The integer amount of spaces to move forward
      */
     public void move(int ammt) {
-    	
-    	
     	currentSpace.getPlayersOnSpace().remove(this);
     	for (int i = 0; i < ammt; i++) {
     		if(currentSpace instanceof GoSpace)
@@ -93,10 +105,10 @@ public class Player {
     	
     	model.notifyViewOfPlayerMoved(this, ammt);
     	System.out.println("Processing Space: " + currentSpace.getName());
-    	currentSpace.processSpace(this, model);
-    	
+    	currentSpace.processSpace(this, model);	
     }
     
+
     /**
      * adds ammt of cash to player
      * 
@@ -207,7 +219,7 @@ public class Player {
     public void advanceToProperty(String name) {
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (currentSpace.getName() != name) {
-    		if(currentSpace instanceof GoSpace)
+    		if(currentSpace.getName().equals(name))
     			currentSpace.processSpace(this, model);
     		currentSpace = currentSpace.getNextSpace();
     	}

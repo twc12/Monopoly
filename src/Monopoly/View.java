@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apiguardian.api.API;
-
 import Cards.Card;
 import Messages.AiActionMessage;
 import Messages.CardDrawnMessage;

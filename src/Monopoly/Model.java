@@ -33,7 +33,8 @@ public class Model extends Observable {
 	 * the playerIconsToPickFrom variable with "PlayerIcon.png" added to the end 
 	 */
 	private String theme;// = "standardTheme";
-	private int totalPlayers;
+	private int totalHumanPlayers;
+	private int totalAiPlayers;
 	/**
 	 * This holds the spaces of the monopoly board
 	 */
@@ -59,8 +60,35 @@ public class Model extends Observable {
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
 
-		gameSettings = new GameSettings();
-		totalPlayers = gameSettings.getAmountOfPlayers();
+		gameSettings = null; // we havent gotten it yet from the view 
+		//	required for JUNIT not having view
+		if (viewClassObj != null) {
+			this.addObserver(viewClassObj);
+		}
+		
+		// THE POST INIT WILL BE CALLED ONCE GAME SETTINGS ARE RECIVED
+	}
+	
+	/**
+	 * This function accepts the game settings after the user presses
+	 * "Start Game" in the start menu
+	 * @param initGameSettingsObj (GameSettings): the game settings the user potentially 
+	 * 												changed in the start menu
+	 */
+	public void setGameSettingsObj(GameSettings initGameSettingsObj) {
+		gameSettings = initGameSettingsObj;
+		post_init(); // LOOK A FEW LINES DOWN
+	}
+	
+	/**
+	 * post_init(): After the (potentially custom) game settings are 
+	 * received from the view when the user presses "Start game"
+	 * in the start menu then this function will run which will initialize
+	 * the game creating the correct number of players
+	 */
+	private void post_init() {
+		totalHumanPlayers = gameSettings.getAmountOfPlayers();
+		totalAiPlayers = gameSettings.getAmountOfAIPlayers();
 		theme = gameSettings.getActiveThemeString();
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
@@ -72,26 +100,24 @@ public class Model extends Observable {
 		List<String> playerIconsToPickFrom = new ArrayList<>();
 		playerIconsToPickFrom.add("boat"); playerIconsToPickFrom.add("car"); playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
 		
-		//required for JUNIT not having view
-		if (viewClassObj != null) {
-			this.addObserver(viewClassObj);
-		}
-		
 		board = new Board();
-		
 		
 		Deck deck = new Deck();
 		chanceCards = deck.getChanceCards();
 		communityChestCards = deck.getCommunityChestCards();
 
-		// Create all the players 
+		// Create all the HUMAN players 
 		players = new ArrayList<>();
-		for (int i=0; i<totalPlayers; i++) {
+		for (int i=0; i<totalHumanPlayers; i++) {
+			players.add(new Player(i+1,playerIconsToPickFrom.get(i), theme, this));
+		}
+		// Adding AI PLAYERS  
+		// FUTURE NOTE: you gotta add the player.isAi = True to all players
+		for (int i=0; i<totalAiPlayers; i++) {
 			players.add(new Player(i+1,playerIconsToPickFrom.get(i), theme, this));
 		}
 		
 		currentPlayer = players.get(0);
-
 	}
 	
 	/**
@@ -322,5 +348,7 @@ public class Model extends Observable {
     	notifyViewOfPlayerGoingToJail(player);
 		
 	}
+
+	
 	
 }

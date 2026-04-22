@@ -234,36 +234,16 @@ public class Controller {
 		return model.getGameSettings().getActiveThemeString();
 	}
 	
-	public void setTheme(GameSettings.Theme theme) {
-		model.getGameSettings().setTheme(theme);
-	}
-	
-	public void setFreeParkingRule(boolean val) {
-		model.getGameSettings().setFreeParkingRule(val);
-	}
-	
-	public void setCustomGoValue(int val) {
-		model.getGameSettings().setCustomGoValue(val);
-	}
-	
-	public void setOptionalBuying(boolean optionalBuying) {
-		model.getGameSettings().setOptionalBuying(optionalBuying);
-	}
-	
-	public void setPropertyPriceAdjust(int propertyPriceAdjust) {
-		model.getGameSettings().setPropertyPriceAdjust(propertyPriceAdjust);
-	}
-	
-	public void setStartingMoney(int setStartingMoney) {
-		model.getGameSettings().setStartingMoney(setStartingMoney);
-	}
-	
-	public void setAmountOfAIPlayers(int amountOfAIPlayers) {
-		model.getGameSettings().setAmountOfAIPlayers(amountOfAIPlayers);
-	}
-	
-	public void setAmountOfPlayers(int amountOfPlayers) {
-		model.getGameSettings().setAmountOfPlayers(amountOfPlayers);
+	/**
+	 * This function is called by the view after the user presses 
+	 * "Start Game". This function accepts all the settings the user entered
+	 * at the start menu. This function just passes it down to the model
+	 * to hold it  
+	 * @param initGameSettingsObj (Game Settings): all the game settings that the user set in the 
+	 * 												start menu
+	 */
+	public void initializeGameSettings(GameSettings initGameSettingsObj) {
+		model.setGameSettingsObj(initGameSettingsObj);
 	}
 
 

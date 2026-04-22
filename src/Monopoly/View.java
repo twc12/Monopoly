@@ -35,9 +35,12 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -98,7 +101,6 @@ public class View extends Application implements Observer {
 	private int widthOfPlayerCardPropertiesScrollPane = 300;
 	private int widthOfPlayerInfoCard = 320;
 	private int heighOfPlayerInfoCard = 210;
-	private String playerCardBackgroundColor = "lightblue";
 	
 	// Large detailed property info cards constants
 	private int widthOfLargeDetailedPropertyCards = 200;
@@ -227,10 +229,287 @@ public class View extends Application implements Observer {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		// theme placeholder
+		
+		
+		
+		// --------------- START SCREEEN --------------- 
+		GameSettings gameSettings = new GameSettings();
+		BorderPane startScreenBorderPane = new BorderPane();
+		
+		
+		// ---- SHOW THE RESULTS OF THE USER CLICKS ---- 
+		VBox resultsOfInputVBox = new VBox(20);
+		resultsOfInputVBox.setMinWidth(280);
+		startScreenBorderPane.setRight(resultsOfInputVBox);
+		Label allowSkipPropPurchLabel = new Label("Allow skipping property purcahses: ✅");
+		Label passingGoAmountLabel = new Label("Amount for passing go: $200 (default)");
+		Label propPricesMultiLabel = new Label("Property Prices Multiplier: 1x (default)");
+		Label freeParkCollectsFundsLabel = new Label("Free Parking Collects Funds: ❌");
+		Label amtOfStartingMoneyLabel = new Label("Amt of money you start with: $1500 (default)");
+		Label tradingWithOthersLabel = new Label("Trading with other players is enabled: ✅");
+		Label numOfHumanPlayersLabel = new Label("Amt of Human Players: 4 (Default)");
+		Label numOfAiPlayersLabel = new Label("Amt of Ai Players: 1 (Default)");
+		resultsOfInputVBox.getChildren().addAll(allowSkipPropPurchLabel, passingGoAmountLabel, propPricesMultiLabel, freeParkCollectsFundsLabel, amtOfStartingMoneyLabel, tradingWithOthersLabel, numOfHumanPlayersLabel, numOfAiPlayersLabel);
+		
+		
+		// ------ BUTTONS ----- 
+		Label topStartScreenLabel = new Label("Start Screen");
+		topStartScreenLabel.setFont(new Font(20));
+		startScreenBorderPane.setTop(topStartScreenLabel);
+		
+		// SKIPING PURCHASE PROPERTIES 
+		ToggleButton allowSkippingPropertyPurchaseButton = new ToggleButton("Allow Skipping Property Purchases");
+		allowSkippingPropertyPurchaseButton.setOnAction(event -> {
+			if (gameSettings.getOptionalBuying() == true) {
+				allowSkipPropPurchLabel.setText("Allow skipping property purcahses: ❌");
+				gameSettings.setOptionalBuying(false);
+			}
+			else {
+				allowSkipPropPurchLabel.setText("Allow skipping property purcahses: ✅");
+				gameSettings.setOptionalBuying(true);
+			}
+		});
+		// PASSING GO MONEY 
+		TextField moneyPassingGoInput = new TextField();
+		moneyPassingGoInput.setPromptText("Amt of money for passing go");
+		moneyPassingGoInput.setMaxWidth(250);
+		moneyPassingGoInput.setOnAction(event -> {
+			String playersInput = moneyPassingGoInput.getText();
+			if (playersInput.length() == 0 || playersInput.equals("200")) {
+				gameSettings.setCustomGoValue(200);
+				passingGoAmountLabel.setText("Amount for passing go: $200 (default)");
+			}
+			else {
+				try {
+					Integer customAmt = Integer.valueOf(playersInput);
+					gameSettings.setCustomGoValue(customAmt);
+					passingGoAmountLabel.setText("Amount for passing go: $"+customAmt);
+					
+				} catch (NumberFormatException e) {
+					gameSettings.setCustomGoValue(200);
+					passingGoAmountLabel.setText("Invalid Input, defaulting to $200");
+				}
+				
+			}
+		});
+		
+		// PRICE PER SPACE 
+		ChoiceBox<String> pricePerSpaceMultiplyerInput = new ChoiceBox<>();
+		pricePerSpaceMultiplyerInput.getItems().addAll("1 (default)", "2x (Meh)", "3x (Woozers)", "5x (Good luck)", "10 (Ultra Mega Extreme)");
+		pricePerSpaceMultiplyerInput.setOnAction(event -> {
+			String userSelction = pricePerSpaceMultiplyerInput.getValue();
+			propPricesMultiLabel.setText("Property Prices Multiplier: "+userSelction);
+			switch (userSelction) {
+				case "1 (default)":
+					gameSettings.setPropertyPriceAdjust(1);
+				case "2x (Meh)":
+					gameSettings.setPropertyPriceAdjust(2);
+				case "3x (Woozers)":
+					gameSettings.setPropertyPriceAdjust(3);
+				case "5x (Good luck)":
+					gameSettings.setPropertyPriceAdjust(5);
+				case "10 (Ultra Mega Extreme)":
+					gameSettings.setPropertyPriceAdjust(10);
+			}
+		});
+		
+		// ENABLE/DISABLE FREE PARKING REWARDS
+		ToggleButton freeParkingRewardsButton = new ToggleButton("Free Parking Collects Funds");
+		freeParkingRewardsButton.setOnAction(event -> {
+			if (gameSettings.getFreeParkingRule() == true) {
+				freeParkCollectsFundsLabel.setText("Free Parking Collects Funds: ❌");
+				gameSettings.setFreeParkingRule(false);
+			}
+			else {
+				freeParkCollectsFundsLabel.setText("Free Parking Collects Funds: ✅");
+				gameSettings.setFreeParkingRule(true);
+			}
+		});
+		
+		// AMOUNT OF STARTING MONEY
+		TextField startingMoneyInput = new TextField();
+		startingMoneyInput.setPromptText("Amt of money you start with");
+		startingMoneyInput.setMaxWidth(250);
+		startingMoneyInput.setOnAction(event -> {
+			String playersInput = startingMoneyInput.getText();
+			if (playersInput.length() == 0 || playersInput.equals("1500")) {
+				gameSettings.setStartingMoney(1500);
+				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
+			}
+			else {
+				try {
+					Integer customAmt = Integer.valueOf(playersInput);
+					gameSettings.setStartingMoney(customAmt);
+					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
+					
+				} catch (NumberFormatException e) {
+					gameSettings.setStartingMoney(1500);
+					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
+				}
+				
+			}
+		});
+		
+		// ENABLE/DISABLE TRADING
+		ToggleButton tradingButton = new ToggleButton("Trading with players");
+		tradingButton.setOnAction(event -> {
+			if (gameSettings.getTradingEnabled() == true) {
+				tradingWithOthersLabel.setText("Trading with other players is enabled: ❌");
+				gameSettings.setTradingEnabled(false);
+			}
+			else {
+				tradingWithOthersLabel.setText("Trading with other players is enabled: ✅");
+				gameSettings.setTradingEnabled(true);
+			}
+		});
+		
+		// NUMBER OF PLAYERS
+		ChoiceBox<Integer> numberOfAiPlayersChoiceBox = new ChoiceBox<>();; // Message to choice box below "IT WILL BE DEFINED LATER TRUST"
+		
+		ChoiceBox<Integer> numberOfHumanPlayersChoiceBox = new ChoiceBox<>(); 
+		numberOfHumanPlayersChoiceBox.getItems().addAll(0,1,2,3,4,5,6,7,8);
+		numberOfHumanPlayersChoiceBox.setValue(4);
+		numberOfHumanPlayersChoiceBox.setOnAction(event -> {
+			Integer numOfHumans = numberOfHumanPlayersChoiceBox.getValue();
+			if (numOfHumans == null) // this is a fix to when I would change a value in the ai box it would activate this box when i didnt want to 
+				return;
+			if (numOfHumans == 0) {
+				boolean numOfAisIsNullOrLessThan2 = numberOfAiPlayersChoiceBox.getValue() == null || numberOfAiPlayersChoiceBox.getValue() < 2;
+				if (numOfAisIsNullOrLessThan2) {
+					gameSettings.setAmountOfAIPlayers(2);
+					numberOfAiPlayersChoiceBox.setValue(2);
+					numOfAiPlayersLabel.setText("Amt of Ai Players: 2 (Automatic)");
+					return;
+				}
+			}
+			// if the user selected one then by default the atleast 1 ai is selected
+			boolean numOfAisIsNullOrZero = numberOfAiPlayersChoiceBox.getValue() == null || numberOfAiPlayersChoiceBox.getValue() == 0;
+			if (numOfHumans == 1 && numOfAisIsNullOrZero) { // only forcefully update the other box if it hasnt been picked or is set to zero
+				gameSettings.setAmountOfAIPlayers(1);
+				numberOfAiPlayersChoiceBox.setValue(1);
+				numOfAiPlayersLabel.setText("Amt of Ai Players: 1 (Automatic)");
+				return;
+			}
+			else if (numOfHumans == 4){
+				numOfHumanPlayersLabel.setText("Amt of Human Players: 4 (default)");
+			}
+			else {				
+				numOfHumanPlayersLabel.setText("Amt of Human Players: "+numOfHumans);
+			}
+			gameSettings.setAmountOfPlayers(numOfHumans);
+			
+			// Change the options for the number of Ai to max the max of 8
+			Integer previousSelection = numberOfAiPlayersChoiceBox.getValue();
+			numberOfAiPlayersChoiceBox.getItems().clear();
+			// Allow the user to select the number of ai players that would fill at most the 8 total allowed, only show options for that
+			for (int i=0; i<=(8-numOfHumans); i++) {
+				numberOfAiPlayersChoiceBox.getItems().add(i);
+			}
+			// if the preivous selection was to large, set it to the most 
+			if (previousSelection != null && previousSelection > (8-numOfHumans)) {
+				numberOfAiPlayersChoiceBox.setValue(8-numOfHumans);
+			}
+			// otherwise the previous selection was fine and we keep that 
+			else {
+				numberOfAiPlayersChoiceBox.setValue(previousSelection);
+			}
+		}); // ---- END OF MASSIVE HUMAN CHOICE BOX LAMBADA -----
+		
+		// AI PLAYERS
+		numberOfAiPlayersChoiceBox.getItems().addAll(0,1,2,3,4,5,6,7,8);
+		numberOfAiPlayersChoiceBox.setValue(1);
+		numberOfAiPlayersChoiceBox.setOnAction(event -> {
+			Integer numOfAis = numberOfAiPlayersChoiceBox.getValue();
+			if (numOfAis == null) // this is a fix to when I would change a value in the human box it would activate this box when i didnt want to 
+				return;
+			// if the user selects zero ais, then the other box must be 2 or more 
+			if (numOfAis == 0) {
+				boolean numOfHumansIsNullOrLessThan2 = numberOfHumanPlayersChoiceBox.getValue() == null || numberOfHumanPlayersChoiceBox.getValue() < 2;
+				if (numOfHumansIsNullOrLessThan2) {
+					gameSettings.setAmountOfPlayers(2);
+					numberOfHumanPlayersChoiceBox.setValue(2);
+					numOfHumanPlayersLabel.setText("Amt of Human Players: 2 (Automatic)");
+					return;
+				}
+			}
+			// if the user selected one ai then by default at least 1 human is selected
+			boolean numOfHumansIsNullOrZero = numberOfHumanPlayersChoiceBox.getValue() == null || numberOfHumanPlayersChoiceBox.getValue() == 0;
+			if (numOfAis == 1 && numOfHumansIsNullOrZero) { // only forcefully update the other box if its unchosesn or is zero
+				gameSettings.setAmountOfPlayers(1);
+				numberOfHumanPlayersChoiceBox.setValue(1);
+				numOfHumanPlayersLabel.setText("Amt of Human Players: 1 (Automatic)");
+				numOfAiPlayersLabel.setText("Amt of Ai Players: 1 (default)");
+				return;
+			}
+			else if (numOfAis == 1) {
+				numOfAiPlayersLabel.setText("Amt of Ai Players: 1 (Default)");
+				gameSettings.setAmountOfAIPlayers(numOfAis);
+			}
+			else {
+				gameSettings.setAmountOfAIPlayers(numOfAis);
+				numOfAiPlayersLabel.setText("Amt of Ai Players: "+numOfAis);
+			}
+			// Now update the human player options to only have the rest over amount to hold the max of 8 total true
+			Integer previousSelection = numberOfHumanPlayersChoiceBox.getValue();
+			numberOfHumanPlayersChoiceBox.getItems().clear();
+			for (int i=0; i<=(8-numOfAis); i++) {
+				numberOfHumanPlayersChoiceBox.getItems().add(i);
+			}
+			// if the preivous selection was to large, set it to the most 
+			if (previousSelection != null && previousSelection > (8-numOfAis)) {
+				numberOfHumanPlayersChoiceBox.setValue(8-numOfAis);
+				gameSettings.setAmountOfPlayers(8-numOfAis);
+			}
+			// otherwise the previous selection was fine and we keep that 
+			else {
+				numberOfHumanPlayersChoiceBox.setValue(previousSelection);
+				gameSettings.setAmountOfPlayers(previousSelection);
+			}
+		}); // ---- END OF MASSIVE AI CHOICE BOX LAMBADA -----
+		
+		// PLAYERS, PUT A LABEL NEXT TO THE CHOICE BOX 
+		HBox humanPlayersChoicesHBox = new HBox(10);
+		humanPlayersChoicesHBox.getChildren().addAll(new Label("Num of Human Players"), numberOfHumanPlayersChoiceBox);
+		
+		HBox aiPlayersChoicesHBox = new HBox(10);
+		aiPlayersChoicesHBox.getChildren().addAll(new Label("Num of Ai Players"), numberOfAiPlayersChoiceBox);
+		
+		
+		
+		
+		// NUMBER OF AI PLAYERS
+		
+		Button startGameButton = new Button("Start Game");
+		startGameButton.setOnAction(event -> {
+			controller = new Controller(this);
+			controller.initializeGameSettings(gameSettings);
+			Scene gameScene = createMainGame();
+			stage.setScene(gameScene);
+		});
+		
+		
+		VBox inputsVBox = new VBox(10);
+		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startGameButton);
+		startScreenBorderPane.setCenter(inputsVBox);
 
-
-		controller = new Controller(this);
+		Scene startGameScene = new Scene(startScreenBorderPane, 600,500);
+		stage.setScene(startGameScene);
+		stage.setTitle("MONOPOLY");
+		stage.show();
+	}
+	
+	/**
+	 * createMainGame(): This function is called after the "Start game" button is 
+	 * pressed from the start menu. The reason for this separation is because 
+	 * the code in here relies on knowing how many players, and that information 
+	 * isnt known until the player inputs that data. So only once the player 
+	 * presses "Start game" does the controller->model get those new game settings
+	 * and that information is available for the code in this function to use.
+	 * This should make sense, we only create the main game once its ready to be made.
+	 * @return
+	 */
+	private Scene createMainGame() {
+		
 		theme = controller.getThemeString();
 		
 //		//TEMP TEST CODE FOR TESTING BUILDING ON TURN 1
@@ -338,11 +617,8 @@ public class View extends Application implements Observer {
 
 		root.getChildren().add(detailedCardInfoOverlay);
 		
-		// CHANGED TARGET ONLY: scene now uses root instead of mainScreen
-		Scene scene = new Scene(root, 1180, 820);
-		stage.setScene(scene);
-		stage.setTitle("MONOPOLY");
-		stage.show();
+		Scene gameScene = new Scene(root, 1180, 820);
+		return gameScene; // THIS RETURNS TO `def start() -> StartGameBtn.onAction()` code look up ^^ a function
 	}
 	
 	/**
@@ -1037,7 +1313,7 @@ public class View extends Application implements Observer {
 		// Set the default size of the scroll pane
 		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
 		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+25); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
-		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // dont show the scroll bars
+		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // dont show the scroll bars
 		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		return scrollablePropertiesPane;
 	}

@@ -3,19 +3,35 @@ package Monopoly;
 
 public class GameSettings  {
 	
-	private int amountOfPlayers = 4;
-	private int amountOfAIPlayers = 1;
-	private int startingMoney = 1500;
-	private int passGoValue = 200;
-	private int propertyPriceAdjust = 0;   //not multiplying, this is just an int
-	private boolean optionalBuying = true;
-    private boolean freeParkingEnabled = false;    
+	private int amountOfPlayers;
+	private int amountOfAIPlayers;
+	private int startingMoney;
+	private int passGoValue;
+	private int propertyPriceAdjust;   //not multiplying, this is just an int
+	private boolean optionalBuying;
+    private boolean freeParkingEnabled;
+    private boolean tradingEnabled;
+    
     public enum Theme {
         STANDARD,
         PIRATE,
         TUCSON
     }
     private Theme activeTheme = Theme.STANDARD;
+    
+    /**
+     * Constructor: Sets default fields
+     */
+    public GameSettings() {
+		amountOfPlayers = 4;
+		amountOfAIPlayers = 1;
+		startingMoney = 1500;
+		passGoValue = 200;
+		propertyPriceAdjust = 0;   //not multiplying, this is just an int
+		optionalBuying = true;
+		freeParkingEnabled = false;
+		tradingEnabled = true;
+    }
     
     /**
      * 
@@ -91,11 +107,13 @@ public class GameSettings  {
 	}
 	
 	public void setAmountOfAIPlayers(int amountOfAIPlayers) {
-		if (amountOfAIPlayers > 7) {
-			this.amountOfAIPlayers = 7;
-		} else {
-			this.amountOfAIPlayers = amountOfAIPlayers;
+		// If its not a new value, ignore it 
+		if (amountOfAIPlayers == this.amountOfAIPlayers) {
+			return;
 		}
+		System.out.println("GameSettings: AI Players = "+amountOfAIPlayers);
+		this.amountOfAIPlayers = amountOfAIPlayers;
+		
 	}
 	
 	public int getAmountOfPlayers() {
@@ -103,13 +121,29 @@ public class GameSettings  {
 	}
 	
 	public void setAmountOfPlayers(int amountOfPlayers) {
-		if (amountOfPlayers > 8) {
-			this.amountOfPlayers = 8;
-		} else if (amountOfPlayers < 2) {
-			this.amountOfPlayers = 2;
-		} else {
-			this.amountOfPlayers = amountOfPlayers;
+		// If its not a new value, ignore it 
+		if (amountOfPlayers == this.amountOfPlayers) {
+			return;
 		}
+		System.out.println("GameSettings: HUMAN Players = "+amountOfPlayers);
+		this.amountOfPlayers = amountOfPlayers;
+		
+	}
+	
+	/**
+	 * Getter: Returns if trading is enabled
+	 * @return boolean: True if trading is enabled, false if not
+	 */
+	public boolean getTradingEnabled() {
+		return tradingEnabled;
+	}
+	
+	/**
+	 * Setter: This sets the tradingEnabled to the new value 
+	 * @param newTradingValue (Boolean): if trading is enabled or not 
+	 */
+	public void setTradingEnabled(boolean newTradingValue) {
+		tradingEnabled = newTradingValue;
 	}
 
 	

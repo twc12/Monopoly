@@ -105,7 +105,7 @@ public class Controller {
 				// Forces the $50 payment if it didn't succeed
 				if (currentAttempts >= 3) {
 					System.out.println("Player has failed 3 get out of jail attempts and was charged $50 to get out"); // debugging
-					playerInjail.addCash(-50);
+					pay50(playerInjail);
 					playerInjail.getOutOfJail();
 					model.setCurrentPlayerToNext();
 				}
@@ -128,12 +128,19 @@ public class Controller {
 		// Player pays $50, gets out of jail
 		else if (choice == choice.PAY_FIFTY) {
 			System.out.println("Player has chosen to pay $50");
-			playerInjail.addCash(-50);
+			pay50(playerInjail);
 			playerInjail.getOutOfJail();
 			if (model.getGameSettings().getFreeParkingRule() == true) {
 				model.addToFreeParkingFunds(50);
 			}
 			rollDice(playerInjail);
+		}
+	}
+
+	private void pay50(Player player) {
+		player.addCash(-50);
+		if (model.getGameSettings().getFreeParkingRule()) {
+			model.addToFreeParkingFunds(50);
 		}
 	}
 	

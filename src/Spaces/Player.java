@@ -54,7 +54,14 @@ public class Player {
         houseCount = 0;
         hotelCount = 0;
     }
-    
+
+    /**
+     * Checks if this is an AI player or not
+     * @return true if so, false if not
+     */
+    public boolean isAI() {
+        return false;
+    }
     public String toString() {return "Player " + this.getId();}
     
     /**

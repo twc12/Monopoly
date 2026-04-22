@@ -26,8 +26,6 @@ public class Controller {
 
 	public Model model;
 	
-	private String theme;
-	
 	//contructor for JUNIT, doesn't create a view
 	public Controller() {
 		this.model = new Model();
@@ -132,7 +130,7 @@ public class Controller {
 			System.out.println("Player has chosen to pay $50");
 			playerInjail.addCash(-50);
 			playerInjail.getOutOfJail();
-			if (model.getRuleSet().getFreeParkingRule() == true) {
+			if (model.getGameSettings().getFreeParkingRule() == true) {
 				model.addToFreeParkingFunds(50);
 			}
 			rollDice(playerInjail);
@@ -228,6 +226,10 @@ public class Controller {
 	//called by view when player successfully chooses to build on their property
 	public void sellHouseHotel(Player player, RealEstate property) {
 	        property.sellHouseHotel(player, model);
+	}
+	
+	public String getThemeString() {
+		return model.getGameSettings().getActiveThemeString();
 	}
 	
 	

@@ -228,9 +228,10 @@ public class View extends Application implements Observer {
 	@Override
 	public void start(Stage stage) throws Exception {
 		// theme placeholder
-		theme = "standardTheme";
+
 
 		controller = new Controller(this);
+		theme = controller.getThemeString();
 		
 //		//TEMP TEST CODE FOR TESTING BUILDING ON TURN 1
 //		List<Space> spaces = controller.getSpaces();

@@ -49,7 +49,7 @@ public class Model extends Observable {
 	
 	private int lastDiceRollAmmt;
 
-	private Rules ruleSet; // Placeholder for Jake
+	private GameSettings ruleSet; // Placeholder for Jake
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
 	
@@ -61,7 +61,7 @@ public class Model extends Observable {
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
 
-		ruleSet = new Rules(); // Placeholder for Jake
+		ruleSet = new GameSettings();
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
 		List<Color> playerColorsToPickFrom = new ArrayList<>();
@@ -91,9 +91,7 @@ public class Model extends Observable {
 		}
 		
 		currentPlayer = players.get(0);
-		
-		themes.put("standard", false);
-		themes.put("pirate", false);
+
 	}
 	
 	/**
@@ -129,7 +127,7 @@ public class Model extends Observable {
 		board.getFreeParking().addCashToFreeParkingReward(moneyToAdd);
 	}
 	
-	public Rules getRuleSet() {
+	public GameSettings getGameSettings() {
 		return ruleSet;
 	}
 	

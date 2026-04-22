@@ -55,7 +55,7 @@ public class TaxSpace extends CostSpace{
 		int costToCharge = getCostToCharge(player, 0);
 		player.addCash(-costToCharge);	
 
-		if (model.getRuleSet().getFreeParkingRule()) {
+		if (model.getGameSettings().getFreeParkingRule()) {
 			FreeParking parking = model.board.getFreeParking();
 			parking.addCashToFreeParkingReward(costToCharge);
 		}

@@ -114,7 +114,7 @@ public class Model extends Observable {
 		// Adding AI PLAYERS  
 		// FUTURE NOTE: you gotta add the player.isAi = True to all players
 		for (int i=0; i<totalAiPlayers; i++) {
-			players.add(new Player(i+1,playerIconsToPickFrom.get(i), theme, this));
+			players.add(new Player(totalHumanPlayers+i+1,playerIconsToPickFrom.get(i), theme, this));
 		}
 		
 		currentPlayer = players.get(0);

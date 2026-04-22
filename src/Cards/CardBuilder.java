@@ -110,6 +110,9 @@ public class CardBuilder {
 		// #3
 		chanceCards.add(new Card(cardDescription.get(2), (player,model)->{
 			player.addCash(-15);
+			if (model.getGameSettings().getFreeParkingRule()) {
+				model.addToFreeParkingFunds(15);
+			}
 		}));
 		
 		// #4

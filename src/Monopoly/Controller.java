@@ -81,7 +81,7 @@ public class Controller {
 	}
 	
 	public void purchaseProperty (Player player, Property property) {
-		property.purchaseProperty(player);		
+		property.purchaseProperty(player, model);		
 	}
 	
 	
@@ -164,12 +164,12 @@ public class Controller {
 	
 	//called by view when player successfully chooses to build on their property
 	public void buildHouseHotel(Player player, RealEstate property) {
-	        property.buildHouseHotel(player);
+	        property.buildHouseHotel(player, model);
 	}
 	
 	//called by view when player successfully chooses to build on their property
 	public void sellHouseHotel(Player player, RealEstate property) {
-	        property.sellHouseHotel(player);
+	        property.sellHouseHotel(player, model);
 	}
 	
 	

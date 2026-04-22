@@ -45,30 +45,30 @@ public abstract class Property extends CostSpace {
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			System.out.println(player.toString() + " charged rent $" + cost + " on " + this.getName() + ". Given to " + this.getOwner().toString());
+			model.notifyViewOfInfoMessage(player.toString() + " charged rent $" + cost + " on " + this.getName() + ". Given to " + this.getOwner().toString());
 
 		}
 
 	}
 	
-	public void purchaseProperty(Player player) {
+	public void purchaseProperty(Player player, Model model) {
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
-		System.out.println(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount());
+		model.notifyViewOfInfoMessage(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount());
 	}
 	
-	public void mortgageProperty(Player player) {
+	public void mortgageProperty(Player player, Model model) {
 		
 		// can only mortgage if all building sold
 		if (((RealEstate)this).getBuildingStage() > 0){
 			int mortgageAmount = this.getPurchaseAmount()/2;
 			player.addCash(mortgageAmount);		
 			this.setIsMortgaged(true);
-			System.out.println(player.toString() + " mortgaged " + this.getName() + " for $" + mortgageAmount);
+			model.notifyViewOfInfoMessage(player.toString() + " mortgaged " + this.getName() + " for $" + mortgageAmount);
 
 		} else {
-			System.out.println("Must sell all buildings before mortgaging!");
+			model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
 		}
 		
 		

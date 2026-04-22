@@ -254,6 +254,16 @@ public class Model extends Observable {
 		
 	}
 
+	/**
+	 * Generic notify view method for displaying string message to the view (ex: "Player X charged rent!")
+	 * @param message
+	 */
+	public void notifyViewOfInfoMessage(String message) {
+	    this.setChanged();
+	    this.notifyObservers(message);
+	    this.clearChanged();
+	}
+
 	public void setLastDiceRollAmmt(int ammtMoved) {
 		this.lastDiceRollAmmt = ammtMoved;
 	}

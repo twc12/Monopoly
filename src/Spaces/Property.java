@@ -30,10 +30,11 @@ public abstract class Property extends CostSpace {
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
-			//if rule=optional property sale=true AND currplayer not AI:
-			model.notifyViewPurchasePrompt(player, this);
-			//else:
-			//this.purchaseProperty(player);
+			if (model.getGameSettings().getOptionalBuying() == true){//&& !player.getIsAI()) {
+				model.notifyViewPurchasePrompt(player, this);
+			} else {
+				this.purchaseProperty(player, model);
+			}
 			
 		//otherwise, charge/transfer $
 		} else {
@@ -45,8 +46,7 @@ public abstract class Property extends CostSpace {
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			model.notifyViewOfInfoMessage(player.toString() + " charged rent $" + cost + " on " + this.getName() + "\n Collected by " + this.getOwner().toString());
-
+			model.notifyViewOfInfoMessage(player.toString() + " charged $" + cost + "!\nLanded on " + this.getName() + "\nCollected by " + this.getOwner().toString());
 		}
 
 	}

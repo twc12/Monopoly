@@ -2,6 +2,8 @@ package Spaces;
 
 import java.util.ArrayList;
 
+import org.apiguardian.api.API;
+
 import Monopoly.Model;
 
 public abstract class Property extends CostSpace {
@@ -30,7 +32,10 @@ public abstract class Property extends CostSpace {
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
-			if (model.getGameSettings().getOptionalBuying() == true){//&& !player.getIsAI()) {
+			if (player.isAI()) {
+				((AIPlayer) player).decidePurchase(this, model);
+			}
+			else if (model.getGameSettings().getOptionalBuying() == true){//&& !player.getIsAI()) {
 				model.notifyViewPurchasePrompt(player, this);
 			} else {
 				this.purchaseProperty(player, model);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
 
+import Spaces.AIPlayer;
 import Cards.Card;
 import Cards.Deck;
 import Messages.AiActionMessage;
@@ -112,9 +113,8 @@ public class Model extends Observable {
 			players.add(new Player(i+1,playerIconsToPickFrom.get(i), theme, this));
 		}
 		// Adding AI PLAYERS  
-		// FUTURE NOTE: you gotta add the player.isAi = True to all players
 		for (int i=0; i<totalAiPlayers; i++) {
-			players.add(new Player(totalHumanPlayers+i+1,playerIconsToPickFrom.get(i), theme, this));
+			players.add(new AIPlayer(totalHumanPlayers+i+1,playerIconsToPickFrom.get(i), theme, this));
 		}
 		
 		currentPlayer = players.get(0);

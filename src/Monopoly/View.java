@@ -18,6 +18,7 @@ import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
 import Monopoly.Controller.JAIL_CHOICE;
 import Monopoly.GameSettings.Theme;
+import Spaces.AIPlayer;
 import Spaces.Chance;
 import Spaces.FreeParking;
 import Spaces.GoSpace;
@@ -1237,7 +1238,7 @@ public class View extends Application implements Observer {
 		playerCash.setTextFill(Color.LIMEGREEN);
 		playerCash.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 		
-		int seperationBetweenNameAndCash = 40;
+		int seperationBetweenNameAndCash = 25;
 		HBox playerNameAndCashHBox = new HBox(seperationBetweenNameAndCash);
 		playerNameAndCashHBox.getChildren().addAll(playerName, playersCircleIcon, playerCash);
 		
@@ -1674,8 +1675,10 @@ public class View extends Application implements Observer {
 			rollDoublesStackPane.getChildren().addAll(rollDoublesButtonRect,rollDoublesLabel);
 			rollDoublesStackPane.setOnMouseClicked(event -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.ROLL_DUBLES);
-				mainButtonsGroup.getChildren().clear(); // remove the jail options
-				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
+				if (!currentPlayer.isInJail()) {
+					mainButtonsGroup.getChildren().clear(); // remove the jail options
+					mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
+				}
 			});
 			
 			jailButtonsVBox.getChildren().add(rollDoublesStackPane);
@@ -1766,6 +1769,11 @@ public class View extends Application implements Observer {
 				endTurnButton.setDisable(false);
 			}
 			
+			if (currentPlayer instanceof AIPlayer) {
+				rollDiceButton.setDisable(true);
+				endTurnButton.setDisable(true);
+				((AIPlayer) currentPlayer).playAITurn(controller);
+			}
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional

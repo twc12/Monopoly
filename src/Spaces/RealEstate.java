@@ -102,7 +102,6 @@ public class RealEstate extends Property {
     	
     	//check if this space is owned by the purchaser
     	if (this.getOwner() == null || !this.getOwner().equals(player)) {
-    		model.notifyViewOfInfoMessage(player.toString() + " does not own " + this.getName() + " can't build");
     		return;
     	}
     	
@@ -139,7 +138,7 @@ public class RealEstate extends Property {
         	player.addCash(-buildPrice);
         	this.rentStageIndex += 1;
         	this.buildingStage += 1;
-    		model.notifyViewOfInfoMessage((player.toString() + " built on " + this.name + " buildstage: " + this.getBuildingStage()));
+    		model.notifyViewOfInfoMessage((player.toString() + " built on " + this.name + "\nBuild stage: " + this.getBuildingStage()));
 	    }else {
 	    	model.notifyViewOfInfoMessage("Not enough funds!");
     	}
@@ -164,7 +163,7 @@ public class RealEstate extends Property {
     	}
     	
     	if (this.buildingStage < 1) {
-    		model.notifyViewOfInfoMessage("Buildstage is less than 1, can't sell buildings!");
+    		model.notifyViewOfInfoMessage("No buildings to sell!");
     		return;
     	}
     	
@@ -173,7 +172,7 @@ public class RealEstate extends Property {
     	player.addCash(sellPrice);
     	this.rentStageIndex -= 1;
     	this.buildingStage -= 1;
-    	model.notifyViewOfInfoMessage(player.toString() + " successfully sold house/hotel for $" + sellPrice);
+    	model.notifyViewOfInfoMessage(player.toString() + " sold house/hotel for $" + sellPrice + "!");
     	
     }
     

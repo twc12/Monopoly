@@ -233,16 +233,6 @@ public class View extends Application implements Observer {
 		controller = new Controller(this);
 		theme = controller.getThemeString();
 		
-//		//TEMP TEST CODE FOR TESTING BUILDING ON TURN 1
-//		List<Space> spaces = controller.getSpaces();
-//		RealEstate mediterranean = (RealEstate) spaces.get(1);
-//		RealEstate baltic = (RealEstate) spaces.get(3);
-//		RealEstate broadway = (RealEstate) spaces.get(39);
-//		Player player1 = controller.getCurrentPlayer();
-//		controller.purchaseProperty(player1, mediterranean);
-//		controller.purchaseProperty(player1, baltic);
-//		controller.purchaseProperty(player1, broadway);
-		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();		
 	
@@ -349,6 +339,17 @@ public class View extends Application implements Observer {
 		stage.setScene(scene);
 		stage.setTitle("MONOPOLY");
 		stage.show();
+		
+//		//TEMP TEST CODE FOR TESTING BUILDING ON TURN 1, roll dice to show changes
+//		List<Space> spaces = controller.getSpaces();
+//		RealEstate mediterranean = (RealEstate) spaces.get(1);
+//		RealEstate baltic = (RealEstate) spaces.get(3);
+//		RealEstate broadway = (RealEstate) spaces.get(39);
+//		Player player1 = controller.getCurrentPlayer();
+//		controller.purchaseProperty(player1, mediterranean);
+//		controller.purchaseProperty(player1, baltic);
+//		controller.purchaseProperty(player1, broadway);
+		
 	}
 	
 	/**

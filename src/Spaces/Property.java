@@ -45,7 +45,7 @@ public abstract class Property extends CostSpace {
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			model.notifyViewOfInfoMessage(player.toString() + " charged rent $" + cost + " on " + this.getName() + ". Given to " + this.getOwner().toString());
+			model.notifyViewOfInfoMessage(player.toString() + " charged rent $" + cost + " on " + this.getName() + "\n Collected by " + this.getOwner().toString());
 
 		}
 
@@ -55,7 +55,7 @@ public abstract class Property extends CostSpace {
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
-		model.notifyViewOfInfoMessage(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount());
+		model.notifyViewOfInfoMessage(player.toString() + " purchased\n" + this.getName() + " for $" + this.getPurchaseAmount() + "!");
 	}
 	
 	public void mortgageProperty(Player player, Model model) {
@@ -65,7 +65,7 @@ public abstract class Property extends CostSpace {
 			int mortgageAmount = this.getPurchaseAmount()/2;
 			player.addCash(mortgageAmount);		
 			this.setIsMortgaged(true);
-			model.notifyViewOfInfoMessage(player.toString() + " mortgaged " + this.getName() + " for $" + mortgageAmount);
+			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
 
 		} else {
 			model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");

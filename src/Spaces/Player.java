@@ -251,12 +251,15 @@ public class Player {
      * @param name property to move to
      */
     public void advanceToProperty(String name) {
+    	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (currentSpace.getName() != name) {
     		if(currentSpace.getName().equals(name))
     			currentSpace.processSpace(this, model);
+    		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
     	currentSpace.processSpace(this, model);
     }
     

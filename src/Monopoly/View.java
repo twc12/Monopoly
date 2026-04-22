@@ -210,6 +210,7 @@ public class View extends Application implements Observer {
 	private Label cardLabel;
 	private StackPane cardOverlay;
 	private Label cardTitle;
+	private ImageView cardIcon;
 	
 	//similar to cards, for purchaseprompts
 	private StackPane purchaseOverlay;
@@ -1838,8 +1839,11 @@ public class View extends Application implements Observer {
 	    overlay.setVisible(false);
 	    overlay.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
+	    cardIcon = new ImageView();
+	    StackPane.setAlignment(cardIcon, Pos.BOTTOM_RIGHT);
+	    
 	    VBox cardBox = new VBox();
-	    cardBox.setAlignment(Pos.CENTER);
+	    cardBox.setAlignment(Pos.TOP_LEFT);
 	
 	    cardBox.setMaxWidth(width); 
 	    cardBox.setMaxHeight(height);
@@ -1855,8 +1859,7 @@ public class View extends Application implements Observer {
 	    
 	    // Title label
 	    cardTitle = new Label();
-	    cardTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
-
+	    cardTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-font-family: 'Lucida Calligraphy';");
 	    // Card description
 	    cardLabel = new Label();
 	    cardLabel.setWrapText(true);
@@ -1868,7 +1871,7 @@ public class View extends Application implements Observer {
 	    continueLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
 
 	    cardBox.getChildren().addAll(cardTitle, cardLabel, continueLabel);
-	    overlay.getChildren().add(cardBox);
+	    overlay.getChildren().addAll(cardBox,cardIcon);
 
 
 	    cardOverlay = overlay;

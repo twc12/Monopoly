@@ -1358,7 +1358,7 @@ public class View extends Application implements Observer {
 		// Set the default size of the scroll pane
 		scrollablePropertiesPane.setPrefWidth(widthOfPlayerCardPropertiesScrollPane);
 		scrollablePropertiesPane.setMinHeight(widthOfPlayerCardProperties*1.6+25); // the 1.6 is from how the cards heigh is determined in `buildSpaceCard()` 
-		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // dont show the scroll bars
+		scrollablePropertiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // dont show the scroll bars
 		scrollablePropertiesPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		return scrollablePropertiesPane;
 	}

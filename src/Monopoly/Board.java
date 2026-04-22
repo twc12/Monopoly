@@ -65,7 +65,7 @@ public class Board {
             new Railroad("B. & O. Railroad", railRoadRentStages, "railroad.png"),
             new RealEstate(Color.YELLOW, "Atlantic Avenue", 260, new int[]{22,44,110,330,800,975,1150}),
             new RealEstate(Color.YELLOW, "Ventnor Avenue", 260, new int[]{22,44,110,330,800,975,1150}),
-            new Utility("Water Works", utilityRentStages, "railroad.png"),
+            new Utility("Water Works", utilityRentStages, "waterWorks.png"),
             new RealEstate(Color.YELLOW, "Marvin Gardens", 280, new int[]{24,48,120,360,850,1025,1200}),					//30
             new GoToJailSpace(jailSpace),
             new RealEstate(Color.GREEN, "Pacific Avenue", 300, new int[]{26,52,130,390,900,1100,1275}),

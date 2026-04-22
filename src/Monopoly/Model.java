@@ -24,6 +24,16 @@ import javafx.scene.paint.Color;
 
 // game state
 public class Model extends Observable {
+	
+	/**
+	 * This variable must be filled in by a future implementation where the theme is 
+	 * passed all the way down from the view into this models constructor and then changes 
+	 * this theme variable. Right now for player icons, alex needs it hard coded BUT you should be able
+	 * the change it later. just make sure that the player icons pngs are named the same as the ones in
+	 * the playerIconsToPickFrom variable with "PlayerIcon.png" added to the end 
+	 */
+	private String theme = "standardTheme";
+	
 
 	private int totalPlayers = 4; // FOR THE FUTURE THIS SHOULD BE CHANGEABLE BASED ON USER INPUT FROM START SCREEN
 	/**
@@ -58,6 +68,10 @@ public class Model extends Observable {
 		playerColorsToPickFrom.add(Color.RED); playerColorsToPickFrom.add(Color.BLUE); playerColorsToPickFrom.add(Color.GREEN); playerColorsToPickFrom.add(Color.YELLOW); 
 		playerColorsToPickFrom.add(Color.PURPLE); playerColorsToPickFrom.add(Color.PINK); playerColorsToPickFrom.add(Color.BLACK); playerColorsToPickFrom.add(Color.ORANGE); 
 		
+		
+		List<String> playerIconsToPickFrom = new ArrayList<>();
+		playerIconsToPickFrom.add("boat"); playerIconsToPickFrom.add("car"); playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
+		
 		//required for JUNIT not having view
 		if (viewClassObj != null) {
 			this.addObserver(viewClassObj);
@@ -73,7 +87,7 @@ public class Model extends Observable {
 		// Create all the players 
 		players = new ArrayList<>();
 		for (int i=0; i<totalPlayers; i++) {
-			players.add(new Player(i+1,playerColorsToPickFrom.get(i), this));
+			players.add(new Player(i+1,playerIconsToPickFrom.get(i), theme, this));
 		}
 		
 		currentPlayer = players.get(0);
@@ -135,8 +149,17 @@ public class Model extends Observable {
 		return chanceCards;
 	}
 	
+	
 	public Stack<Card> getCommunityChestCards(){
 		return communityChestCards;
+	}
+	
+	public void setChanceCards(Stack<Card> stack) {
+		this.chanceCards = stack;
+	}
+	
+	public void setCommunityChestCards(Stack<Card> stack) {
+		this.communityChestCards = stack;
 	}
 	
 	/**

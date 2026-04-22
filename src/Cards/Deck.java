@@ -14,7 +14,7 @@ public class Deck {
 	private Stack<Card> communityChestCards;
 	
 	public Deck(){
-		cards = new CardBuilder();
+		cards = new CardBuilder("standard");
 		ArrayList<Card> unShuffled;
 		
 		// Shuffle Chance Cards

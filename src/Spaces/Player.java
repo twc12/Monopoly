@@ -10,6 +10,7 @@ package Spaces;
 import java.util.*;
 
 import Monopoly.Model;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 public class Player {
 	
@@ -21,26 +22,37 @@ public class Player {
     private int ammtOfGetOutOfJailCards; 
     private Model model;
     private boolean isDoneRollingDice;
-    private Color playersColor; 
+    private Image playersIconImage; 
+    private int houseCount;
+    private int hotelCount;
+
     
     /**
      * Constructor for the Player Class
      * 
      * @param id the player identification
      * @param model the model for the player class to interact with
+     * @param playersIconStr (String): The string of the first word of the icon this player will be 
+     * 									e.g. "dog" "evil" "boat"
+     * @param theme (String): The theme folder for this player icon to be loaded
      */
-    public Player(int id, Color playersColor, Model model) {
+    public Player(int id, String playersIconStr, String theme, Model model) {
         playerId = id;
         this.model = model;
         inJail = false;
         cashAmmt = 1500; // FUTURE - This should be updateable from user input on the start screen 
-        this.playersColor = playersColor;
+        
+        // IMPORTANT NOTE: the naming format for the player icons for this implementation is "namePlayerIcon.png"
+        Image playerIcon = new Image("/"+theme+"/"+playersIconStr+"PlayerIcon.png");
+        playersIconImage = playerIcon;
        
         // TODO get model method
         currentSpace = model.board.getFirstSpace();
         listOfProperties = new ArrayList<Property>();
         ammtOfGetOutOfJailCards = 0;
         isDoneRollingDice = false;
+        houseCount = 0;
+        hotelCount = 0;
     }
     
     public String toString() {return "Player " + this.getId();}
@@ -51,14 +63,26 @@ public class Player {
     public int getId() {return playerId;}
     
     /**
+     * Getter: Returns the player name
+     * FUTURE NOTE: This function should be changed to represent the user inputed
+     * player name, this function is called by the view but because the 
+     * custom names arent inputed right now it returns this basic string
+     * 
+     * @return String: The name of the player (LOOK 2 LINES UP AND READ)
+     */
+    public String getPlayerName() {
+    	return "Player Id: " + getId(); // SHOULD BE CHANGED IN THE FUTURE TO THE PLAYERS NAME 
+    }
+    
+    /**
      * @return The players total cash integer
      */
     public int getCashAmmt() {return cashAmmt;}
     
     /**
-     * @return The players JavaFx color
+     * @return The players JavaFX Image of their icon
      */
-    public Color getColor() { return playersColor; }
+    public Image getPlayerIconImage() { return playersIconImage; }
     
     /**
      * @return The players jail status boolean
@@ -76,16 +100,26 @@ public class Player {
     public List<Property> getListOfProperties(){return listOfProperties;}
     
     /**
+     * @return The count of houses
+     */
+    public int getHouseCount() {return houseCount;}
+    
+    /**
+     * @return The count of hotels
+     */
+    public int getHotelCount() {return hotelCount;}
+    
+    /**
      * moves the player ammt of spaces forward. and processes space
      * 
      * @param ammt: The integer amount of spaces to move forward
      */
     public void move(int ammt) {
-    	
-    	
-    	currentSpace.getPlayersOnSpace().remove(this);
+
+    	currentSpace.getPlayersOnSpace().remove(this); 
+
     	for (int i = 0; i < ammt; i++) {
-    		if(currentSpace instanceof GoSpace)
+    		if(currentSpace instanceof GoSpace && i != 0) // `i!=0` was added because players would get +$200 on their first move because it was go space
     			currentSpace.processSpace(this, model);
     		currentSpace = currentSpace.getNextSpace();
     	}
@@ -93,10 +127,10 @@ public class Player {
     	
     	model.notifyViewOfPlayerMoved(this, ammt);
     	System.out.println("Processing Space: " + currentSpace.getName());
-    	currentSpace.processSpace(this, model);
-    	
+    	currentSpace.processSpace(this, model);	
     }
     
+
     /**
      * adds ammt of cash to player
      * 
@@ -207,7 +241,7 @@ public class Player {
     public void advanceToProperty(String name) {
     	currentSpace.getPlayersOnSpace().remove(this);
     	while (currentSpace.getName() != name) {
-    		if(currentSpace instanceof GoSpace)
+    		if(currentSpace.getName().equals(name))
     			currentSpace.processSpace(this, model);
     		currentSpace = currentSpace.getNextSpace();
     	}

@@ -2,18 +2,28 @@ package Monopoly;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import Spaces.Player;
-import Spaces.Property;
 import Spaces.RealEstate;
 import Spaces.Space;
+import javafx.application.Platform;
+
 
 class MonopolyTests {
 
+	//needed to avoid java fx errors when running test suite
+	//the javafx Image class is an attr of the Player class, causing the tests to fail
+	//ISSUE: our Player class in the model is no longer swappable w/ diff views
+	//TODO fix all model files to not have any imports/attributes/etc related to javafx
+    @BeforeAll
+    static void startJAVAFXinTestSuite() {
+        Platform.startup(() -> {}); 
+    }
+	
 	@Test
 	void test() {
 
@@ -40,7 +50,6 @@ class MonopolyTests {
 	@Test
 	void testRealEstateBuild() {
 
-		
 		Controller controller = new Controller();
 		Model model = controller.model;
 		

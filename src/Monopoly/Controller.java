@@ -3,6 +3,7 @@ package Monopoly;
 import java.util.List;
 
 import Cards.Card;
+import Cards.Deck;
 import Spaces.Chance;
 import Spaces.CostSpace;
 import Spaces.FreeParking;
@@ -58,10 +59,22 @@ public class Controller {
 	 * @param player (Player): The current player rolling the dice 
 	 */
 	public void rollDice(Player player) {
+<<<<<<< HEAD
 		int[] roll = diceRollGeneration();
 		int dice1 = roll[0];
 		int dice2 = roll[1];
 	
+=======
+		
+		Random rand = new Random();
+		int dice1Result;
+		int dice2Result;
+		
+		// Roll dice, place into list
+		dice1Result = rand.nextInt(6)+1; 
+		dice2Result = rand.nextInt(6)+1;
+		
+>>>>>>> main
 		// if the player did not get doubles then they are DONE ROLLING DICE 
 		if (dice1 != dice2) {
 			player.setIsDoneRollingDice(true);
@@ -159,12 +172,18 @@ public class Controller {
 	}
 
 	/**
-	 * What does this function do high level tyler?
+	 * This function applies the card affect to the player from the `cardBuilder` class
 	 * @param card
 	 * @param player
 	 */
 	public void resolveCard(Card card, Player player) {
 		card.apply(player, model);
+		if(model.getChanceCards().isEmpty()) {
+			model.setChanceCards(new Deck().getChanceCards());
+		}
+		if(model.getCommunityChestCards().isEmpty()) {
+			model.setCommunityChestCards(new Deck().getCommunityChestCards());
+		}
 	}
 
 

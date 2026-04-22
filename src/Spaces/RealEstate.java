@@ -176,7 +176,11 @@ public class RealEstate extends Property {
     }
     
     
-	//checks for monopolies. if no monopoly, makes sure that rents are reset to first stage and can't build
+	/**
+	 * checks for monopolies. if no monopoly, makes sure that rents are reset to first stage and can't build
+	 * 
+	 * @param 
+	 */
 	public void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount) {
 		//brown and blue are only groups of 2
 		if (matchedOwnedPropertiesCount == 2 && (this.color.equals(Color.BROWN) || this.color.equals(Color.BLUE))) {

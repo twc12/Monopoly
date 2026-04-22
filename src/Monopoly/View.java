@@ -300,8 +300,7 @@ public class View extends Application implements Observer {
 		topLabelSection.setTranslateY(15); // move down slightly
 		
 		// ___________________________Right side image___________________________________
-		javafx.scene.image.Image rightImage =
-			    new javafx.scene.image.Image(getClass().getResource("/"+theme+"/uiRight.png").toExternalForm());
+		Image rightImage = new Image("/"+theme+"/uiRight.png");
 		ImageView rightImageView = new ImageView(rightImage);
 			
 		rightImageView.setFitWidth(1500);
@@ -321,12 +320,19 @@ public class View extends Application implements Observer {
 		
 		// For chance and community chests
 		buildCardOverlay();
+		cardOverlay.setAlignment(Pos.CENTER_RIGHT);
+		cardOverlay.setTranslateX(-110);
+		cardOverlay.setTranslateY(-70);
 		root.getChildren().add(cardOverlay);
 		
 		// For purchase prompts
 		StackPane purchaseOverlay = new StackPane();
+		purchaseOverlay.setAlignment(Pos.CENTER_RIGHT);
+		purchaseOverlay.setTranslateX(-90);
+		purchaseOverlay.setTranslateY(-100);
 		purchaseOverlay.setVisible(false);
 		this.purchaseOverlay = purchaseOverlay;
+		
 		root.getChildren().add(purchaseOverlay);
 		
 		// Build the overlay for the detailed card info on mouse click 
@@ -1400,10 +1406,6 @@ public class View extends Application implements Observer {
 		
 	}
 	
-	
-
-
-
 	/**
 	 * This function will decipher that type of message is received and then it will act on the message
 	 * with a corresponding function 
@@ -1524,6 +1526,7 @@ public class View extends Application implements Observer {
 	        "-fx-background-color: white;" +
 	        "-fx-border-color: black;" +
 	        "-fx-border-width: 3;" +
+	        "-fx-border-insets: 5;" +
 	        "-fx-padding: 20;"
 	    );
 	    
@@ -1557,10 +1560,12 @@ public class View extends Application implements Observer {
 	public void showCard(Card card) {
 		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
 			cardTitle.setText("Chance");		
-		else
+		else 
 			cardTitle.setText("Community Chest");
-	    cardLabel.setText(card.getDescription());
-	    cardOverlay.setVisible(true);
+		
+		cardLabel.setText(card.getDescription());
+		cardOverlay.setVisible(true);
+		
 	    if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			// disable the roll dice button because they finished rolling
 			rollDiceButton.setDisable(true);
@@ -1589,8 +1594,6 @@ public class View extends Application implements Observer {
 	    hboxContainer.setMaxWidth(width); //avoid stackpane taking up whole screen
 	    hboxContainer.setMaxHeight(height);
 	    hboxContainer.setStyle(
-	        "-fx-background-color: white;" +
-	        "-fx-border-color: black;" +
 	        "-fx-border-width: 3;" +
 	        "-fx-padding: 20;"
 	    );
@@ -1647,7 +1650,7 @@ public class View extends Application implements Observer {
 	 * @param cardWidth the width of the card to scale from
 	 * @return StackPane the card image
 	 */
-	public StackPane buildSpaceCard(Property testSpace, int cardWidth) {
+	public StackPane buildSpaceCard(Property testSpace, double cardWidth) {
 		double cardHeight = cardWidth * 1.6;
 	    double borderWidth = Math.max(1, cardWidth * 0.016);
 	    double borderInset = cardWidth * 0.05;
@@ -1658,6 +1661,7 @@ public class View extends Application implements Observer {
 	    double rNameFont = cardWidth * 0.065;
 	    double innerWidthOffset = borderInset * 2 + borderWidth * 2;
 	    double bodyFont = cardWidth * 0.06;
+	    double imageSize = cardWidth * .55;
 
 	    // For lines
 	    double sepWidth = cardWidth * 0.70;
@@ -1665,7 +1669,8 @@ public class View extends Application implements Observer {
 		double sepSpacing = cardHeight * 0.015;
 	    
 	    StackPane root = new StackPane();
-
+	    StackPane imageOverlay = new StackPane();
+	    
 	    VBox card = new VBox();
 	    card.setAlignment(Pos.TOP_CENTER);
 	    card.setPrefWidth(cardWidth);
@@ -1694,7 +1699,6 @@ public class View extends Application implements Observer {
 	    	buildPrice = re.getBuildPrice();
 	    
 	    	StackPane headerBox = new StackPane();
-	    	headerBox.setMaxWidth(Double.MAX_VALUE);
 	    	headerBox.setPrefHeight(headerHeight);
 	    	headerBox.setAlignment(Pos.CENTER);
 
@@ -1781,7 +1785,16 @@ public class View extends Application implements Observer {
 		
 		if(testSpace instanceof Railroad) {
 			
-
+			Image image = new Image("/"+theme +"/" + testSpace.getImageFile());
+			ImageView icon = new ImageView(image);
+			
+			icon.setFitWidth(imageSize);
+			icon.setPreserveRatio(true);
+			icon.setManaged(false);
+			icon.setTranslateX(cardWidth*.25);
+			
+			StackPane.setAlignment(icon, Pos.TOP_CENTER);
+			
 			Line topLine = new Line(0, 0, sepWidth, 0);
 			topLine.setStrokeWidth(sepThickness);
 
@@ -1798,22 +1811,22 @@ public class View extends Application implements Observer {
 
 			// Moves title to center
 			VBox.setMargin(railroadTitleBox, new Insets(cardWidth * 0.50, 0, 0, 0));
-			card.getChildren().add(railroadTitleBox);
+			
+			
+			card.getChildren().addAll(icon,railroadTitleBox);
 	    	
-	   	
 	    	
 	    	prices = testSpace.getRentStages();
 	    	mortgageVal = testSpace.getPurchaseAmount()/2;
 	    	
 	    	lines.add("Purchase Price $" + purchasePrice +"\n");
-	    	lines.add("Rent    $" + prices.get(0)+ "\n");
-	    	lines.add("If 2 R,R.'s are owned	$" + prices.get(1)+"\n");
-	    	lines.add("If 3 R.R.'s are owned	$" + prices.get(2)+"\n");
-	    	lines.add("If 4 R.R.'s are owned	$" + prices.get(3)+"\n"); 
+	    	lines.add("Rent		$" + prices.get(0)+ "\n");
+	    	lines.add("If 2 R,R.'s are owned $" + prices.get(1)+"\n");
+	    	lines.add("If 3 R.R.'s are owned $" + prices.get(2)+"\n");
+	    	lines.add("If 4 R.R.'s are owned $" + prices.get(3)+"\n"); 
 	    	lines.add("\nMortgage Value		$" + mortgageVal);
 	    	
 	    	StackPane bodyBox = new StackPane();
-	        bodyBox.setMaxWidth(Double.MAX_VALUE);
 	        bodyBox.setAlignment(Pos.TOP_CENTER);
 	        
 	        Text line1 = new Text(lines.get(0));
@@ -1840,11 +1853,22 @@ public class View extends Application implements Observer {
 	        
 	        bodyBox.getChildren().add(bodyFlow);
 
-	        card.getChildren().addAll( bodyBox);
+	        card.getChildren().addAll(bodyBox);
 	    	
 		}
 		
 		if(testSpace instanceof Utility) {
+			
+			
+			Image image = new Image("/" + theme +"/" + testSpace.getImageFile());
+			ImageView icon = new ImageView(image);
+			
+			
+			icon.setFitWidth(imageSize);
+			icon.setPreserveRatio(true);
+			icon.setManaged(false);
+			icon.setTranslateX(cardWidth*.25);
+			
 			Line topLine = new Line(0, 0, sepWidth, 0);
 			topLine.setStrokeWidth(sepThickness);
 
@@ -1860,7 +1884,8 @@ public class View extends Application implements Observer {
 
 			// Moves title to center
 			VBox.setMargin(utilityTitleBox, new Insets(cardWidth * 0.50, 0, 0, 0));
-			card.getChildren().add(utilityTitleBox);
+			
+			card.getChildren().addAll(icon, utilityTitleBox);
 	    	
 	    	StackPane bodyBox = new StackPane();
 	        bodyBox.setMaxWidth(Double.MAX_VALUE);

@@ -3,8 +3,9 @@ package Spaces;
 public class Utility extends Property {
 	
 	
-	public Utility(String name, int[] rentStages) {
-		super(name, 150, rentStages);
+	public Utility(String name, int[] rentStages, String imageFile) {
+		super(name, 150, rentStages); 
+		this.imageFile = imageFile;
 	}
 	
 	//will need to multiply this amount by the dice roll...

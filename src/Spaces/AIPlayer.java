@@ -42,10 +42,14 @@ public class AIPlayer extends Player {
         // Jail logic
         if (this.isInJail()) {
             handleJail(controller);
+            setIsDoneRollingDice(true);
             if (this.isInJail()) {
                 controller.processEndTurn();
                 return;
             }
+            buildRandomly(controller);
+            controller.processEndTurn();
+            return;
         }
         // safety cap is just to prevent an infinite loop
         // this may prove unnecessary but exists just to 
@@ -82,6 +86,7 @@ public class AIPlayer extends Player {
 
         // Randomly chooses an option to getout of jail
         JAIL_CHOICE choice = options.get(random.nextInt(options.size()));
+        getModel().notifyViewOfAiAction(getPlayerName() + "chose jail option " + choice);
         controller.processJailLogic(this, choice);
     }
 
@@ -92,8 +97,10 @@ public class AIPlayer extends Player {
     private void buildRandomly(Controller controller) {
         // it's a binary choice so it just chooses at a 50% change
         // if it will build on a property or not
-        if (!random.nextBoolean()) return;
-
+        if (!random.nextBoolean()) {
+            getModel().notifyViewOfAiAction(getPlayerName() + " chose not to build this turn");
+            return;
+        }
         // Acquires the AI owned properties
         List<RealEstate> owned = new ArrayList<>();
         for (Property property : getListOfProperties()) {
@@ -102,13 +109,17 @@ public class AIPlayer extends Player {
             }
         }
         // If the AI owns no properties, does not attempt to build
-        if (owned.isEmpty()) return;
+        if (owned.isEmpty()) {
+            getModel().notifyViewOfAiAction(getPlayerName() + " has no properties to build on");
+            return;
+        }
 
         // Likely going to need to add a check for if the AI owns
         // a full set of properties or not
 
         // Picks a piece of owned real estate to build on
         RealEstate pick = owned.get(random.nextInt(owned.size()));
+        getModel().notifyViewOfAiAction(getPlayerName() + " attempting to build on " + pick.getName());
         controller.buildHouseHotel(this, pick);
     }
 
@@ -119,7 +130,11 @@ public class AIPlayer extends Player {
      */
     public void decidePurchase(Property property, Model model) {
         if (random.nextBoolean() && getCashAmmt() >= property.getPurchaseAmount()) {
+            getModel().notifyViewOfAiAction(getPlayerName() + " decided to buy " + property.getName());
             property.purchaseProperty(this, model);
+        }
+        else {
+            getModel().notifyViewOfAiAction(getPlayerName() + " decided to not buy " + property.getName());
         }
     }
 }

@@ -146,6 +146,13 @@ public class Player {
     public void addJailCard() {
     	ammtOfGetOutOfJailCards++;
     }
+
+    /**
+     * Removes the players get out of jail free card when they use it
+     */
+    public void removeJailCard() {
+        ammtOfGetOutOfJailCards--;
+    }
     
     /**
      * @return int: The number of get out of jail cards this player has
@@ -158,8 +165,8 @@ public class Player {
      * putInJail()
      */
     public void putInJail() {
-    	inJail = true;
-    	
+        setIsDoneRollingDice(true);
+    	inJail = true;	
     	model.putPlayerInJail(this);
     }
     
@@ -169,6 +176,7 @@ public class Player {
     public void getOutOfJail() {
     	inJail = false; 
     	model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
+        // FUTURE PROOF: Call a model.notifyViewthatPlayerisOutOfJail() message so it can do sounds
     }
     
     /**

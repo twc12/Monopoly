@@ -1706,8 +1706,8 @@ public class View extends Application implements Observer {
 	    	}
 	    
 			// Changed from this to the new line, this was causing cards to expend horizontally to the window edges
-	    	colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8)); // Works for rest of team
-			// colorRect.setWidth(cardWidth - innerWidthOffset * 0.8); // Works for jarrod, jarrod should be only one using this line of code
+	    	// colorRect.widthProperty().bind(card.widthProperty().subtract(innerWidthOffset*.8)); // Works for rest of team
+			colorRect.setWidth(cardWidth - innerWidthOffset * 0.8); // Works for jarrod, jarrod should be only one using this line of code
 																	   // since the other implementation for some unknowable reason doesn't work
 																	   // on his computer
 

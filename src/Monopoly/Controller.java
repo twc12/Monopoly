@@ -59,22 +59,10 @@ public class Controller {
 	 * @param player (Player): The current player rolling the dice 
 	 */
 	public void rollDice(Player player) {
-<<<<<<< HEAD
 		int[] roll = diceRollGeneration();
 		int dice1 = roll[0];
 		int dice2 = roll[1];
 	
-=======
-		
-		Random rand = new Random();
-		int dice1Result;
-		int dice2Result;
-		
-		// Roll dice, place into list
-		dice1Result = rand.nextInt(6)+1; 
-		dice2Result = rand.nextInt(6)+1;
-		
->>>>>>> main
 		// if the player did not get doubles then they are DONE ROLLING DICE 
 		if (dice1 != dice2) {
 			player.setIsDoneRollingDice(true);

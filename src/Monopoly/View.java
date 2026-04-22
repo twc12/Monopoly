@@ -17,6 +17,7 @@ import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
 import Monopoly.Controller.JAIL_CHOICE;
+import Monopoly.GameSettings.Theme;
 import Spaces.Chance;
 import Spaces.FreeParking;
 import Spaces.GoSpace;
@@ -38,9 +39,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -238,7 +241,7 @@ public class View extends Application implements Observer {
 		
 		
 		// ---- SHOW THE RESULTS OF THE USER CLICKS ---- 
-		VBox resultsOfInputVBox = new VBox(20);
+		VBox resultsOfInputVBox = new VBox(20); resultsOfInputVBox.setPadding(new Insets(10));
 		resultsOfInputVBox.setMinWidth(280);
 		startScreenBorderPane.setRight(resultsOfInputVBox);
 		Label allowSkipPropPurchLabel = new Label("Allow skipping property purcahses: ✅");
@@ -255,6 +258,7 @@ public class View extends Application implements Observer {
 		// ------ BUTTONS ----- 
 		Label topStartScreenLabel = new Label("Start Screen");
 		topStartScreenLabel.setFont(new Font(20));
+		BorderPane.setAlignment(topStartScreenLabel, Pos.CENTER);
 		startScreenBorderPane.setTop(topStartScreenLabel);
 		
 		// SKIPING PURCHASE PROPERTIES 
@@ -474,11 +478,6 @@ public class View extends Application implements Observer {
 		HBox aiPlayersChoicesHBox = new HBox(10);
 		aiPlayersChoicesHBox.getChildren().addAll(new Label("Num of Ai Players"), numberOfAiPlayersChoiceBox);
 		
-		
-		
-		
-		// NUMBER OF AI PLAYERS
-		
 		Button startGameButton = new Button("Start Game");
 		startGameButton.setOnAction(event -> {
 			controller = new Controller(this);
@@ -488,11 +487,60 @@ public class View extends Application implements Observer {
 		});
 		
 		
-		VBox inputsVBox = new VBox(10);
+		VBox inputsVBox = new VBox(10); inputsVBox.setPadding(new Insets(10));
 		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startGameButton);
 		startScreenBorderPane.setCenter(inputsVBox);
+		
 
-		Scene startGameScene = new Scene(startScreenBorderPane, 600,500);
+		// ----- END OF NUMBER OF PLAYER CHOICES -----
+		
+		// CHOICES OF THEMES
+		int MAX_IMAGE_WIDTH = 180;
+		HBox themeChoicesHBox = new HBox(15); themeChoicesHBox.setPadding(new Insets(10)); 
+		ToggleGroup toggleGroup = new ToggleGroup();
+		
+		// --- BASE MONOPOLY
+		VBox baseMonopolyThemeChoiceVBox = new VBox(10); baseMonopolyThemeChoiceVBox.setAlignment(Pos.CENTER);
+		Image baseMonopolyThemePreviewImage = new Image("/MonopolyThemePicker.png");
+		ImageView baseMonopolyPreviewView = new ImageView(baseMonopolyThemePreviewImage);
+		baseMonopolyPreviewView.setPreserveRatio(true); baseMonopolyPreviewView.setFitWidth(MAX_IMAGE_WIDTH); 
+		RadioButton baseMonopolyRadioBtn = new RadioButton(); 
+		baseMonopolyRadioBtn.setOnAction(event -> {
+			gameSettings.setTheme(Theme.STANDARD);
+		});
+		baseMonopolyRadioBtn.fire(); // click the button by default
+		baseMonopolyRadioBtn.setToggleGroup(toggleGroup);
+		baseMonopolyThemeChoiceVBox.getChildren().addAll(baseMonopolyPreviewView, baseMonopolyRadioBtn);
+
+		// --- PIRATES
+		VBox pirateThemeChoiceVBox = new VBox(10); pirateThemeChoiceVBox.setAlignment(Pos.CENTER);
+		Image pirateThemePreviewImage = new Image("/PirateThemePicker.png");
+		ImageView piratePreviewView = new ImageView(pirateThemePreviewImage); 
+		piratePreviewView.setPreserveRatio(true); piratePreviewView.setFitWidth(MAX_IMAGE_WIDTH); 
+		RadioButton pirateRadioBtn = new RadioButton();
+		pirateRadioBtn.setOnAction(event -> {
+			gameSettings.setTheme(Theme.PIRATE);
+		});
+		pirateRadioBtn.setToggleGroup(toggleGroup);
+		pirateThemeChoiceVBox.getChildren().addAll(piratePreviewView, pirateRadioBtn);
+		
+		// --- TUCSON
+		VBox tucsonThemeChoiceVBox = new VBox(10); tucsonThemeChoiceVBox.setAlignment(Pos.CENTER);
+		Image tucsonThemePreviewImage = new Image("/TucsonThemePicker.png");
+		ImageView tucsonPreviewView = new ImageView(tucsonThemePreviewImage);
+		tucsonPreviewView.setPreserveRatio(true); tucsonPreviewView.setFitWidth(MAX_IMAGE_WIDTH); 
+		RadioButton tucsonRadioBtn = new RadioButton();
+		tucsonRadioBtn.setOnAction(event -> {
+			gameSettings.setTheme(Theme.TUCSON);
+		});
+		tucsonRadioBtn.setToggleGroup(toggleGroup);
+		tucsonThemeChoiceVBox.getChildren().addAll(tucsonPreviewView, tucsonRadioBtn);
+		
+		themeChoicesHBox.getChildren().addAll(baseMonopolyThemeChoiceVBox, pirateThemeChoiceVBox, tucsonThemeChoiceVBox);
+		startScreenBorderPane.setBottom(themeChoicesHBox);
+		// ------ END OF THEMES -----
+		
+		Scene startGameScene = new Scene(startScreenBorderPane, 590,500);
 		stage.setScene(startGameScene);
 		stage.setTitle("MONOPOLY");
 		stage.show();

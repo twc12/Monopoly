@@ -115,6 +115,11 @@ public class Player {
      * @return The count of hotels
      */
     public int getHotelCount() {return hotelCount;}
+
+    /**
+     * @return the model object
+     */
+    public Model getModel() { return model; }
     
     /**
      * moves the player ammt of spaces forward. and processes space

@@ -42,17 +42,17 @@ public class Board {
             new CommunityChest(),																						//3
             new RealEstate(Color.BROWN, "Baltic Avenue", 60, new int[]{4,8,20,60,180,320,450}),							//4
             new TaxSpace(TaxSpace.TaxSpaceType.INCOME),																	//5
-            new Railroad("Reading Railroad", railRoadRentStages),									
+            new Railroad("Reading Railroad", railRoadRentStages, "railroad.png"),									
             new RealEstate(Color.LIGHTBLUE, "Oriental Avenue", 100, new int[]{6,12,30,90,270,400,550}),
             new Chance(),
             new RealEstate(Color.LIGHTBLUE, "Vermont Avenue", 100, new int[]{6,12,30,90,270,400,550}),
             new RealEstate(Color.LIGHTBLUE, "Connecticut Avenue", 120, new int[]{8,16,40,100,300,450,600}),				//10
             jailSpace,
             new RealEstate(Color.PINK, "St. Charles Place", 140, new int[]{10,20,50,150,450,625,750}),
-            new Utility("Electric Company", utilityRentStages),
+            new Utility("Electric Company", utilityRentStages, "electricCompany.png"),
             new RealEstate(Color.PINK, "States Avenue", 140, new int[]{10,20,50,150,450,625,750}),
             new RealEstate(Color.PINK, "Virginia Avenue", 160, new int[]{12,24,60,180,500,700,900}),						//15
-            new Railroad("Pennsylvania Railroad", railRoadRentStages),									
+            new Railroad("Pennsylvania Railroad", railRoadRentStages, "railroad.png"),									
             new RealEstate(Color.ORANGE,"St. James Place", 180, new int[]{14,28,70,200,550,750,950}),
             new CommunityChest(),
             new RealEstate(Color.ORANGE, "Tennessee Avenue", 180, new int[]{14,28,70,200,550,750,950}),
@@ -62,17 +62,17 @@ public class Board {
             new Chance(),
             new RealEstate(Color.RED, "Indiana Avenue", 220, new int[]{18,36,90,250,700,875,1050}),
             new RealEstate(Color.RED, "Illinois Avenue", 240, new int[]{20,40,100,300,750,925,1100}),						//25
-            new Railroad("B. & O. Railroad", railRoadRentStages),
+            new Railroad("B. & O. Railroad", railRoadRentStages, "railroad.png"),
             new RealEstate(Color.YELLOW, "Atlantic Avenue", 260, new int[]{22,44,110,330,800,975,1150}),
             new RealEstate(Color.YELLOW, "Ventnor Avenue", 260, new int[]{22,44,110,330,800,975,1150}),
-            new Utility("Water Works", utilityRentStages),
+            new Utility("Water Works", utilityRentStages, "railroad.png"),
             new RealEstate(Color.YELLOW, "Marvin Gardens", 280, new int[]{24,48,120,360,850,1025,1200}),					//30
             new GoToJailSpace(jailSpace),
             new RealEstate(Color.GREEN, "Pacific Avenue", 300, new int[]{26,52,130,390,900,1100,1275}),
             new RealEstate(Color.GREEN, "North Carolina Avenue", 300, new int[]{26,52,130,390,900,1100,1275}),
             new CommunityChest(),
             new RealEstate(Color.GREEN, "Pennsylvania Avenue", 320, new int[]{28,56,150,450,1000,1200,1400}),					//35
-            new Railroad("Short Line", railRoadRentStages),
+            new Railroad("Short Line", railRoadRentStages, "railroad.png"),
             new Chance(),
             new RealEstate(Color.BLUE, "Park Place", 350, new int[]{35,70,175,500,1100,1300,1500}),
             new TaxSpace(TaxSpace.TaxSpaceType.LUXURY),

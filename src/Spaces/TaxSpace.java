@@ -52,6 +52,8 @@ public class TaxSpace extends CostSpace{
 	@Override
 	protected void processSpace(Player player, Model model) {
 
+		int originalCash = player.getCashAmmt();
+		
 		int costToCharge = getCostToCharge(player, 0);
 		player.addCash(-costToCharge);	
 
@@ -60,7 +62,11 @@ public class TaxSpace extends CostSpace{
 			parking.addCashToFreeParkingReward(costToCharge);
 		}
 
-		model.notifyViewOfInfoMessage(player.toString() + " taxed $" + getCostToCharge(player, 0));
+		if (taxSpaceType == TaxSpaceType.INCOME) {
+			model.notifyViewOfInfoMessage("Income tax! Charged $" + costToCharge + "\n(Lesser of $200 or 10% of cash ($" + originalCash + ")");
+		} else {
+			model.notifyViewOfInfoMessage("Luxury tax! Charged flat tax of $" + costToCharge);
+		}
 	}
 
 }

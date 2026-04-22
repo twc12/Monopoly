@@ -30,10 +30,11 @@ public abstract class Property extends CostSpace {
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
-			//if rule=optional property sale=true AND currplayer not AI:
-			model.notifyViewPurchasePrompt(player, this);
-			//else:
-			//this.purchaseProperty(player);
+			if (model.getGameSettings().getOptionalBuying() == true){//&& !player.getIsAI()) {
+				model.notifyViewPurchasePrompt(player, this);
+			} else {
+				this.purchaseProperty(player, model);
+			}
 			
 		//otherwise, charge/transfer $
 		} else {
@@ -45,8 +46,7 @@ public abstract class Property extends CostSpace {
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			model.notifyViewOfInfoMessage(player.toString() + " charged rent $" + cost + " on " + this.getName() + ". Given to " + this.getOwner().toString());
-
+			model.notifyViewOfInfoMessage(player.toString() + " charged $" + cost + "!\nLanded on " + this.getName() + "\nCollected by " + this.getOwner().toString());
 		}
 
 	}
@@ -55,7 +55,7 @@ public abstract class Property extends CostSpace {
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
-		model.notifyViewOfInfoMessage(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount());
+		model.notifyViewOfInfoMessage(player.toString() + " purchased\n" + this.getName() + " for $" + this.getPurchaseAmount() + "!");
 	}
 	
 	public void mortgageProperty(Player player, Model model) {
@@ -65,7 +65,7 @@ public abstract class Property extends CostSpace {
 			int mortgageAmount = this.getPurchaseAmount()/2;
 			player.addCash(mortgageAmount);		
 			this.setIsMortgaged(true);
-			model.notifyViewOfInfoMessage(player.toString() + " mortgaged " + this.getName() + " for $" + mortgageAmount);
+			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
 
 		} else {
 			model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");

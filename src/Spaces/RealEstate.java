@@ -2,6 +2,8 @@ package Spaces;
 
 import java.util.*;
 
+import Monopoly.Model;
+
 public class RealEstate extends Property {
 	
 	private int buildPrice;
@@ -96,22 +98,22 @@ public class RealEstate extends Property {
     	return canBuild;
     }
     
-    public void buildHouseHotel(Player player) {
+    public void buildHouseHotel(Player player, Model model) {
     	
     	//check if this space is owned by the purchaser
     	if (this.getOwner() == null || !this.getOwner().equals(player)) {
-    		System.out.println(player.toString() + " does not own " + this.getName() + " can't build");
+    		model.notifyViewOfInfoMessage(player.toString() + " does not own " + this.getName() + " can't build");
     		return;
     	}
     	
     	//first must get a color set before can build
     	if (!this.canBuild) {
-    		System.out.println("Can't build! Must aquire a set!");
+    		model.notifyViewOfInfoMessage("Can't build! Must aquire a set!");
     		return; 
     	}
     	
     	if (this.buildingStage>=5) {
-    		System.out.println("Already fully developed!");
+    		model.notifyViewOfInfoMessage("Already fully developed!");
     		return;
     	}
     	
@@ -125,7 +127,7 @@ public class RealEstate extends Property {
     				//if i have another realestate of the same color that has a lower buildstage, can't buy
 	    			if (checkRealEstate.getColor().equals(this.getColor())) {
 	        			if(checkRealEstate.getBuildingStage()<this.getBuildingStage()) { 
-	        		    	System.out.println("Must build evenly!");
+	        	    		model.notifyViewOfInfoMessage("Can't build, must build evenly!");
 	        				return;
 	        			}
 	    			}	
@@ -137,13 +139,13 @@ public class RealEstate extends Property {
         	player.addCash(-buildPrice);
         	this.rentStageIndex += 1;
         	this.buildingStage += 1;
-        	System.out.println((player.toString() + " built on " + this.name + " buildstage: " + this.getBuildingStage()));
+    		model.notifyViewOfInfoMessage((player.toString() + " built on " + this.name + " buildstage: " + this.getBuildingStage()));
 	    }else {
-	    	System.out.println("Not enough funds!");
+	    	model.notifyViewOfInfoMessage("Not enough funds!");
     	}
     }
     
-    public void sellHouseHotel(Player player) {
+    public void sellHouseHotel(Player player, Model model) {
     	
     	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
     	List<Property> myProperties = this.getOwner().getListOfProperties();
@@ -154,7 +156,7 @@ public class RealEstate extends Property {
     			if (checkRealEstate.getColor().equals(this.getColor())) {
     				//if i have another realestate of the same color that has a higher buildstage, can't sell
         			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
-        				System.out.println("Not selling evenly across properties of same color!");
+        				model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
         				return; //Throw exception?
         			}
     			}	
@@ -162,7 +164,7 @@ public class RealEstate extends Property {
     	}
     	
     	if (this.buildingStage < 1) {
-    		System.out.println("Buildstage is less than 1, can't sell buildings!");
+    		model.notifyViewOfInfoMessage("Buildstage is less than 1, can't sell buildings!");
     		return;
     	}
     	
@@ -171,7 +173,7 @@ public class RealEstate extends Property {
     	player.addCash(sellPrice);
     	this.rentStageIndex -= 1;
     	this.buildingStage -= 1;
-    	System.out.println(player.toString() + " successfully sold house/hotel for $" + sellPrice);
+    	model.notifyViewOfInfoMessage(player.toString() + " successfully sold house/hotel for $" + sellPrice);
     	
     }
     

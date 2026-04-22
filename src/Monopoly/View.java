@@ -1493,8 +1493,11 @@ public class View extends Application implements Observer {
 			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
 		}
 		
-		
-		
+		//generic string can be used to update player info label in the center
+		else if (message instanceof String) {
+	        String sentence = (String) message;
+	        infoToTellPlayer.setText(sentence);
+	    }
 	}
 	
 	/**
@@ -1729,15 +1732,15 @@ public class View extends Application implements Observer {
 
 	    	buildPrice = ((RealEstate) testSpace).getBuildPrice();
 	    	
-	    	lines.add("Purchase Price          $" + purchasePrice +"\n");
-	    	lines.add("Rent                               $" + prices.get(0)+"\n");
-	    	lines.add("Rent w/ color set      $" + prices.get(1)+"\n");
-	    	lines.add("Rent w/ 1 house        $" + prices.get(2)+"\n");
-	    	lines.add("Rent w/ 2 houses     $" + prices.get(3)+"\n"); 
-	    	lines.add("Rent w/ 3 houses     $" + prices.get(4)+"\n");
-	    	lines.add("Rent w/ 4 houses     $" + prices.get(5)+"\n");
+	    	lines.add("Purchase Price             $" + purchasePrice +"\n");
+	    	lines.add("Rent                             $" + prices.get(0)+"\n");
+	    	lines.add("Rent w/ color set         $" + prices.get(1)+"\n");
+	    	lines.add("Rent w/ 1 house          $" + prices.get(2)+"\n");
+	    	lines.add("Rent w/ 2 houses        $" + prices.get(3)+"\n"); 
+	    	lines.add("Rent w/ 3 houses        $" + prices.get(4)+"\n");
+	    	lines.add("Rent w/ 4 houses        $" + prices.get(5)+"\n");
 	    	lines.add("Rent w/ hotel              $" + prices.get(6)+"\n\n");
-	    	lines.add("Houses cost              $" + buildPrice +"\n");
+	    	lines.add("Houses cost                $" + buildPrice +"\n");
 
 
 	    	StackPane bodyBox = new StackPane();

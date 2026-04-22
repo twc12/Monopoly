@@ -60,7 +60,7 @@ public class TaxSpace extends CostSpace{
 			parking.addCashToFreeParkingReward(costToCharge);
 		}
 
-		System.out.println(player.toString() + " taxed $" + getCostToCharge(player, 0));
+		model.notifyViewOfInfoMessage(player.toString() + " taxed $" + getCostToCharge(player, 0));
 	}
 
 }

@@ -228,9 +228,44 @@ public class Controller {
 	        property.sellHouseHotel(player, model);
 	}
 	
+	
+	//START-SCREEN METHODS, 
 	public String getThemeString() {
 		return model.getGameSettings().getActiveThemeString();
 	}
 	
+	public void setTheme(GameSettings.Theme theme) {
+		model.getGameSettings().setTheme(theme);
+	}
+	
+	public void setFreeParkingRule(boolean val) {
+		model.getGameSettings().setFreeParkingRule(val);
+	}
+	
+	public void setCustomGoValue(int val) {
+		model.getGameSettings().setCustomGoValue(val);
+	}
+	
+	public void setOptionalBuying(boolean optionalBuying) {
+		model.getGameSettings().setOptionalBuying(optionalBuying);
+	}
+	
+	public void setPropertyPriceAdjust(int propertyPriceAdjust) {
+		model.getGameSettings().setPropertyPriceAdjust(propertyPriceAdjust);
+	}
+	
+	public void setStartingMoney(int setStartingMoney) {
+		model.getGameSettings().setStartingMoney(setStartingMoney);
+	}
+	
+	public void setAmountOfAIPlayers(int amountOfAIPlayers) {
+		model.getGameSettings().setAmountOfAIPlayers(amountOfAIPlayers);
+	}
+	
+	public void setAmountOfPlayers(int amountOfPlayers) {
+		model.getGameSettings().setAmountOfPlayers(amountOfPlayers);
+	}
+
+
 	
 }

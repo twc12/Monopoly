@@ -32,10 +32,8 @@ public class Model extends Observable {
 	 * the change it later. just make sure that the player icons pngs are named the same as the ones in
 	 * the playerIconsToPickFrom variable with "PlayerIcon.png" added to the end 
 	 */
-	private String theme = "standardTheme";
-	
-
-	private int totalPlayers = 4; // FOR THE FUTURE THIS SHOULD BE CHANGEABLE BASED ON USER INPUT FROM START SCREEN
+	private String theme;// = "standardTheme";
+	private int totalPlayers;
 	/**
 	 * This holds the spaces of the monopoly board
 	 */
@@ -49,7 +47,7 @@ public class Model extends Observable {
 	
 	private int lastDiceRollAmmt;
 
-	private GameSettings ruleSet; // Placeholder for Jake
+	private GameSettings gameSettings; // Placeholder for Jake
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
 	
@@ -61,7 +59,9 @@ public class Model extends Observable {
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
 
-		ruleSet = new GameSettings();
+		gameSettings = new GameSettings();
+		totalPlayers = gameSettings.getAmountOfPlayers();
+		theme = gameSettings.getActiveThemeString();
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
 		List<Color> playerColorsToPickFrom = new ArrayList<>();
@@ -128,7 +128,7 @@ public class Model extends Observable {
 	}
 	
 	public GameSettings getGameSettings() {
-		return ruleSet;
+		return gameSettings;
 	}
 	
 	public List<Space> getSpaces() {

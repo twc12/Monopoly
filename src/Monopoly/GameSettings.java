@@ -1,6 +1,5 @@
 package Monopoly;
 
-import java.util.HashMap;
 
 public class GameSettings  {
 	
@@ -18,6 +17,10 @@ public class GameSettings  {
     }
     private Theme activeTheme = Theme.STANDARD;
     
+    /**
+     * 
+     * @return
+     */
 	public String getActiveThemeString() {
 		switch(activeTheme) {
 			case STANDARD: return "standardTheme"; 
@@ -26,6 +29,10 @@ public class GameSettings  {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param theme (ex: GameSettings.Theme STANDARD)
+	 */
 	public void setTheme(Theme theme) {
 		this.activeTheme = theme;
 	}
@@ -38,8 +45,8 @@ public class GameSettings  {
     	return passGoValue; 
 	}
     
-    public void setFreeParkingRule() {
-    	freeParkingEnabled = true;
+    public void setFreeParkingRule(boolean val) {
+    	freeParkingEnabled = val;
     }
 
     public void setCustomGoValue(int val) {

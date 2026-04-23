@@ -1102,7 +1102,7 @@ public class View extends Application implements Observer {
 		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
-		otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
+		//TODO: temp fix - otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
 
 
 		// !! NOW FILL THE BOTTOM ROW !!
@@ -1806,7 +1806,7 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			aiLoggerVBox.getChildren().add(newAiActionLabel);			
+			//TODO: temp fix - aiLoggerVBox.getChildren().add(newAiActionLabel);			
 		}
 		
 		// if the view is notified that a player is going to jail, you can play sounds and animate

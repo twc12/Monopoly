@@ -183,9 +183,9 @@ public class CardBuilder {
 		
 		// #16
 		chanceCards.add(new Card(cardDescription.get(15), (player,model)->{
-		for(int i = 0; i < player.getHouseCount(); i++) 
+		for(int i = 0; i < player.getHousesOwnedCount(); i++) 
 			player.addCash(25);
-		for(int i = 0; i < player.getHotelCount(); i++) 
+		for(int i = 0; i < player.getHotelsOwnedCount(); i++) 
 			player.addCash(100);
 		}));
 		

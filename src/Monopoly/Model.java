@@ -10,6 +10,7 @@ import Spaces.AIPlayer;
 import Cards.Card;
 import Cards.Deck;
 import Messages.AiActionMessage;
+import Messages.AiLogsEnabledMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GoToJailMessage;
@@ -52,6 +53,8 @@ public class Model extends Observable {
 	private GameSettings gameSettings; // Placeholder for Jake
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
+	private int turnCounter = 1;
+	
 	
 	//constructor for JUNIT, doesn't create a view
 	public Model() {
@@ -90,6 +93,8 @@ public class Model extends Observable {
 	private void post_init() {
 		totalHumanPlayers = gameSettings.getAmountOfPlayers();
 		totalAiPlayers = gameSettings.getAmountOfAIPlayers();
+		if (totalAiPlayers > 0) this.notifyViewAILogsEnabled();
+		
 		theme = gameSettings.getActiveThemeString();
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
@@ -142,6 +147,7 @@ public class Model extends Observable {
 		}
 		currentPlayer = players.get(nextPlayerIndex);
 		
+		this.turnCounter++;
 		this.notifyViewOfNextPlayersTurn(currentPlayer);
 	}
 
@@ -268,7 +274,7 @@ public class Model extends Observable {
 	 * @param theAiActionTaken (String): A BRIEF string explaining the AI action 
 	 */
 	public void notifyViewOfAiAction(String theAiActionTaken) {
-		AiActionMessage aiActionMsg = new AiActionMessage(theAiActionTaken);
+		AiActionMessage aiActionMsg = new AiActionMessage(">Turn " + this.turnCounter + ":\n" + theAiActionTaken);
 	    this.setChanged();
 	    this.notifyObservers(aiActionMsg);
 	    this.clearChanged();
@@ -297,6 +303,17 @@ public class Model extends Observable {
 	    this.setChanged();
 	    this.notifyObservers(message);
 	    this.clearChanged();
+	}
+	
+	/**
+	 * Generic notify view method for displaying string message to the view (ex: "Player X charged rent!")
+	 * @param message
+	 */
+	public void notifyViewAILogsEnabled() {
+		AiLogsEnabledMessage aiLogsEnabledMsg = new AiLogsEnabledMessage();
+		this.setChanged();
+		this.notifyObservers(aiLogsEnabledMsg);
+		this.clearChanged();	
 	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {

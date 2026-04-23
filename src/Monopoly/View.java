@@ -10,6 +10,7 @@ import java.util.Observer;
 
 import Cards.Card;
 import Messages.AiActionMessage;
+import Messages.AiLogsEnabledMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GoToJailMessage;
@@ -42,6 +43,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -202,7 +204,7 @@ public class View extends Application implements Observer {
 	 * This Customizes the look of the ai logger text labels
 	 * Hacker style text
 	 */
-	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px;"; 
+	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px; -fx-font-family: 'Monospaced'; -fx-font-size: 11px;"; 
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -227,6 +229,7 @@ public class View extends Application implements Observer {
 	 * hold the stack pane that jail is made out of 
 	 */
 	private StackPane jailSpaceStackPane;
+	private boolean aiLogsEnabled = false;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -486,6 +489,7 @@ public class View extends Application implements Observer {
 			controller.initializeGameSettings(gameSettings);
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
+			stage.setResizable(false);
 		});
 		
 		
@@ -558,6 +562,9 @@ public class View extends Application implements Observer {
 	 * This should make sense, we only create the main game once its ready to be made.
 	 * @return
 	 */
+	
+	
+	
 	private Scene createMainGame() {
 		
 		theme = controller.getThemeString();
@@ -565,7 +572,7 @@ public class View extends Application implements Observer {
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();		
 	
-		BorderPane mainScreen = new BorderPane();
+		BorderPane mainScreen = new BorderPane();		
  
 		// Set the monopoly title at the top
 		VBox topLabelSection = createTopLabelSection();
@@ -741,15 +748,25 @@ public class View extends Application implements Observer {
 	 * @param selectedOtherPlayer (Player): The object of the selected other player chosen to be shown
 	 */
 	private void showOtherPlayersInfoInBottomRight(Player selectedOtherPlayer) {
-		if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
-			otherPlayerInfoCardStackPane.getChildren().clear();
-			previousSelectedOtherPlayer = null; // allow them to click it again
-			return;
-		}
-		previousSelectedOtherPlayer = selectedOtherPlayer;
-		Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer);
-		otherPlayerInfoCardStackPane.getChildren().clear();
-		otherPlayerInfoCardStackPane.getChildren().add(othersInfoCard);
+	    // remove playerinfocard on top of the logger if one is showing
+	    if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {//clear playerinfocard, keep ai console logger
+	        otherPlayerInfoCardStackPane.getChildren().removeLast();
+	    }
+
+	    //if re-selecting same player
+	    if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
+	        previousSelectedOtherPlayer = null; //de-select
+	        // if there's a card already here, and its not the console, remove it
+		    if (otherPlayerInfoCardStackPane.getChildren().size() > 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear playerinfocard, keep ai console
+		        otherPlayerInfoCardStackPane.getChildren().removeLast();
+		    }
+	        return;
+
+	    }
+
+	    //otherwise, add new playerinfocard on top
+	    previousSelectedOtherPlayer = selectedOtherPlayer;
+	    otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(selectedOtherPlayer));
 	}
 	
 	
@@ -841,10 +858,12 @@ public class View extends Application implements Observer {
 		infoToTellPlayer.setFont(new Font(15));
 		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
 				
-		// AI MOVEMENT/DECISION LOGGER
-		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
-		aiLoggerVBox.setAlignment(Pos.CENTER);
-		this.aiLoggerVBox = aiLoggerVBox;
+
+		
+		
+		
+		
+		
 
 	    StackPane centerOverlay = new StackPane();
 	    centerOverlay.setStyle(
@@ -857,7 +876,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.prefHeightProperty().bind(mainBoardGridPane.heightProperty().multiply(0.65));
 	    
 	    centerOverlay.getChildren().add(centerContent);
-	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
 	    wrapper.getChildren().addAll(backgroundImageView,titleImageView,mainBoardGridPane, centerOverlay);
 
@@ -1096,6 +1115,9 @@ public class View extends Application implements Observer {
 		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
+		
+		if (this.aiLogsEnabled) otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
+
 
 
 		// !! NOW FILL THE BOTTOM ROW !!
@@ -1311,22 +1333,29 @@ public class View extends Application implements Observer {
 
 			// check if realestate, building the 5 "build-progress-dots" on top of a real estate card and add build-button onclick logic
 			if (currProperty instanceof RealEstate re) {
-				FlowPane buildingDots = new FlowPane(1, 0); // 1 horiz-pixel margin
+				HBox buildingDots = new HBox(1); // 1 horiz-pixel margin
 				buildingDots.setAlignment(Pos.CENTER);
-				//creating 5 dots, one for each buildstage value on the property
 				int buildStage = re.getBuildingStage();
-				for (int i = 1; i <= 5; i++) {
-					Rectangle dot = new Rectangle(10, 10);
-					if (buildStage >= i) {
-						dot.setFill(Color.ORANGERED);
-					} else {
-						dot.setFill(Color.TRANSPARENT);
+				
+				//drawing houses/hotels based on buildstage value on the property
+			    if (buildStage == 5) {
+			        // single large red rectangle (hotel)
+			        Rectangle hotel = new Rectangle(26, 10);
+			        hotel.setFill(Color.RED);
+			        buildingDots.getChildren().add(hotel);
+			    } else { // up to 4 green rectangles (houses)
+					for (int i = 1; i <= 4; i++) {
+						Rectangle dot = new Rectangle(8, 8);
+						if (buildStage >= i) {
+							dot.setFill(Color.GREEN);
+						} else {
+							dot.setFill(Color.TRANSPARENT);
+						}
+						//adding to flowpane
+						buildingDots.getChildren().add(dot);
 					}
-					//styling and adding to flowpane
-					dot.setStroke(Color.MAROON);
-					dot.setStrokeWidth(1);
-					buildingDots.getChildren().add(dot);
-				}
+			    }
+			    
 				// add dots to the bottom of the card stackpane
 				StackPane.setAlignment(buildingDots, Pos.BOTTOM_CENTER);
 				visualPropertyInfoCard.getChildren().add(buildingDots);
@@ -1754,7 +1783,7 @@ public class View extends Application implements Observer {
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			
 			// at the start of another player, clear the Ai logger of any potential messages
-			aiLoggerVBox.getChildren().clear();
+//			aiLoggerVBox.getChildren();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 			
@@ -1799,7 +1828,7 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			aiLoggerVBox.getChildren().add(newAiActionLabel);
+			aiLoggerVBox.getChildren().add(newAiActionLabel);			
 		}
 		
 		// if the view is notified that a player is going to jail, you can play sounds and animate
@@ -1823,6 +1852,11 @@ public class View extends Application implements Observer {
 		else if (message instanceof String) {
 	        String sentence = (String) message;
 	        infoToTellPlayer.setText(sentence);
+	    }
+		
+		//generic string can be used to update player info label in the center
+		else if (message instanceof AiLogsEnabledMessage) {
+	        this.aiLogsEnabled = true;
 	    }
 	}
 	
@@ -2250,5 +2284,35 @@ public class View extends Application implements Observer {
 		root.setUserData(testSpace);
 		return  root;
 	}
+	
+	private ScrollPane buildAILoggerScrollPane(){
+		
+	// AI MOVEMENT/DECISION LOGGER		
+	VBox aiLoggerVBox = new VBox(1); // 5px of separation between the messages
+	this.aiLoggerVBox = aiLoggerVBox;
+	aiLoggerVBox.setAlignment(Pos.TOP_LEFT);
+	ScrollPane aiLoggerScrollPane = new ScrollPane(aiLoggerVBox);
+
+	double aiLogWidth = 290;
+	double aiLogHeight = 210;
+	aiLoggerScrollPane.setMinWidth(aiLogWidth);
+	aiLoggerScrollPane.setPrefWidth(aiLogWidth);
+	aiLoggerScrollPane.setMaxWidth(aiLogWidth);
+	aiLoggerScrollPane.setMinHeight(aiLogHeight);
+	aiLoggerScrollPane.setPrefHeight(aiLogHeight);
+	aiLoggerScrollPane.setMaxHeight(aiLogHeight);
+	aiLoggerScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+	aiLoggerScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
+	aiLoggerScrollPane.setPannable(true);
+
+	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black;");
+	Label initLabel = new Label(">AI Player Log:          ");
+	initLabel.setStyle(aiLoggerLabelSetStyle);
+	aiLoggerVBox.getChildren().add(initLabel);
+	
+	return aiLoggerScrollPane;
+	
+	}
+	
 
 }

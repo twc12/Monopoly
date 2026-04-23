@@ -35,8 +35,8 @@ public abstract class Property extends CostSpace {
 			if (player.isAI()) {
 				((AIPlayer) player).decidePurchase(this, model);
 			}
-			else if (model.getGameSettings().getOptionalBuying() == true){//&& !player.getIsAI()) {
-				model.notifyViewPurchasePrompt(player, this);
+			else if (model.getGameSettings().getOptionalBuying() == true) {
+				if (!player.isAI()) model.notifyViewPurchasePrompt(player, this);
 			} else {
 				this.purchaseProperty(player, model);
 			}
@@ -73,7 +73,7 @@ public abstract class Property extends CostSpace {
 			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
 
 		} else {
-			model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
+			if (!player.isAI()) model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
 		}
 		
 		

@@ -23,9 +23,6 @@ public class Player {
     private Model model;
     private boolean isDoneRollingDice;
     private Image playersIconImage; 
-    private int houseCount;
-    private int hotelCount;
-
     
     /**
      * Constructor for the Player Class
@@ -51,8 +48,6 @@ public class Player {
         listOfProperties = new ArrayList<Property>();
         ammtOfGetOutOfJailCards = 0;
         isDoneRollingDice = false;
-        houseCount = 0;
-        hotelCount = 0;
     }
 
     /**
@@ -107,15 +102,35 @@ public class Player {
     public List<Property> getListOfProperties(){return listOfProperties;}
     
     /**
-     * @return The count of houses
+     * Returns how many houses owned based on the buildstage of player's properties (buildstages 1 through 4 would have houses)
+     * @return The count of houses owned by the player
      */
-    public int getHouseCount() {return houseCount;}
+    public int getHousesOwnedCount() {
+    	int count = 0;
+    	for (Property myProperty: this.listOfProperties) {
+    		if (myProperty instanceof RealEstate re && re.getBuildingStage() >= 1 && re.getBuildingStage() <= 4) {
+    			count += re.getBuildingStage();
+    		} 
+    	}
+    	return count;
+    }
     
     /**
-     * @return The count of hotels
+     * Returns how many hotels owned based on the buildStage of player's properties (buildstages 5 would have a hotel)
+     * @return The count of hotels owned by the player
      */
-    public int getHotelCount() {return hotelCount;}
-
+    public int getHotelsOwnedCount() {
+    	int count = 0;
+    	for (Property myProperty: this.listOfProperties) {
+    		if (myProperty instanceof RealEstate re && re.getBuildingStage() == 5) {
+    			count += 1;
+    		} 
+    	}
+    	return count;
+    }
+    
+    
+    
     /**
      * @return the model object
      */
@@ -303,15 +318,15 @@ public class Player {
     		//scanning for matching properties
     		int matchedPropertiesCount = 0;
 			for (Property myProperty: this.getListOfProperties()) {
-				if (myProperty.getClass().equals(this.getClass())){
+				if (myProperty.getClass().equals(property.getClass())){
 					matchedPropertiesCount+=1;
 				}
 			}
 			
 			//applying effect of matching properties (rent will increase/decrease)
 			for (Property myProperty: this.getListOfProperties()) {
-				if (myProperty.getClass().equals(this.getClass())){
-					property.applyMatchedPropertyEffect(matchedPropertiesCount);
+				if (myProperty.getClass().equals(property.getClass())){
+					myProperty.applyMatchedPropertyEffect(matchedPropertiesCount);
 				}
 			} 
 		}else {// only real-estate
@@ -339,5 +354,7 @@ public class Player {
 			} 
 		}  
     }
+    
+
     
 }

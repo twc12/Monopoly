@@ -318,14 +318,14 @@ public class Player {
     		//scanning for matching properties
     		int matchedPropertiesCount = 0;
 			for (Property myProperty: this.getListOfProperties()) {
-				if (myProperty.getClass().equals(this.getClass())){
+				if (myProperty.getClass().equals(property.getClass())){
 					matchedPropertiesCount+=1;
 				}
 			}
 			
 			//applying effect of matching properties (rent will increase/decrease)
 			for (Property myProperty: this.getListOfProperties()) {
-				if (myProperty.getClass().equals(this.getClass())){
+				if (myProperty.getClass().equals(property.getClass())){
 					property.applyMatchedPropertyEffect(matchedPropertiesCount);
 				}
 			} 

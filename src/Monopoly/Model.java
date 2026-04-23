@@ -52,6 +52,8 @@ public class Model extends Observable {
 	private GameSettings gameSettings; // Placeholder for Jake
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
+	private int turnCounter = 1;
+	
 	
 	//constructor for JUNIT, doesn't create a view
 	public Model() {
@@ -142,6 +144,7 @@ public class Model extends Observable {
 		}
 		currentPlayer = players.get(nextPlayerIndex);
 		
+		this.turnCounter++;
 		this.notifyViewOfNextPlayersTurn(currentPlayer);
 	}
 
@@ -268,7 +271,7 @@ public class Model extends Observable {
 	 * @param theAiActionTaken (String): A BRIEF string explaining the AI action 
 	 */
 	public void notifyViewOfAiAction(String theAiActionTaken) {
-		AiActionMessage aiActionMsg = new AiActionMessage(theAiActionTaken);
+		AiActionMessage aiActionMsg = new AiActionMessage(">Turn " + this.turnCounter + ":\n" + theAiActionTaken);
 	    this.setChanged();
 	    this.notifyObservers(aiActionMsg);
 	    this.clearChanged();

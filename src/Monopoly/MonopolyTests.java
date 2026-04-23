@@ -30,6 +30,8 @@ class MonopolyTests {
 		
 		Controller controller = new Controller();
 		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+
 		
 		controller.rollDice(controller.getCurrentPlayer());
 		controller.rollDice(controller.getCurrentPlayer());
@@ -52,6 +54,7 @@ class MonopolyTests {
 
 		Controller controller = new Controller();
 		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
 		
 		//get 2 brown properties
 		List<Space> spaces = controller.getSpaces();

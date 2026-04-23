@@ -42,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -202,7 +203,7 @@ public class View extends Application implements Observer {
 	 * This Customizes the look of the ai logger text labels
 	 * Hacker style text
 	 */
-	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px;"; 
+	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px; -fx-font-family: 'Monospaced'; -fx-font-size: 11px;"; 
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -485,6 +486,7 @@ public class View extends Application implements Observer {
 			controller.initializeGameSettings(gameSettings);
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
+			stage.setResizable(false);
 		});
 		
 		
@@ -557,6 +559,9 @@ public class View extends Application implements Observer {
 	 * This should make sense, we only create the main game once its ready to be made.
 	 * @return
 	 */
+	
+	
+	
 	private Scene createMainGame() {
 		
 		theme = controller.getThemeString();
@@ -564,7 +569,7 @@ public class View extends Application implements Observer {
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();		
 	
-		BorderPane mainScreen = new BorderPane();
+		BorderPane mainScreen = new BorderPane();		
  
 		// Set the monopoly title at the top
 		VBox topLabelSection = createTopLabelSection();
@@ -840,10 +845,12 @@ public class View extends Application implements Observer {
 		infoToTellPlayer.setFont(new Font(15));
 		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
 				
-		// AI MOVEMENT/DECISION LOGGER
-		VBox aiLoggerVBox = new VBox(5); // 5px of separation between the messages
-		aiLoggerVBox.setAlignment(Pos.CENTER);
-		this.aiLoggerVBox = aiLoggerVBox;
+
+		
+		
+		
+		
+		
 
 	    StackPane centerOverlay = new StackPane();
 	    centerOverlay.setStyle(
@@ -856,7 +863,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.prefHeightProperty().bind(mainBoardGridPane.heightProperty().multiply(0.65));
 	    
 	    centerOverlay.getChildren().add(centerContent);
-	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer, aiLoggerVBox);
+	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
 	    wrapper.getChildren().addAll(backgroundImageView,titleImageView,mainBoardGridPane, centerOverlay);
 
@@ -1095,6 +1102,7 @@ public class View extends Application implements Observer {
 		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
+		otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
 
 
 		// !! NOW FILL THE BOTTOM ROW !!
@@ -1753,7 +1761,7 @@ public class View extends Application implements Observer {
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			
 			// at the start of another player, clear the Ai logger of any potential messages
-			aiLoggerVBox.getChildren().clear();
+//			aiLoggerVBox.getChildren();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 			
@@ -1798,7 +1806,7 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			aiLoggerVBox.getChildren().add(newAiActionLabel);
+			aiLoggerVBox.getChildren().add(newAiActionLabel);			
 		}
 		
 		// if the view is notified that a player is going to jail, you can play sounds and animate
@@ -2247,5 +2255,35 @@ public class View extends Application implements Observer {
 		root.setUserData(testSpace);
 		return  root;
 	}
+	
+	private ScrollPane buildAILoggerScrollPane(){
+		
+	// AI MOVEMENT/DECISION LOGGER		
+	VBox aiLoggerVBox = new VBox(1); // 5px of separation between the messages
+	this.aiLoggerVBox = aiLoggerVBox;
+	aiLoggerVBox.setAlignment(Pos.TOP_LEFT);
+	ScrollPane aiLoggerScrollPane = new ScrollPane(aiLoggerVBox);
+
+	double aiLogWidth = 290;
+	double aiLogHeight = 210;
+	aiLoggerScrollPane.setMinWidth(aiLogWidth);
+	aiLoggerScrollPane.setPrefWidth(aiLogWidth);
+	aiLoggerScrollPane.setMaxWidth(aiLogWidth);
+	aiLoggerScrollPane.setMinHeight(aiLogHeight);
+	aiLoggerScrollPane.setPrefHeight(aiLogHeight);
+	aiLoggerScrollPane.setMaxHeight(aiLogHeight);
+	aiLoggerScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+	aiLoggerScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
+	aiLoggerScrollPane.setPannable(true);
+
+	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black;");
+	Label initLabel = new Label(">AI Player Log:          ");
+	initLabel.setStyle(aiLoggerLabelSetStyle);
+	aiLoggerVBox.getChildren().add(initLabel);
+	
+	return aiLoggerScrollPane;
+	
+	}
+	
 
 }

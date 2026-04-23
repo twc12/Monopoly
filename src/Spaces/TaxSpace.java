@@ -63,9 +63,9 @@ public class TaxSpace extends CostSpace{
 		}
 
 		if (taxSpaceType == TaxSpaceType.INCOME) {
-			model.notifyViewOfInfoMessage("Income tax! Charged $" + costToCharge + "\n(Lesser of $200 or 10% of cash ($" + originalCash + ")");
+			model.notifyViewOfInfoMessage(player.toString() + " charged\nIncome tax! $" + costToCharge + "\n(Lesser of $200 or 10% of cash ($" + originalCash + ")");
 		} else {
-			model.notifyViewOfInfoMessage("Luxury tax! Charged flat tax of $" + costToCharge);
+			model.notifyViewOfInfoMessage(player.toString() +" charged\nLuxury tax! Flat tax of $" + costToCharge);
 		}
 	}
 

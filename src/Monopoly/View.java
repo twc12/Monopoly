@@ -1334,20 +1334,27 @@ public class View extends Application implements Observer {
 			if (currProperty instanceof RealEstate re) {
 				FlowPane buildingDots = new FlowPane(1, 0); // 1 horiz-pixel margin
 				buildingDots.setAlignment(Pos.CENTER);
-				//creating 5 dots, one for each buildstage value on the property
 				int buildStage = re.getBuildingStage();
-				for (int i = 1; i <= 5; i++) {
-					Rectangle dot = new Rectangle(10, 10);
-					if (buildStage >= i) {
-						dot.setFill(Color.ORANGERED);
-					} else {
-						dot.setFill(Color.TRANSPARENT);
+				
+				//drawing houses/hotels based on buildstage value on the property
+			    if (buildStage == 5) {
+			        // single large red rectangle (hotel)
+			        Rectangle hotel = new Rectangle(22, 10);
+			        hotel.setFill(Color.RED);
+			        buildingDots.getChildren().add(hotel);
+			    } else { // up to 4 green rectangles (houses)
+					for (int i = 1; i <= 4; i++) {
+						Rectangle dot = new Rectangle(10, 10);
+						if (buildStage >= i) {
+							dot.setFill(Color.GREEN);
+						} else {
+							dot.setFill(Color.TRANSPARENT);
+						}
+						//adding to flowpane
+						buildingDots.getChildren().add(dot);
 					}
-					//styling and adding to flowpane
-					dot.setStroke(Color.MAROON);
-					dot.setStrokeWidth(1);
-					buildingDots.getChildren().add(dot);
-				}
+			    }
+			    
 				// add dots to the bottom of the card stackpane
 				StackPane.setAlignment(buildingDots, Pos.BOTTOM_CENTER);
 				visualPropertyInfoCard.getChildren().add(buildingDots);

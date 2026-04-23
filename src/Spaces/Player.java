@@ -326,7 +326,7 @@ public class Player {
 			//applying effect of matching properties (rent will increase/decrease)
 			for (Property myProperty: this.getListOfProperties()) {
 				if (myProperty.getClass().equals(property.getClass())){
-					property.applyMatchedPropertyEffect(matchedPropertiesCount);
+					myProperty.applyMatchedPropertyEffect(matchedPropertiesCount);
 				}
 			} 
 		}else {// only real-estate

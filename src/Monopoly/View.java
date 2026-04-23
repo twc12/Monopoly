@@ -1332,19 +1332,19 @@ public class View extends Application implements Observer {
 
 			// check if realestate, building the 5 "build-progress-dots" on top of a real estate card and add build-button onclick logic
 			if (currProperty instanceof RealEstate re) {
-				FlowPane buildingDots = new FlowPane(1, 0); // 1 horiz-pixel margin
+				HBox buildingDots = new HBox(1); // 1 horiz-pixel margin
 				buildingDots.setAlignment(Pos.CENTER);
 				int buildStage = re.getBuildingStage();
 				
 				//drawing houses/hotels based on buildstage value on the property
 			    if (buildStage == 5) {
 			        // single large red rectangle (hotel)
-			        Rectangle hotel = new Rectangle(22, 10);
+			        Rectangle hotel = new Rectangle(26, 10);
 			        hotel.setFill(Color.RED);
 			        buildingDots.getChildren().add(hotel);
 			    } else { // up to 4 green rectangles (houses)
 					for (int i = 1; i <= 4; i++) {
-						Rectangle dot = new Rectangle(10, 10);
+						Rectangle dot = new Rectangle(8, 8);
 						if (buildStage >= i) {
 							dot.setFill(Color.GREEN);
 						} else {

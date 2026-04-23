@@ -1761,9 +1761,6 @@ public class View extends Application implements Observer {
 		if (message instanceof DiceRollResultMessage) {
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
 			animateDiceRoll(diceRollResult.getDice1Result(), diceRollResult.getDice2Result());
-		    if (otherPlayerInfoCardStackPane.getChildren().size() != 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear other player's playercard if selected
-		        otherPlayerInfoCardStackPane.getChildren().removeLast();
-		    }
 		}
 		
 		// if the message is that a player moved, animate the player moving on the board
@@ -1799,10 +1796,6 @@ public class View extends Application implements Observer {
 				endTurnButton.setDisable(true);
 				((AIPlayer) currentPlayer).playAITurn(controller);
 			}
-			
-		    if (otherPlayerInfoCardStackPane.getChildren().size() != 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear other player's playercard if selected
-		        otherPlayerInfoCardStackPane.getChildren().removeLast();
-		    }
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional

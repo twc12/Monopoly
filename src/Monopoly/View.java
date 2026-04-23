@@ -747,15 +747,20 @@ public class View extends Application implements Observer {
 	 * @param selectedOtherPlayer (Player): The object of the selected other player chosen to be shown
 	 */
 	private void showOtherPlayersInfoInBottomRight(Player selectedOtherPlayer) {
-		if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
-			otherPlayerInfoCardStackPane.getChildren().clear();
-			previousSelectedOtherPlayer = null; // allow them to click it again
-			return;
-		}
-		previousSelectedOtherPlayer = selectedOtherPlayer;
-		Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer);
-		otherPlayerInfoCardStackPane.getChildren().clear();
-		otherPlayerInfoCardStackPane.getChildren().add(othersInfoCard);
+	    if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
+	    	if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {// if the ai console's already been added, dont clear it
+	    	    otherPlayerInfoCardStackPane.getChildren().removeLast();
+	    	}
+	    	previousSelectedOtherPlayer = null;
+	        return;
+	    }
+	    
+	    previousSelectedOtherPlayer = selectedOtherPlayer;
+	    Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer);
+    	if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {// if the ai console's already been added, dont clear it
+    	    otherPlayerInfoCardStackPane.getChildren().removeLast();
+    	}
+    	otherPlayerInfoCardStackPane.getChildren().add(othersInfoCard);
 	}
 	
 	

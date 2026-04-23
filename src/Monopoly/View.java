@@ -747,20 +747,25 @@ public class View extends Application implements Observer {
 	 * @param selectedOtherPlayer (Player): The object of the selected other player chosen to be shown
 	 */
 	private void showOtherPlayersInfoInBottomRight(Player selectedOtherPlayer) {
-	    if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
-	    	if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {// if the ai console's already been added, dont clear it
-	    	    otherPlayerInfoCardStackPane.getChildren().removeLast();
-	    	}
-	    	previousSelectedOtherPlayer = null;
-	        return;
+	    // remove playerinfocard on top of the logger if one is showing
+	    if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {//clear playerinfocard, keep ai console logger
+	        otherPlayerInfoCardStackPane.getChildren().removeLast();
 	    }
-	    
+
+	    //if re-selecting same player
+	    if (selectedOtherPlayer.equals(previousSelectedOtherPlayer)) {
+	        previousSelectedOtherPlayer = null; //de-select
+	        // if there's a card already here, and its not the console, remove it
+		    if (otherPlayerInfoCardStackPane.getChildren().size() > 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear playerinfocard, keep ai console
+		        otherPlayerInfoCardStackPane.getChildren().removeLast();
+		    }
+	        return;
+
+	    }
+
+	    //otherwise, add new playerinfocard on top
 	    previousSelectedOtherPlayer = selectedOtherPlayer;
-	    Node othersInfoCard = createVisualPlayerInfoCard(selectedOtherPlayer);
-    	if (otherPlayerInfoCardStackPane.getChildren().size() > 1) {// if the ai console's already been added, dont clear it
-    	    otherPlayerInfoCardStackPane.getChildren().removeLast();
-    	}
-    	otherPlayerInfoCardStackPane.getChildren().add(othersInfoCard);
+	    otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(selectedOtherPlayer));
 	}
 	
 	
@@ -1756,6 +1761,9 @@ public class View extends Application implements Observer {
 		if (message instanceof DiceRollResultMessage) {
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
 			animateDiceRoll(diceRollResult.getDice1Result(), diceRollResult.getDice2Result());
+		    if (otherPlayerInfoCardStackPane.getChildren().size() != 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear other player's playercard if selected
+		        otherPlayerInfoCardStackPane.getChildren().removeLast();
+		    }
 		}
 		
 		// if the message is that a player moved, animate the player moving on the board
@@ -1791,6 +1799,10 @@ public class View extends Application implements Observer {
 				endTurnButton.setDisable(true);
 				((AIPlayer) currentPlayer).playAITurn(controller);
 			}
+			
+		    if (otherPlayerInfoCardStackPane.getChildren().size() != 0 && !(otherPlayerInfoCardStackPane.getChildren().getFirst() instanceof ScrollPane)) { //clear other player's playercard if selected
+		        otherPlayerInfoCardStackPane.getChildren().removeLast();
+		    }
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional

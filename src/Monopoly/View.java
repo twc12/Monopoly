@@ -10,6 +10,7 @@ import java.util.Observer;
 
 import Cards.Card;
 import Messages.AiActionMessage;
+import Messages.AiLogsEnabledMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GoToJailMessage;
@@ -227,6 +228,7 @@ public class View extends Application implements Observer {
 	 * hold the stack pane that jail is made out of 
 	 */
 	private StackPane jailSpaceStackPane;
+	private boolean aiLogsEnabled = false;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -1102,7 +1104,9 @@ public class View extends Application implements Observer {
 		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
-		//TODO: temp fix - otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
+		
+		if (this.aiLogsEnabled) otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
+
 
 
 		// !! NOW FILL THE BOTTOM ROW !!
@@ -1806,7 +1810,7 @@ public class View extends Application implements Observer {
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			//TODO: temp fix - aiLoggerVBox.getChildren().add(newAiActionLabel);			
+			aiLoggerVBox.getChildren().add(newAiActionLabel);			
 		}
 		
 		// if the view is notified that a player is going to jail, you can play sounds and animate
@@ -1830,6 +1834,11 @@ public class View extends Application implements Observer {
 		else if (message instanceof String) {
 	        String sentence = (String) message;
 	        infoToTellPlayer.setText(sentence);
+	    }
+		
+		//generic string can be used to update player info label in the center
+		else if (message instanceof AiLogsEnabledMessage) {
+	        this.aiLogsEnabled = true;
 	    }
 	}
 	

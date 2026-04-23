@@ -10,6 +10,7 @@ import Spaces.AIPlayer;
 import Cards.Card;
 import Cards.Deck;
 import Messages.AiActionMessage;
+import Messages.AiLogsEnabledMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GoToJailMessage;
@@ -92,6 +93,8 @@ public class Model extends Observable {
 	private void post_init() {
 		totalHumanPlayers = gameSettings.getAmountOfPlayers();
 		totalAiPlayers = gameSettings.getAmountOfAIPlayers();
+		if (totalAiPlayers > 0) this.notifyViewAILogsEnabled();
+		
 		theme = gameSettings.getActiveThemeString();
 		
 		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
@@ -300,6 +303,17 @@ public class Model extends Observable {
 	    this.setChanged();
 	    this.notifyObservers(message);
 	    this.clearChanged();
+	}
+	
+	/**
+	 * Generic notify view method for displaying string message to the view (ex: "Player X charged rent!")
+	 * @param message
+	 */
+	public void notifyViewAILogsEnabled() {
+		AiLogsEnabledMessage aiLogsEnabledMsg = new AiLogsEnabledMessage();
+		this.setChanged();
+		this.notifyObservers(aiLogsEnabledMsg);
+		this.clearChanged();	
 	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {

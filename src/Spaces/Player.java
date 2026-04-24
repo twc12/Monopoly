@@ -164,7 +164,86 @@ public class Player {
      * @param ammt: amount of cash to add
      */
     public void addCash(int ammt) {
+    	
+    	
+    	//if negative
+    	if (ammt < 0) {
+    		
+    		int cost = Math.abs(ammt);
+    		if (cost > this.getCashAmmt()) {
+    			this.bankruptcy(cost);
+    			//PLAYER GOING NEGATIVE
+    			//AUTOSELL PROPERTIES/HOMES
+    			//IF CAN'T SELL ENOUGH, PLAYER.LOSE
+
+    		}
+    	}
     	cashAmmt += ammt;
+    }
+    
+    
+    private void bankruptcy(int ammtOwed) {
+    	
+    	
+    	int ammtPayed = 0;
+    	
+    	
+    	List<Property> myProperties = this.getListOfProperties();
+    	
+    	
+    	
+    	//selling off buildings
+    	for (Property property: myProperties) {
+    		
+    		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			
+    			ammtPayed += re.getBuildPrice()/2;
+    			
+    			
+    			
+    			
+    		}
+    		
+    		
+    		
+    		
+    	}
+    	
+    	
+    	
+    	
+    	//selling off properties
+    	for (Property property: myProperties) {
+    		
+    		
+    		
+    		
+   
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    		
+    	}
+    	
+    	
+    	
+    	
     }
     
     /**

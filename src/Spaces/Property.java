@@ -57,6 +57,7 @@ public abstract class Property extends CostSpace {
 	}
 	
 	public void purchaseProperty(Player player, Model model) {
+		if (player.getCashAmmt()<this.getPurchaseAmount())return;
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		

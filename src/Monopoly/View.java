@@ -842,6 +842,20 @@ public class View extends Application implements Observer {
 		backgroundImageView.setManaged(false);
 		backgroundImageView.setTranslateY(-180);
 		backgroundImageView.setTranslateX(-800);
+	    // background image
+	    Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
+
+	    
+	    //bottomframeimageview
+	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
+	    bottomFrameImageView.setPreserveRatio(false);
+	    bottomFrameImageView.setFitHeight(500);
+	    bottomFrameImageView.setFitWidth(1200);
+	    bottomFrameImageView.setTranslateY(178);
+	    bottomFrameImageView.setTranslateX(-430);
+	    bottomFrameImageView.setMouseTransparent(true);
+	    bottomFrameImageView.setManaged(false);
+		
 				
 		//place image at the bottom
 		StackPane.setAlignment(backgroundImageView, Pos.BOTTOM_CENTER);
@@ -882,7 +896,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
-	    wrapper.getChildren().addAll(backgroundImageView,titleImageView,mainBoardGridPane, centerOverlay);
+	    wrapper.getChildren().addAll(backgroundImageView, bottomFrameImageView, titleImageView,mainBoardGridPane, centerOverlay);
 
 
 	    return wrapper;
@@ -1181,25 +1195,12 @@ public class View extends Application implements Observer {
 		
 		bottomHBox.setPrefHeight(bottomHBoxHeight);
 
-	    // background image
-	    Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
-
-	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
-	    bottomFrameImageView.setPreserveRatio(false);
-	    bottomFrameImageView.setFitHeight(500);
-	    bottomFrameImageView.setTranslateY(-130);
-	    bottomFrameImageView.setTranslateX(-50);
-	    bottomFrameImageView.setMouseTransparent(true);
-	    bottomFrameImageView.setManaged(false);
-
 	    // wrapper
 	    StackPane bottomWrapper = new StackPane();
 	    bottomWrapper.setAlignment(Pos.BOTTOM_CENTER);
 
-	    // make image stretch across the whole bottom section width
-	    bottomFrameImageView.fitWidthProperty().bind(bottomWrapper.widthProperty());
 
-	    bottomWrapper.getChildren().addAll(bottomFrameImageView, bottomHBox);
+	    bottomWrapper.getChildren().addAll(bottomHBox);
 
 	    return bottomWrapper;
 		

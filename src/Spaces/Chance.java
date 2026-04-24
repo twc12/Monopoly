@@ -5,8 +5,9 @@ import Monopoly.Model;
 
 public class Chance extends Space {
 	
-	public Chance() {
+	public Chance(String imageFile) {
 		super("Chance");
+		this.imageFile = imageFile;
 	}
 
 	@Override

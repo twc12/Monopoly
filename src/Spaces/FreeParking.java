@@ -10,9 +10,10 @@ public class FreeParking extends Space {
 
 	private int currFreeParkingReward;
 	
-	public FreeParking() {
+	public FreeParking(String imageFile) {
 		super("FreeParkingSpace");
 		currFreeParkingReward = 0;
+		this.imageFile = imageFile;
 	}
 	
 	public void addCashToFreeParkingReward(int cashAmount) {

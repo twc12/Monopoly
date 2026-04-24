@@ -9,7 +9,7 @@ import Monopoly.Model;
 public abstract class Property extends CostSpace {
 	private int purchaseAmount;
 	private Player owner;
-	private boolean isMortgaged = false;
+//	private boolean isMortgaged = false;
 	protected ArrayList<Integer> rentStages;
 	protected int rentStageIndex = 0;
 	
@@ -28,7 +28,7 @@ public abstract class Property extends CostSpace {
 	public void processSpace(Player player, Model model) {
 		
 		//do nothing if mortgaged, or the player is the owner
-		if (this.getIsMortgaged() || this.getOwner() == player) return;
+		if (this.getOwner() == player) return;
 		
 		//if unowned, prompt player to purchase
 		if (this.getOwner() == null) {
@@ -64,21 +64,22 @@ public abstract class Property extends CostSpace {
 		model.notifyViewOfInfoMessage(player.toString() + " purchased\n" + this.getName() + " for $" + this.getPurchaseAmount() + "!");
 	}
 	
-	public void mortgageProperty(Player player, Model model) {
 		
-		// can only mortgage if all building sold
-		if (((RealEstate)this).getBuildingStage() > 0){
-			int mortgageAmount = this.getPurchaseAmount()/2;
-			player.addCash(mortgageAmount);		
-			this.setIsMortgaged(true);
-			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
-
-		} else {
-			if (!player.isAI()) model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
-		}
-		
-		
-	}
+//	public void mortgageProperty(Player player, Model model) {
+//		
+//		// can only mortgage if all building sold
+//		if (((RealEstate)this).getBuildingStage() > 0){
+//			int mortgageAmount = this.getPurchaseAmount()/2;
+//			player.addCash(mortgageAmount);		
+//			this.setIsMortgaged(true);
+//			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
+//
+//		} else {
+//			if (!player.isAI()) model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
+//		}
+//		
+//		
+//	}
 	
 	public void unmortgageProperty(Player player) {
 		
@@ -100,13 +101,13 @@ public abstract class Property extends CostSpace {
 		this.owner = player;
 	}
 	
-	public boolean getIsMortgaged() {
-		return isMortgaged;
-	}
-	
-	public void setIsMortgaged(boolean val) {
-		this.isMortgaged = val;
-	}
+//	public boolean getIsMortgaged() {
+//		return isMortgaged;
+//	}
+//	
+//	public void setIsMortgaged(boolean val) {
+//		this.isMortgaged = val;
+//	}
 	
 	public int getMortgageAmount() {
 		return purchaseAmount/2;
@@ -119,6 +120,21 @@ public abstract class Property extends CostSpace {
 	//helper function when player buys a property, will check if matching properties and update rent stage/enable building,etc.
 	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
 
+	
+    public int autoSellProperty(Player player, Model model) {
+    	
+    	//if found no conflicts, sell
+    	int sellPrice = purchaseAmount/2;
+    	player.addCash(sellPrice);
+    	model.notifyViewOfInfoMessage(player.toString() + " sold property for $" + sellPrice + "!");
+    	
+    	this.setOwner(null);
+    	player.removeProperty(this);
+    	
+    	
+    	return sellPrice;
+    	
+    }
 
 
 }

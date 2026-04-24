@@ -23,6 +23,7 @@ public class Player {
     private Model model;
     private boolean isDoneRollingDice;
     private Image playersIconImage; 
+    private boolean gameOver = false;
     
     /**
      * Constructor for the Player Class
@@ -181,65 +182,49 @@ public class Player {
     	cashAmmt += ammt;
     }
     
+    public boolean getGameOver() {
+    	return this.gameOver;
+    }
     
     private void bankruptcy(int ammtOwed) {
     	
     	
     	int ammtPayed = 0;
+    	int buildingsSoldCount = 0;
+    	List<Property> propertiesSold = new ArrayList<Property>();
+
+    	
     	
     	
     	List<Property> myProperties = this.getListOfProperties();
-    	
-    	
-    	
-    	//selling off buildings
+    	//selling off all buildings first
     	for (Property property: myProperties) {
-    		
     		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			
-    			ammtPayed += re.getBuildPrice()/2;
-    			
-    			
-    			
-    			
+    			for (int i=0; i<re.getBuildingStage(); i++) {
+        			ammtPayed += re.autoSellHouseHotel(this, model);
+        			if (ammtPayed > ammtOwed) return;
+        			buildingsSoldCount++;
+        			i++;
+    			}
     		}
-    		
-    		
-    		
-    		
     	}
-    	
-    	
-    	
-    	
     	//selling off properties
     	for (Property property: myProperties) {
-    		
-    		
-    		
-    		
-   
-    		
-    		
-    		
-    		
-    		
-    		
-    		
-    		
-    		
+
+			ammtPayed += property.autoSellProperty(this, model);
+			if (ammtPayed > ammtOwed) return;
+			propertiesSold.add(property);
     	}
+    	
+    	if (ammtOwed > ammtPayed) {
+    		
+    		this.gameOver = true;
+    		System.out.println("GAME OVER");
+    		// model.removeplayerfromturncycle
+    	}
+    	
+    	
+    	model.notifyViewBankruptcy(this, ammtPayed, buildingsSoldCount, propertiesSold);
     	
     	
     	

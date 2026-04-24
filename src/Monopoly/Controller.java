@@ -162,6 +162,7 @@ public class Controller {
 	 */
 	public void processEndTurn() {
 		model.setCurrentPlayerToNext();
+		
 	}
 
 	/**
@@ -230,10 +231,10 @@ public class Controller {
 	        property.buildHouseHotel(player, model);
 	}
 	
-	//called by view when player successfully chooses to build on their property
-	public void sellHouseHotel(Player player, RealEstate property) {
-	        property.sellHouseHotel(player, model);
-	}
+//	//called by view when player successfully chooses to sell on their property
+//	public void autoSellHouseHotel(Player player, RealEstate property) {
+//	        property.autoSellHouseHotel(player, model);
+//	}
 	
 	
 	//START-SCREEN METHODS, 

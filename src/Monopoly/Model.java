@@ -315,6 +315,15 @@ public class Model extends Observable {
 		this.notifyObservers(aiLogsEnabledMsg);
 		this.clearChanged();	
 	}
+	
+	public void notifyViewBankruptcy(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold) {
+		BankruptcyMessage aiLogsEnabledMsg = new BankruptcyMessage(player, ammtPayed, buildingsSoldCount, propertiesSold);
+		this.setChanged();
+		this.notifyObservers(aiLogsEnabledMsg);
+		this.clearChanged();	
+	}
+	
+
 
 	public void setLastDiceRollAmmt(int ammtMoved) {
 		this.lastDiceRollAmmt = ammtMoved;
@@ -366,6 +375,4 @@ public class Model extends Observable {
 		
 	}
 
-	
-	
 }

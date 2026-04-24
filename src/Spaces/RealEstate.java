@@ -144,28 +144,28 @@ public class RealEstate extends Property {
     	}
     }
     
-    public void sellHouseHotel(Player player, Model model) {
+    public int autoSellHouseHotel(Player player, Model model) {
     	
-    	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
-    	List<Property> myProperties = this.getOwner().getListOfProperties();
-    	for (Property p: myProperties) {
-    		if (p instanceof RealEstate) {
-    			RealEstate checkRealEstate = (RealEstate)p;
-    			
-    			if (checkRealEstate.getColor().equals(this.getColor())) {
-    				//if i have another realestate of the same color that has a higher buildstage, can't sell
-        			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
-        				if (!player.isAI()) model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
-        				return; //Throw exception?
-        			}
-    			}	
-    		}
-    	}
-    	
-    	if (this.buildingStage < 1) {
-    		model.notifyViewOfInfoMessage("No buildings to sell!");
-    		return;
-    	}
+//    	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
+//    	List<Property> myProperties = this.getOwner().getListOfProperties();
+//    	for (Property p: myProperties) {
+//    		if (p instanceof RealEstate) {
+//    			RealEstate checkRealEstate = (RealEstate)p;
+//    			
+//    			if (checkRealEstate.getColor().equals(this.getColor())) {
+//    				//if i have another realestate of the same color that has a higher buildstage, can't sell
+//        			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
+//        				if (!player.isAI()) model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
+//        				return; //Throw exception?
+//        			}
+//    			}	
+//    		}
+//    	}
+//    	
+//    	if (this.buildingStage < 1) {
+//    		model.notifyViewOfInfoMessage("No buildings to sell!");
+//    		return;
+//    	}
     	
     	//if found no conflicts, sell
     	int sellPrice = buildPrice/2;
@@ -173,6 +173,8 @@ public class RealEstate extends Property {
     	this.rentStageIndex -= 1;
     	this.buildingStage -= 1;
     	model.notifyViewOfInfoMessage(player.toString() + " sold house/hotel for $" + sellPrice + "!");
+    	
+    	return sellPrice;
     	
     }
     
@@ -203,6 +205,8 @@ public class RealEstate extends Property {
 		}
 		
 	}
+	
+	
 
 
 }

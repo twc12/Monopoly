@@ -6,9 +6,10 @@ public class GoToJailSpace extends Space {
 	
 	private Jail jailSpaceObject;
 	
-	public GoToJailSpace(Jail jailSpaceInModel) {
+	public GoToJailSpace(Jail jailSpaceInModel, String imageFile) {
 		super("Go to Jail");
 		jailSpaceObject = jailSpaceInModel;
+		this.imageFile = imageFile;
 	}
 	
 	public Jail getJailSpace() {

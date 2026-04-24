@@ -6,8 +6,9 @@ public class GoSpace extends Space {
 	
 	private int amountEarnedWhenPassingGo = 200;
 	
-	public GoSpace() {
+	public GoSpace(String imageFile) {
 		super("GO");
+		this.imageFile = imageFile;
 	}
 	
 	public int getAmountEarnedWhenPassingGo() {

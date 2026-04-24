@@ -89,10 +89,10 @@ public class View extends Application implements Observer {
 	private String theme;
 	private String themeFolder;
 	
-	private int widthOfPropertySpaceCards = 40;
-	private int heightOfPropertySpaceCards = 80;
+	private int widthOfPropertySpaceCards = 47;
+	private int heightOfPropertySpaceCards = 61;
 	private int heightOfColorOnSpaceCard = 15;
-	private int playerCircleRadius = 10;
+	private int playerCircleRadius = 15;
 	
 	// BOTTOM ROW CONSTANTS
 	/**
@@ -205,6 +205,13 @@ public class View extends Application implements Observer {
 	 * Hacker style text
 	 */
 	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px; -fx-font-family: 'Monospaced'; -fx-font-size: 11px;"; 
+	
+	// For Theme changing
+	private String backgroundColor;
+	private String generalFont;
+	private String uiColor;
+	
+	
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -582,7 +589,9 @@ public class View extends Application implements Observer {
 		StackPane visualGameBoard = buildMonopolyBoard();
 		
 		// __________Position board on screen________________________
-		BorderPane.setMargin(visualGameBoard, new Insets(0, 0, 0, -200)); // TOP, RIGHT, BOTTOM, LEFT
+		visualGameBoard.setManaged(false);
+		visualGameBoard.setLayoutX(400);
+		visualGameBoard.setLayoutY(290);
 		mainScreen.setCenter(visualGameBoard);
 		//____________________________________________________________
 		
@@ -665,6 +674,8 @@ public class View extends Application implements Observer {
 		// Build the overlay for the detailed card info on mouse click 
 		StackPane detailedCardInfoOverlay = new StackPane();
 		this.detailedCardInfoOverlay = detailedCardInfoOverlay;
+		detailedCardInfoOverlay.setTranslateX(-200);
+		detailedCardInfoOverlay.setTranslateY(-70);
 		detailedCardInfoOverlay.setVisible(false); // dont show anything, not until mouse click 
 		detailedCardInfoOverlay.setPickOnBounds(false); // allows "transparent" click thru to the board
 
@@ -829,8 +840,8 @@ public class View extends Application implements Observer {
 		backgroundImageView.setFitWidth(1000);
 		backgroundImageView.setPreserveRatio(true);
 		backgroundImageView.setManaged(false);
-		backgroundImageView.setTranslateY(120);
-		backgroundImageView.setTranslateX(-200);
+		backgroundImageView.setTranslateY(-180);
+		backgroundImageView.setTranslateX(-800);
 				
 		//place image at the bottom
 		StackPane.setAlignment(backgroundImageView, Pos.BOTTOM_CENTER);
@@ -858,13 +869,6 @@ public class View extends Application implements Observer {
 		infoToTellPlayer.setFont(new Font(15));
 		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
 				
-
-		
-		
-		
-		
-		
-
 	    StackPane centerOverlay = new StackPane();
 	    centerOverlay.setStyle(
 	        
@@ -977,51 +981,79 @@ public class View extends Application implements Observer {
 
 		// CURRENTLY DOESNT USE OBJECT FOR ANYTHING
 		// in the future we should pull the image from the space object
-
+		
+		
+		Image pImage = new Image("/"+theme+"/"+ freeParkingSpaceObj.getImageFile());
+		ImageView pImageView = new ImageView(pImage);
+		pImageView.setFitWidth(heightOfPropertySpaceCards + 15);
+		pImageView.setFitHeight(heightOfPropertySpaceCards + 10);
+		pImageView.setManaged(false);
+		pImageView.setTranslateX(-5);
 		
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
 		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label freeParkingText = new Label("Free Parking");
-		freeParkingText.setFont(new Font(10));
+		baseBottomRect.setStroke(Color.BLACK);
 		freeParkingStackPane.getChildren().add(baseBottomRect);
-		freeParkingStackPane.getChildren().add(freeParkingText);
+		freeParkingStackPane.getChildren().add(pImageView);
 		mainBoardGridPane.add(freeParkingStackPane, 0, 0);
 
 		// GO SPACE
+		Image gImage = new Image("/"+theme+"/"+ goSpaceObj.getImageFile());
+		ImageView gImageView = new ImageView(gImage);
+		gImageView.setFitWidth(heightOfPropertySpaceCards + 10);
+		gImageView.setFitHeight(heightOfPropertySpaceCards + 10);
+		gImageView.setManaged(false);
+		gImageView.setTranslateX(-5);
+		
 		StackPane goSpaceStackPane = new StackPane();
 		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goSpaceText = new Label("GO");
-		goSpaceText.setFont(new Font(20));
+		baseBottomRect.setStroke(Color.BLACK);
 		goSpaceStackPane.getChildren().add(baseBottomRect);
-		goSpaceStackPane.getChildren().add(goSpaceText);
+		goSpaceStackPane.getChildren().add(gImageView);
 		mainBoardGridPane.add(goSpaceStackPane, 10, 10);
 		
 		// JAIL SPACE
+		
+		// Jail Image
+		Image jImage = new Image("/"+theme+"/"+ jailSpaceObj.getImageFile());
+		ImageView jImageView = new ImageView(jImage);
+		jImageView.setFitWidth(heightOfPropertySpaceCards + 15);
+		jImageView.setFitHeight(heightOfPropertySpaceCards + 15);
+		jImageView.setManaged(false);
+		jImageView.setTranslateY(-12);
+		jImageView.setTranslateX(3);
+		
 		StackPane jailStackPane = new StackPane();
 		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label jailText = new Label("Jail/Just Visiting");
-		jailText.setFont(new Font(8));
+		baseBottomRect.setStroke(Color.BLACK);
 		jailStackPane.getChildren().add(baseBottomRect);
-		jailStackPane.getChildren().add(jailText);
+		jailStackPane.getChildren().add(jImageView);
 		mainBoardGridPane.add(jailStackPane, 0, 10);
 		
 		// GO TO JAIL SPACE
+		
+		Image gjImage = new Image("/"+theme+"/"+ goToJailSpaceObj.getImageFile());
+		ImageView gjImageView = new ImageView(gjImage);
+		gjImageView.setFitWidth(heightOfPropertySpaceCards + 15);
+		gjImageView.setFitHeight(heightOfPropertySpaceCards + 15);
+		gjImageView.setManaged(false);
+		gjImageView.setTranslateX(-5);
+		
 		StackPane goToJailStackPane = new StackPane();
 		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
-		Label goToJailText = new Label("Go to Jail");
-		goToJailText.setFont(new Font(13));
+		baseBottomRect.setStroke(Color.BLACK);
 		goToJailStackPane.getChildren().add(baseBottomRect);
-		goToJailStackPane.getChildren().add(goToJailText);
+		goToJailStackPane.getChildren().add(gjImageView);
 		mainBoardGridPane.add(goToJailStackPane, 10, 0);
 	}
 
@@ -1054,6 +1086,7 @@ public class View extends Application implements Observer {
 
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, Color.BISQUE);
+		
 		spaceCardPane.getChildren().add(baseBottomRect);
 
 		// TEST The top color of properties
@@ -1062,6 +1095,18 @@ public class View extends Application implements Observer {
 				((RealEstate)space).getFXColor());
 		topColorBandRect.setTranslateY(-23); // -23 is to put match the corners perfectly
 		spaceCardPane.getChildren().add(topColorBandRect);
+		}
+		
+		if(space.hasImage()) {
+			Image image = new Image("/"+ theme + "/"+space.getImageFile());
+			ImageView icon = new ImageView(image);
+			icon.setFitWidth(widthOfPropertySpaceCards-5);
+			icon.setFitHeight(heightOfPropertySpaceCards-5);
+			icon.setManaged(false);
+			icon.setPreserveRatio(true);
+			icon.setTranslateX(5);
+			icon.setTranslateY(10);
+			spaceCardPane.getChildren().add(icon);
 		}
 
 		// Rotate the
@@ -1072,11 +1117,18 @@ public class View extends Application implements Observer {
 		Group spaceCardGroup = new Group(spaceCardPane);
 		
 		// FUTURE PROOOF CODE: this code should stay after that function above (line 448) is made because we need clickable stuff
-		// Whenever this -- on the board -- property pane is clicked show the detailed stats
+		// Whenever this -- on the board -- property pane is panned over show the detailed stats
 		spaceCardGroup.setUserData(space);
-		spaceCardGroup.setOnMouseClicked((e) -> {
-			showDetailedPropertyInfo((Property) spaceCardGroup.getUserData());
+		
+		spaceCardGroup.setOnMouseEntered((e) -> {
+			if((spaceCardGroup.getUserData() instanceof Property))
+				showDetailedPropertyInfo((Property) spaceCardGroup.getUserData());
 		});
+		
+		spaceCardGroup.setOnMouseExited(e -> {
+			detailedCardInfoOverlay.setVisible(false); 
+		});
+		
 
 		mainBoardGridPane.add(spaceCardGroup, col, row);
 	}
@@ -2001,6 +2053,8 @@ public class View extends Application implements Observer {
 			detailedCardInfoOverlay.setOnMouseClicked(null);
 		});
 	}
+	
+	
 	
 	/**
 	 * Builds a resizable stackframe for viewing property cards.

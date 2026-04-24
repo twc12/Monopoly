@@ -12,9 +12,10 @@ public class Jail extends Space {
 	private Set<Player> currPlayersInJail;
 	public  Map<Player, Integer> playerAttemptsToGetOutMapping;
 	
-	public Jail() {
+	public Jail(String imageFile) {
 		super("Jail");
 		playerAttemptsToGetOutMapping = new HashMap<>();
+		this.imageFile = imageFile;
 	}
 	
 	public Set<Player> getCurrentPlayersInJail(){

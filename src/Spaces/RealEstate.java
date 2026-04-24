@@ -168,6 +168,7 @@ public class RealEstate extends Property {
 //    	}
     	
     	//if found no conflicts, sell
+    	if (this.buildingStage > 0) {
     	int sellPrice = buildPrice/2;
     	player.addCash(sellPrice);
     	this.rentStageIndex -= 1;
@@ -175,6 +176,7 @@ public class RealEstate extends Property {
     	model.notifyViewOfInfoMessage(player.toString() + " sold house/hotel for $" + sellPrice + "!");
     	
     	return sellPrice;
+    	} return 0;
     	
     }
     

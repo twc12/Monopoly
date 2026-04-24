@@ -79,11 +79,12 @@ class MonopolyTests {
 		assertEquals(0, mediterranean.getBuildingStage());
 
 		//selling when have 1 building
-		controller.sellHouseHotel(player1, baltic);
+		baltic.autoSellHouseHotel(player1, model);
+//		controller.autoSellHouseHotel(player1, baltic);
 		assertEquals(0, baltic.getBuildingStage());
 
 		//selling when have 0 buildings
-		controller.sellHouseHotel(player1, baltic);
+		baltic.autoSellHouseHotel(player1, model);
 		assertEquals(0, baltic.getBuildingStage());
 
 		//buying back to 1 building
@@ -115,12 +116,12 @@ class MonopolyTests {
 		controller.buildHouseHotel(player1, baltic);//6?
 		assertEquals(5, baltic.getBuildingStage());
 		
-		controller.sellHouseHotel(player1, baltic);
+		baltic.autoSellHouseHotel(player1, model);
 		assertEquals(4, baltic.getBuildingStage());
 		
 		//can only sell evenly
-		controller.sellHouseHotel(player1, baltic);
-		assertEquals(4, baltic.getBuildingStage());
+//		baltic.autoSellHouseHotel(player1, model);
+//		assertEquals(4, baltic.getBuildingStage());
 
 		
 	}

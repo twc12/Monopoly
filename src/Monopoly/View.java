@@ -74,6 +74,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage; 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.AudioClip;
 
 /**
  * File: View.java Purpose: This class holds the java fx view of the class. it
@@ -217,9 +220,14 @@ public class View extends Application implements Observer {
 	 * These are used for displaying a card when the player lands on a chance card
 	 */
 	private Label cardLabel;
+	private Image cardImage;
+	private ImageView cardIcon;
 	private StackPane cardOverlay;
 	private Label cardTitle;
-	private ImageView cardIcon;
+	
+	// main music
+	private MediaPlayer mplayer;
+	
 	
 	//similar to cards, for purchaseprompts
 	private StackPane purchaseOverlay;
@@ -649,6 +657,16 @@ public class View extends Application implements Observer {
 		
 		root.getChildren().add(rightImageView);
 		//________________________________________________________________________________
+		
+		// Media Section
+		
+		Media media = new Media(getClass().getResource("/" + theme + "/mainMusic.mp3").toExternalForm());
+
+		mplayer = new MediaPlayer(media);
+		mplayer.setVolume(.2);
+		mplayer.setCycleCount(MediaPlayer.INDEFINITE);
+		mplayer.play();
+		
 		
 		
 		root.getChildren().add(mainScreen);
@@ -1480,6 +1498,12 @@ public class View extends Application implements Observer {
 			
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
+			
+			AudioClip sound = new AudioClip(
+				    getClass().getResource("/" + theme + "/dice.mp3").toExternalForm()
+				);
+
+				sound.play();
 		}
 		
 		// if the player is done rolling dice then dont allow them to roll dice
@@ -1950,14 +1974,22 @@ public class View extends Application implements Observer {
 	    // Card description
 	    cardLabel = new Label();
 	    cardLabel.setWrapText(true);
-	    cardLabel.setTextAlignment(TextAlignment.CENTER);
+	    cardLabel.setTextAlignment(TextAlignment.LEFT);
 	    cardLabel.setAlignment(Pos.CENTER);
-	    cardLabel.setStyle("-fx-font-size: 16px;");
-
+	    cardLabel.setStyle("-fx-font-size: 14px;");
+	    
+	    cardIcon = new ImageView();
+	    cardIcon.setPreserveRatio(true);
+	    cardIcon.setFitWidth(width*.8);
+	    cardIcon.setFitHeight(height*.8);
+	    cardIcon.setTranslateX(15);
+	    cardIcon.setTranslateY(32);
+	    
+	    
 	    Label continueLabel = new Label("Click to continue");
 	    continueLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
 
-	    cardBox.getChildren().addAll(cardTitle, cardLabel, continueLabel);
+	    cardBox.getChildren().addAll(cardTitle, cardLabel, continueLabel,cardIcon);
 	    overlay.getChildren().addAll(cardBox,cardIcon);
 
 
@@ -1970,12 +2002,19 @@ public class View extends Application implements Observer {
 	 * 
 	 * @param card
 	 */
-	public void showCard(Card card) {
+	public void showCard(Card card) {	
+		AudioClip sound = new AudioClip(
+			    getClass().getResource("/"+theme+"/cardSound.mp3").toExternalForm()
+			);
+
+			sound.play();
+		
 		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
 			cardTitle.setText("Chance");		
 		else 
 			cardTitle.setText("Community Chest");
-		
+		cardImage = new Image("/"+theme + "/" +card.getImage());
+		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());
 		cardOverlay.setVisible(true);
 		

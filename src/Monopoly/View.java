@@ -319,15 +319,15 @@ public class View extends Application implements Observer {
 			propPricesMultiLabel.setText("Property Prices Multiplier: "+userSelction);
 			switch (userSelction) {
 				case "1 (default)":
-					gameSettings.setPropertyPriceAdjust(1);
+					gameSettings.setPropertyPriceAdjust(1); break;
 				case "2x (Meh)":
-					gameSettings.setPropertyPriceAdjust(2);
+					gameSettings.setPropertyPriceAdjust(2);break;
 				case "3x (Woozers)":
-					gameSettings.setPropertyPriceAdjust(3);
+					gameSettings.setPropertyPriceAdjust(3);break;
 				case "5x (Good luck)":
-					gameSettings.setPropertyPriceAdjust(5);
+					gameSettings.setPropertyPriceAdjust(5);break;
 				case "10 (Ultra Mega Extreme)":
-					gameSettings.setPropertyPriceAdjust(10);
+					gameSettings.setPropertyPriceAdjust(10);break;
 			}
 		});
 		
@@ -348,25 +348,27 @@ public class View extends Application implements Observer {
 		TextField startingMoneyInput = new TextField();
 		startingMoneyInput.setPromptText("Amt of money you start with");
 		startingMoneyInput.setMaxWidth(250);
-		startingMoneyInput.setOnAction(event -> {
-			String playersInput = startingMoneyInput.getText();
-			if (playersInput.length() == 0 || playersInput.equals("1500")) {
-				gameSettings.setStartingMoney(1500);
-				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
-			}
-			else {
-				try {
-					Integer customAmt = Integer.valueOf(playersInput);
-					gameSettings.setStartingMoney(customAmt);
-					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
-					
-				} catch (NumberFormatException e) {
-					gameSettings.setStartingMoney(1500);
-					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
-				}
-				
-			}
-		});
+		//commenting the below code for now, it doesn't apply the user's entered starting money, 
+		//i added code when we hit the start button
+//		startingMoneyInput.setOnAction(event -> {
+//			String playersInput = startingMoneyInput.getText();
+//			if (playersInput.length() == 0 || playersInput.equals("1500")) {
+//				gameSettings.setStartingMoney(1500);
+//				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
+//			}
+//			else {
+//				try {
+//					Integer customAmt = Integer.valueOf(playersInput);
+//					gameSettings.setStartingMoney(customAmt);
+//					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
+//					
+//				} catch (NumberFormatException e) {
+//					gameSettings.setStartingMoney(1500);
+//					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
+//				}
+//				
+//			}
+//		});
 		
 		// ENABLE/DISABLE TRADING
 		ToggleButton tradingButton = new ToggleButton("Trading with players");
@@ -494,6 +496,20 @@ public class View extends Application implements Observer {
 		
 		Button startGameButton = new Button("Start Game");
 		startGameButton.setOnAction(event -> {
+			
+			//set starting money
+		    String moneyInput = startingMoneyInput.getText();
+		    if (moneyInput != null && !moneyInput.isEmpty()) {
+		        try {
+		            gameSettings.setStartingMoney(Integer.valueOf(moneyInput));
+		        } catch (Exception e) {
+		            gameSettings.setStartingMoney(1500);
+		        }
+		    }
+			
+			
+			
+			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
 			Scene gameScene = createMainGame();

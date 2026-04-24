@@ -38,7 +38,7 @@ public class Player {
         playerId = id;
         this.model = model;
         inJail = false;
-        cashAmmt = 1500; // FUTURE - This should be updateable from user input on the start screen 
+        cashAmmt = model.getGameSettings().getStartingMoney();// FUTURE - This should be updateable from user input on the start screen 
         
         // IMPORTANT NOTE: the naming format for the player icons for this implementation is "namePlayerIcon.png"
         Image playerIcon = new Image("/"+theme+"/"+playersIconStr+"PlayerIcon.png");

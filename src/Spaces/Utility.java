@@ -12,7 +12,7 @@ public class Utility extends Property {
     public int getCostToCharge(Player player, int diceRoll) {
     	
     	// if not owned, or is mortgaged, return 0
-        if (getOwner() == null || this.getIsMortgaged()) {
+        if (getOwner() == null) {//|| this.getIsMortgaged()) {
         	return 0;
         }
         

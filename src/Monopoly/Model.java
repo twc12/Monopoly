@@ -316,10 +316,10 @@ public class Model extends Observable {
 		this.clearChanged();	
 	}
 	
-	public void notifyViewBankruptcy(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold) {
-		BankruptcyMessage aiLogsEnabledMsg = new BankruptcyMessage(player, ammtPayed, buildingsSoldCount, propertiesSold);
+	public void notifyViewBankruptcy(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold, boolean gameOver) {
+		BankruptcyMessage bankruptcyMessage = new BankruptcyMessage(player, ammtPayed, buildingsSoldCount, propertiesSold, gameOver);
 		this.setChanged();
-		this.notifyObservers(aiLogsEnabledMsg);
+		this.notifyObservers(bankruptcyMessage);
 		this.clearChanged();	
 	}
 	

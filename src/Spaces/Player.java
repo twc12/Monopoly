@@ -187,14 +187,9 @@ public class Player {
     }
     
     private void bankruptcy(int ammtOwed) {
-    	
-    	
     	int ammtPayed = 0;
     	int buildingsSoldCount = 0;
     	List<Property> propertiesSold = new ArrayList<Property>();
-
-    	
-    	
     	
     	List<Property> myProperties = this.getListOfProperties();
     	//selling off all buildings first
@@ -224,7 +219,7 @@ public class Player {
     	}
     	
     	
-    	model.notifyViewBankruptcy(this, ammtPayed, buildingsSoldCount, propertiesSold);
+    	model.notifyViewBankruptcy(this, ammtPayed, buildingsSoldCount, propertiesSold, this.gameOver);
     	
     	
     	

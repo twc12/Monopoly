@@ -11,11 +11,13 @@ public class BankruptcyMessage {
 	private int buildingsSoldCount;
 	private List<Property> propertiesSold;
 	private Player player;
+	private boolean gameOver;
 	
-	public BankruptcyMessage(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold) {
+	public BankruptcyMessage(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold, boolean gameOver) {
 		this.ammtPayed = ammtPayed;
 		this.buildingsSoldCount = buildingsSoldCount;
 		this.propertiesSold = propertiesSold;
+		this.gameOver = gameOver;
 	}
 	
 	public int getAmmtPayed() {
@@ -28,6 +30,10 @@ public class BankruptcyMessage {
 	
 	public List<Property> getPropertiesSold(){
 		return propertiesSold;
+	}
+	
+	public boolean gameGameOver() {
+		return gameOver;
 	}
 	
 	

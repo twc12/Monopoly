@@ -37,6 +37,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -47,6 +48,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -1911,6 +1913,27 @@ public class View extends Application implements Observer {
 		else if (message instanceof AiLogsEnabledMessage) {
 	        this.aiLogsEnabled = true;
 	    }
+		
+		else if (message instanceof BankruptcyMessage) {
+			BankruptcyMessage bnkMsg = (BankruptcyMessage) message;
+			int ammtPayed = bnkMsg.getAmmtPayed();
+			int buildingsSoldCount = bnkMsg.getBuildingsSoldCount();
+			List<Property> propertiesSold = bnkMsg.getPropertiesSold();
+			boolean gameOver = bnkMsg.gameGameOver();
+			
+			
+	        Alert alert = new Alert(AlertType.INFORMATION);
+	        alert.setTitle("Bankruptcy!");
+	        
+	        String testString = "ammtPayed: " + ammtPayed + "buildingsSoldCount: " + buildingsSoldCount + "gameover: " + gameOver;
+	        
+	        alert.setContentText(testString);
+	        
+	        alert.showAndWait();
+
+		
+		
+		}
 	}
 	
 	/**

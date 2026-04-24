@@ -851,8 +851,8 @@ public class View extends Application implements Observer {
 	    bottomFrameImageView.setPreserveRatio(false);
 	    bottomFrameImageView.setFitHeight(500);
 	    bottomFrameImageView.setFitWidth(1200);
-	    bottomFrameImageView.setTranslateY(178);
-	    bottomFrameImageView.setTranslateX(-430);
+	    bottomFrameImageView.setTranslateY(182);
+	    bottomFrameImageView.setTranslateX(-475);
 	    bottomFrameImageView.setMouseTransparent(true);
 	    bottomFrameImageView.setManaged(false);
 		

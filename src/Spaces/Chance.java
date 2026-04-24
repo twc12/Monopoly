@@ -12,7 +12,7 @@ public class Chance extends Space {
 	@Override
 	protected void processSpace(Player player, Model model) {
 		Card card = model.getChanceCards().pop();
-		model.notifyViewCardDrawn(player, card);
+		if (!player.isAI()) model.notifyViewCardDrawn(player, card);
 	}
 	
 }

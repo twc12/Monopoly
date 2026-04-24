@@ -107,12 +107,12 @@ public class RealEstate extends Property {
     	
     	//first must get a color set before can build
     	if (!this.canBuild) {
-    		model.notifyViewOfInfoMessage("Can't build! Must aquire a set!");
+    		if (!player.isAI()) model.notifyViewOfInfoMessage("Can't build! Must aquire a set!");
     		return; 
     	}
     	
     	if (this.buildingStage>=5) {
-    		model.notifyViewOfInfoMessage("Already fully developed!");
+    		if (!player.isAI()) model.notifyViewOfInfoMessage("Already fully developed!");
     		return;
     	}
     	
@@ -126,7 +126,7 @@ public class RealEstate extends Property {
     				//if i have another realestate of the same color that has a lower buildstage, can't buy
 	    			if (checkRealEstate.getColor().equals(this.getColor())) {
 	        			if(checkRealEstate.getBuildingStage()<this.getBuildingStage()) { 
-	        	    		model.notifyViewOfInfoMessage("Can't build, must build evenly!");
+	        				if (!player.isAI()) model.notifyViewOfInfoMessage("Can't build, must build evenly!");
 	        				return;
 	        			}
 	    			}	
@@ -140,7 +140,7 @@ public class RealEstate extends Property {
         	this.buildingStage += 1;
     		model.notifyViewOfInfoMessage((player.toString() + " built on\n" + this.name + "\nBuild stage: " + this.getBuildingStage()));
 	    }else {
-	    	model.notifyViewOfInfoMessage("Not enough funds!");
+	    	if (!player.isAI()) model.notifyViewOfInfoMessage("Not enough funds!");
     	}
     }
     
@@ -155,7 +155,7 @@ public class RealEstate extends Property {
     			if (checkRealEstate.getColor().equals(this.getColor())) {
     				//if i have another realestate of the same color that has a higher buildstage, can't sell
         			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
-        				model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
+        				if (!player.isAI()) model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
         				return; //Throw exception?
         			}
     			}	

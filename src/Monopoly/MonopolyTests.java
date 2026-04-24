@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import Spaces.Player;
+import Spaces.Railroad;
 import Spaces.RealEstate;
 import Spaces.Space;
 import javafx.application.Platform;
@@ -30,6 +31,8 @@ class MonopolyTests {
 		
 		Controller controller = new Controller();
 		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+
 		
 		controller.rollDice(controller.getCurrentPlayer());
 		controller.rollDice(controller.getCurrentPlayer());
@@ -52,6 +55,7 @@ class MonopolyTests {
 
 		Controller controller = new Controller();
 		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
 		
 		//get 2 brown properties
 		List<Space> spaces = controller.getSpaces();
@@ -120,5 +124,48 @@ class MonopolyTests {
 
 		
 	}
+	
+	@Test
+	void testRailroadRentStages() {
+	    Controller controller = new Controller();
+	    Model model = controller.model;
+	    model.setGameSettingsObj(new GameSettings());
+
+	    List<Space> spaces = controller.getSpaces();
+
+	    //get all railroads
+	    Railroad reading      = (Railroad) spaces.get(5);
+	    Railroad pennsylvania = (Railroad) spaces.get(15);
+	    Railroad bo           = (Railroad) spaces.get(25);
+	    Railroad shortLine    = (Railroad) spaces.get(35);
+
+	    Player player1 = controller.getAllPlayers().get(0);
+	    Player player2 = controller.getAllPlayers().get(1);
+
+	    // 1  railroads should cause player 2 to lose $25
+	    controller.purchaseProperty(player1, reading);
+	    int p2Cash = player2.getCashAmmt();
+	    reading.processSpace(player2, model);
+	    assertEquals(p2Cash - 25, player2.getCashAmmt());
+
+	    // 2  railroads should cause player 2 to lose $50
+	    controller.purchaseProperty(player1, pennsylvania);
+	    p2Cash = player2.getCashAmmt();
+	    reading.processSpace(player2, model);
+	    assertEquals(p2Cash - 50, player2.getCashAmmt());
+
+	    // 3 railroads should cause player 2 to lose $100
+	    controller.purchaseProperty(player1, bo);
+	    p2Cash = player2.getCashAmmt();
+	    reading.processSpace(player2, model);
+	    assertEquals(p2Cash - 100, player2.getCashAmmt());
+
+	    // 4 railroads should cause player 2 to lose $200
+	    controller.purchaseProperty(player1, shortLine);
+	    p2Cash = player2.getCashAmmt();
+	    reading.processSpace(player2, model);
+	    assertEquals(p2Cash - 200, player2.getCashAmmt());
+	}
+	
 
 }

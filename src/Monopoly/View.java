@@ -761,6 +761,9 @@ public class View extends Application implements Observer {
 				currPlayerStackPane.setOnMouseClicked((e) -> {
 					showOtherPlayersInfoInBottomRight((Player)currPlayerStackPane.getUserData());
 				});
+				
+
+				
 			}
 			
 			currPlayerLabel.setTextFill(Color.BISQUE);
@@ -778,6 +781,16 @@ public class View extends Application implements Observer {
 			
 			currPlayerStackPane.getChildren().addAll(newRectangle, currPlayerLabel, playersIconCircle);
 			playersRectangleStack.getChildren().add(currPlayerStackPane);
+			
+			if (player.getGameOver()) {
+				
+				currPlayerLabel.setStyle("-fx-strikethrough: true;");
+				newRectangle.setStroke(Color.rgb(255, 0, 0, 0.2));
+				currPlayerLabel.setTextFill(Color.RED);
+
+			}
+			
+			
 		}
 		
 		BorderPane.setAlignment(rightSidePlayerPickerGroup, Pos.CENTER);
@@ -1969,10 +1982,11 @@ public class View extends Application implements Observer {
 	        
 	        alert.setContentText(testString);
 	        
+	        buildRightPlayerPicker(controller.getCurrentPlayer());
+	        controller.processEndTurn();
+	        
 	        alert.showAndWait();
-
-		
-		
+	        		
 		}
 	}
 	
@@ -2096,17 +2110,40 @@ public class View extends Application implements Observer {
 	    //adding buttons to the right spot in the hbox
 	    VBox buttonBox = new VBox();
 	    buttonBox.setAlignment(Pos.CENTER);
-	    Button buyButton = new Button("Buy");
-	    buyButton.setOnAction(e -> {		//On click, buy property, update playerinfo, hide overlay
+	    
+		// BUY BUTTON - copying style from roll dice button
+		Rectangle buyButton = new Rectangle(coreButtonWidth-30, coreButtonHeight-5 , Color.LIGHTGREEN);
+		buyButton.setArcWidth(30); 
+		buyButton.setArcHeight(30);
+		Label buyLabel = new Label("Buy Property");
+		StackPane buyStackPane = new StackPane();
+		buyStackPane.getChildren().addAll(buyButton,buyLabel);
+		
+		// if can't afford, mark as disabled and don't rig click event
+		if (player.getCashAmmt() < property.getPurchaseAmount()) {
+			buyLabel.setText("Can't buy");;
+			buyButton.setFill(Color.GREY);
+		} else {
+			buyStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	        controller.purchaseProperty(player, property);
 	        populatePlayerCardWithNewInfo(player);
 	        this.purchaseOverlay.setVisible(false);
-	    });
-	    Button skipButton = new Button("Skip"); //On click for skip, just hide overlay
-	    skipButton.setOnAction(e -> {
+			});
+		}
+	    	    
+	    //On click for skip, just hide overlay
+		Rectangle skipButton = new Rectangle(coreButtonWidth-50, coreButtonHeight-5, Color.LIGHTSTEELBLUE);
+		skipButton.setArcWidth(30); 
+		skipButton.setArcHeight(30);
+		Label skipLabel = new Label("Pass");
+		StackPane skipStackPane = new StackPane();
+		skipStackPane.getChildren().addAll(skipButton,skipLabel);
+		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
-	    });
-	    buttonBox.getChildren().addAll(buyButton, skipButton);
+		});
+
+	    
+	    buttonBox.getChildren().addAll(buyStackPane, skipStackPane);
 	    hboxContainer.getChildren().add(buttonBox);
 
 	    //add hbox to stackpane atribute

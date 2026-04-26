@@ -924,28 +924,22 @@ public class View extends Application implements Observer {
 		
 		// CURR PLAYER LABEL
 		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
-		currPlayerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		currPlayerLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
 		this.currPlayerLabel = currPlayerLabel;
 				
 		// PLAYER INFO LABEL for when there are errors
 		Label infoToTellPlayer = new Label("");
-		infoToTellPlayer.setFont(new Font(15));
+		infoToTellPlayer.setFont(new Font(12));
 		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
 				
 	    StackPane centerOverlay = new StackPane();
-	    centerOverlay.setStyle(
-	        
-	        "-fx-background-radius: 8;"
-	    );
-
-	    // auto-size to center area
-	    centerOverlay.prefWidthProperty().bind(mainBoardGridPane.widthProperty().multiply(0.65));
-	    centerOverlay.prefHeightProperty().bind(mainBoardGridPane.heightProperty().multiply(0.65));
+	    centerOverlay.setMinWidth(800);
+	    
 	    
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
-	    wrapper.getChildren().addAll(backgroundImageView, bottomFrameImageView, titleImageView,mainBoardGridPane, centerOverlay);
+	    wrapper.getChildren().addAll(backgroundImageView, bottomFrameImageView, titleImageView, centerOverlay, mainBoardGridPane);
 
 
 	    return wrapper;
@@ -2121,10 +2115,10 @@ public class View extends Application implements Observer {
 		
 		// if can't afford, mark as disabled and don't rig click event
 		if (player.getCashAmmt() < property.getPurchaseAmount()) {
-			buyLabel.setText("Can't buy");;
-			buyButton.setFill(Color.GREY);
+			buyLabel.setText("(can't afford)");;
+			buyButton.setFill(Color.TRANSPARENT);
 		} else {
-			buyStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
+			buyStackPane.setOnMouseClicked(e -> { //On click, buy property, update playerinfo, hide overlay
 	        controller.purchaseProperty(player, property);
 	        populatePlayerCardWithNewInfo(player);
 	        this.purchaseOverlay.setVisible(false);
@@ -2140,6 +2134,7 @@ public class View extends Application implements Observer {
 		skipStackPane.getChildren().addAll(skipButton,skipLabel);
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
+	    	this.infoToTellPlayer.setText("Passed on purchasing!");
 		});
 
 	    

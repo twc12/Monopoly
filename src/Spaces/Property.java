@@ -51,7 +51,7 @@ public abstract class Property extends CostSpace {
 			int cost = getCostToCharge(player, recentDiceRoll); //only Utilities object will use diceroll arg
 			player.addCash(-cost);
 			this.getOwner().addCash(cost);
-			model.notifyViewOfInfoMessage(player.toString() + " charged $" + cost + "!\nLanded on " + this.getName() + "\nCollected by " + this.getOwner().toString());
+			model.notifyViewOfInfoMessage(player.toString() + " landed on " + this.getName() + "! Charged $" + cost + " by " + this.getOwner().toString());
 		}
 
 	}
@@ -61,7 +61,7 @@ public abstract class Property extends CostSpace {
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
-		model.notifyViewOfInfoMessage(player.toString() + " purchased\n" + this.getName() + " for $" + this.getPurchaseAmount() + "!");
+		model.notifyViewOfInfoMessage(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount() + "!");
 	}
 	
 		

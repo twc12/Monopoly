@@ -54,6 +54,7 @@ public class Model extends Observable {
 	
 	private HashMap<String,Boolean> themes = new HashMap<>();
 	private int turnCounter = 1;
+	private boolean gameFinished = false;
 	
 	
 	//constructor for JUNIT, doesn't create a view
@@ -373,6 +374,14 @@ public class Model extends Observable {
 		
     	notifyViewOfPlayerGoingToJail(player);
 		
+	}
+	
+	public boolean getGameFinished() {
+		return this.gameFinished;
+	}
+	
+	public void setGameFinished(boolean val) {
+		this.gameFinished = val;
 	}
 
 }

@@ -44,7 +44,7 @@ public class CardBuilder {
 			cardDescription.add("Your Building Loan Matures, Collect $150");
 			cardDescription.add("Speeding Fine, Pay $15");
 			cardDescription.add("Pay Poor Tax Of $15");
-			cardDescription.add("Go Directly\n To Jail\n Do Not Pass Go, Do Not Collect $200");
+			cardDescription.add("Go Directly\n To Jail\n Do Not Pass Go\nDo Not Collect $200");
 			cardDescription.add("Advance To Go");
 			cardDescription.add("Advance To Railroad");
 			cardDescription.add("Advance To Utility");
@@ -55,7 +55,7 @@ public class CardBuilder {
 			cardDescription.add("You Have Been Elected\nChairman Of The Board\nPay Each Player $50");
 			cardDescription.add("Get Out Of Jail Free!\nThis Card Made Be Kept");
 			cardDescription.add("Go Forward 3 Spaces");
-			cardDescription.add("Make General Repairs on all your properties\nFor each house pay $25\nFor each hotel pay $100");
+			cardDescription.add("Make General Repairs on\nall your properties\nFor each house pay $25\nFor each hotel pay $100");
 			
 			// Community Chest
 			cardDescription.add("Life Insurance Matures\nCollect $100");

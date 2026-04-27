@@ -94,6 +94,7 @@ public class View extends Application implements Observer {
 	private String theme;
 	private String themeFolder;
 	
+	
 	private int widthOfPropertySpaceCards = 47;
 	private int heightOfPropertySpaceCards = 61;
 	private int heightOfColorOnSpaceCard = 15;
@@ -214,7 +215,8 @@ public class View extends Application implements Observer {
 	// For Theme changing
 	private String backgroundColor;
 	private String generalFont;
-	private String uiColor;
+	private Color uiColor = Color.rgb(70, 70, 70);
+	private String uiColorString = "rgb(70, 70, 70)";
 	
 	
 	
@@ -520,6 +522,10 @@ public class View extends Application implements Observer {
 			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
+			
+			
+				
+				
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);
@@ -576,8 +582,11 @@ public class View extends Application implements Observer {
 		tucsonThemeChoiceVBox.getChildren().addAll(tucsonPreviewView, tucsonRadioBtn);
 		
 		themeChoicesHBox.getChildren().addAll(baseMonopolyThemeChoiceVBox, pirateThemeChoiceVBox, tucsonThemeChoiceVBox);
-		startScreenBorderPane.setBottom(themeChoicesHBox);
+		startScreenBorderPane.setBottom(themeChoicesHBox);	
 		// ------ END OF THEMES -----
+		
+		
+		
 		
 		Scene startGameScene = new Scene(startScreenBorderPane, 590,500);
 		stage.setScene(startGameScene);
@@ -601,6 +610,15 @@ public class View extends Application implements Observer {
 	private Scene createMainGame() {
 		
 		theme = controller.getThemeString();
+		// Theme changes
+		if(theme.equals("standardTheme")) {
+			uiColor = Color.DARKSLATEGRAY;
+			uiColorString = "darkslategray";
+		}
+		if(theme.equals("pirateTheme")) {
+			uiColor = Color.rgb(70,70,70);
+			uiColorString = "rgb(70,70,70)";
+		}	
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();		
@@ -641,6 +659,28 @@ public class View extends Application implements Observer {
 
 		mainScreen.setCenter(visualGameBoard);
 		
+		Image backgroundImage = new Image("/"+theme+"/background.png");
+		ImageView backgroundImageView = new ImageView(backgroundImage);
+		// BACKGROUND IMAGE 
+		if(theme.equals("standardTheme")) {
+			backgroundImage = new Image("/"+theme+"/background.png");
+			backgroundImageView = new ImageView(backgroundImage);
+			backgroundImageView.setFitWidth(1000);
+			backgroundImageView.setPreserveRatio(true);
+			backgroundImageView.setManaged(false);
+			backgroundImageView.setTranslateY(100);
+			backgroundImageView.setTranslateX(-418);
+		}
+		if(theme.equals("pirateTheme")) {
+			backgroundImage = new Image("/"+theme+"/background.png");
+			backgroundImageView = new ImageView(backgroundImage);
+			backgroundImageView.setFitWidth(1100);
+			backgroundImageView.setPreserveRatio(true);
+			backgroundImageView.setManaged(false);
+			backgroundImageView.setTranslateY(0);
+			backgroundImageView.setTranslateX(0);
+		}
+		
 		Group rightSidePlayerPickerGroup = new Group();	
 		this.rightSidePlayerPickerGroup = rightSidePlayerPickerGroup;
 		buildRightPlayerPicker(controller.getCurrentPlayer()); // THIS FUNCTION WILL ADD TO THE GROUP ONE LINE ABOVE!
@@ -654,7 +694,10 @@ public class View extends Application implements Observer {
 		// ADDED: root StackPane so overlay can sit above mainScreen
 		root = new StackPane();
 		
-		root.setStyle("-fx-background-color: rgb(168, 190, 168,.6);");
+		if(theme.equals("standardTheme"))
+			root.setStyle("-fx-background-color: rgb(168, 190, 168,.6);");
+		if(theme.equals("pirateTheme"))
+			root.setStyle("-fx-background-color: rgb(198, 164, 102);");
 
 		root.getChildren().add(topLabelSection);
 		StackPane.setAlignment(topLabelSection, Pos.TOP_CENTER);		
@@ -673,7 +716,7 @@ public class View extends Application implements Observer {
 
 		rightImageView.setTranslateX(700);
 		
-		root.getChildren().add(rightImageView);
+
 		//________________________________________________________________________________
 		
 		// Media Section
@@ -686,7 +729,8 @@ public class View extends Application implements Observer {
 		mplayer.play();
 		
 		
-		
+		root.getChildren().add(backgroundImageView);
+		root.getChildren().add(rightImageView);
 		root.getChildren().add(mainScreen);
 		
 		
@@ -752,7 +796,7 @@ public class View extends Application implements Observer {
 			}
 			// if its not he current player then make the fully feature rich rectangle with color and rectangle
 			else {
-				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, Color.DARKSLATEGRAY);
+				newRectangle = new Rectangle(widthOfRightSideRectangle, heightOfRightSideRectangle, uiColor);
 				currPlayerLabel = new Label(player.getPlayerName());
 				
 				currPlayerStackPane = new StackPane();
@@ -883,19 +927,11 @@ public class View extends Application implements Observer {
 
 		StackPane wrapper = new StackPane();
 		
-		// BACKGROUND IMAGE 
-		Image backgroundImage = new Image("/"+theme+"/background.png");
-		ImageView backgroundImageView = new ImageView(backgroundImage);
-		backgroundImageView.setFitWidth(1000);
-		backgroundImageView.setPreserveRatio(true);
-		backgroundImageView.setManaged(false);
-		backgroundImageView.setTranslateY(-180);
-		backgroundImageView.setTranslateX(-800);
-	    // background image
+		
 	    Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
 
 	    
-	    //bottomframeimageview
+	  
 	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
 	    bottomFrameImageView.setPreserveRatio(false);
 	    bottomFrameImageView.setFitHeight(500);
@@ -904,10 +940,6 @@ public class View extends Application implements Observer {
 	    bottomFrameImageView.setTranslateX(-475);
 	    bottomFrameImageView.setMouseTransparent(true);
 	    bottomFrameImageView.setManaged(false);
-		
-				
-		//place image at the bottom
-		StackPane.setAlignment(backgroundImageView, Pos.BOTTOM_CENTER);
 		
 		
 		// TITLE IMAGE added where the backgrounImage is added
@@ -939,7 +971,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
-	    wrapper.getChildren().addAll(backgroundImageView, bottomFrameImageView, titleImageView, centerOverlay, mainBoardGridPane);
+	    wrapper.getChildren().addAll(bottomFrameImageView, titleImageView, centerOverlay, mainBoardGridPane);
 
 
 	    return wrapper;
@@ -1211,7 +1243,7 @@ public class View extends Application implements Observer {
 		StackPane diceRollStackPane = new StackPane();
 		diceRollStackPane.setPrefWidth(diceRollAreaWidth);
 		diceRollStackPane.setPrefHeight(bottomHBoxHeight);
-		diceRollStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		diceRollStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		diceRollStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.diceRollStackPane = diceRollStackPane;
 		
@@ -1221,7 +1253,7 @@ public class View extends Application implements Observer {
 		StackPane otherPlayerInfoCardStackPane = new StackPane();
 		otherPlayerInfoCardStackPane.setPrefWidth(diceRollAreaWidth);
 		otherPlayerInfoCardStackPane.setPrefHeight(bottomHBoxHeight);
-		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
 		
@@ -1316,7 +1348,7 @@ public class View extends Application implements Observer {
 		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
 		VBox coreButtonsVBox = new VBox(5);
 		coreButtonsVBox.setPadding(new Insets(8));
-		coreButtonsVBox.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		coreButtonsVBox.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		coreButtonsVBox.setPrefHeight(bottomHBoxHeight);
 		
 		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
@@ -1337,12 +1369,12 @@ public class View extends Application implements Observer {
 	 * @return Node: The Java fx pane that will be a visual representation of a player card
 	 */
 	private Node createVisualPlayerInfoCard(Player currPlayer) {
-		GridPane visualPlayerCardGridPane = new GridPane(10, 5);
+		GridPane visualPlayerCardGridPane = new GridPane(10, 10);
 		visualPlayerCardGridPane.setPrefWidth(widthOfPlayerInfoCard);
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
 		
 		
-		visualPlayerCardGridPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: darkslategrey;");
+		visualPlayerCardGridPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		
 		Label playerName = new Label(currPlayer.getPlayerName());
 		playerName.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 25));
@@ -1788,7 +1820,7 @@ public class View extends Application implements Observer {
 		
 		VBox jailButtonsVBox = new VBox(5);
 		jailButtonsVBox.setPadding(new Insets(8));
-		jailButtonsVBox.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+		jailButtonsVBox.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		jailButtonsVBox.setPrefHeight(bottomHBoxHeight);
 		
 		mainButtonsGroup.getChildren().add(jailButtonsVBox);

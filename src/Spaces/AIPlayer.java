@@ -56,7 +56,7 @@ public class AIPlayer extends Player {
         // be safe
         int safetyCap = 0;
         // Rolls dice
-        while (!getIsDoneRollingDice() && safetyCap < 10) {
+        while (!getIsDoneRollingDice() && safetyCap < 10) { 
             controller.rollDice(this);
             safetyCap++;
             if (this.isInJail()) break;
@@ -86,6 +86,7 @@ public class AIPlayer extends Player {
 
         // Randomly chooses an option to getout of jail
         JAIL_CHOICE choice = options.get(random.nextInt(options.size()));
+
         getModel().notifyViewOfAiAction(getPlayerName() + "chose jail option " + choice);
         controller.processJailLogic(this, choice);
     }
@@ -108,6 +109,7 @@ public class AIPlayer extends Player {
                 owned.add((RealEstate) property);
             }
         }
+
         // If the AI owns no properties, does not attempt to build
         if (owned.isEmpty()) {
             getModel().notifyViewOfAiAction(getPlayerName() + " has no properties to build on");
@@ -119,7 +121,7 @@ public class AIPlayer extends Player {
 
         // Picks a piece of owned real estate to build on
         RealEstate pick = owned.get(random.nextInt(owned.size()));
-        getModel().notifyViewOfAiAction(getPlayerName() + " attempting to build on " + pick.getName());
+        getModel().notifyViewOfAiAction(getPlayerName() + " attempting to build on \n" + pick.getName());
         controller.buildHouseHotel(this, pick);
     }
 
@@ -130,11 +132,11 @@ public class AIPlayer extends Player {
      */
     public void decidePurchase(Property property, Model model) {
         if (random.nextBoolean() && getCashAmmt() >= property.getPurchaseAmount()) {
-            getModel().notifyViewOfAiAction(getPlayerName() + " decided to buy " + property.getName());
+            getModel().notifyViewOfAiAction(getPlayerName() + " decided to buy \n" + property.getName());
             property.purchaseProperty(this, model);
         }
         else {
-            getModel().notifyViewOfAiAction(getPlayerName() + " decided to not buy " + property.getName());
+            getModel().notifyViewOfAiAction(getPlayerName() + " decided to not buy \n" + property.getName());
         }
     }
 }

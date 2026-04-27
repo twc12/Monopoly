@@ -211,6 +211,8 @@ public class View extends Application implements Observer {
 	 * Hacker style text
 	 */
 	private String aiLoggerLabelSetStyle = "-fx-background-color: black; -fx-text-fill: green; -fx-padding: 5px; -fx-font-family: 'Monospaced'; -fx-font-size: 11px;"; 
+	private String textThemeColor;
+	
 	
 	// For Theme changing
 	private String backgroundColor;
@@ -552,6 +554,7 @@ public class View extends Application implements Observer {
 		RadioButton baseMonopolyRadioBtn = new RadioButton(); 
 		baseMonopolyRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.STANDARD);
+			this.textThemeColor = "-fx-text-fill: darkslateblue;";
 		});
 		baseMonopolyRadioBtn.fire(); // click the button by default
 		baseMonopolyRadioBtn.setToggleGroup(toggleGroup);
@@ -565,6 +568,7 @@ public class View extends Application implements Observer {
 		RadioButton pirateRadioBtn = new RadioButton();
 		pirateRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.PIRATE);
+			this.textThemeColor = "-fx-text-fill: gold;";
 		});
 		pirateRadioBtn.setToggleGroup(toggleGroup);
 		pirateThemeChoiceVBox.getChildren().addAll(piratePreviewView, pirateRadioBtn);
@@ -668,7 +672,7 @@ public class View extends Application implements Observer {
 			backgroundImageView.setFitWidth(1000);
 			backgroundImageView.setPreserveRatio(true);
 			backgroundImageView.setManaged(false);
-			backgroundImageView.setTranslateY(100);
+			backgroundImageView.setTranslateY(104);
 			backgroundImageView.setTranslateX(-418);
 		}
 		if(theme.equals("pirateTheme")) {
@@ -956,12 +960,12 @@ public class View extends Application implements Observer {
 		
 		// CURR PLAYER LABEL
 		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
-		currPlayerLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: darkslateblue; -fx-font-weight: bold;");
+		currPlayerLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;" + textThemeColor);
 		this.currPlayerLabel = currPlayerLabel;
 				
 		// PLAYER INFO LABEL for when there are errors
 		Label infoToTellPlayer = new Label("");
-		infoToTellPlayer.setFont(new Font(12));
+		infoToTellPlayer.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;" + textThemeColor);
 		this.infoToTellPlayer = infoToTellPlayer; // we store it so in the future we can change the text to inform the user of something		
 				
 	    StackPane centerOverlay = new StackPane();

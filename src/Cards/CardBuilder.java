@@ -119,7 +119,7 @@ public class CardBuilder {
 		
 		// #4
 		chanceCards.add(new Card(cardDescription.get(3),"chanceCard3.png" , (player,model)->{
-			player.addCash(50);
+			player.addCash(-15);
 		}));
 		
 		// #5

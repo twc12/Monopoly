@@ -186,44 +186,46 @@ public class Player {
     	return this.gameOver;
     }
     
-    private void bankruptcy(int ammtOwed) {
+    /**
+     * Given an amount a player owes on any transaction using .addCash()
+     * Will auto-sell buildings, then properties, in order to meet debt.
+     * If can't meet debt, marks game over.
+     * @param ammtOwed
+     */
+    public void bankruptcy(int ammtOwed) {
     	int ammtPayed = 0;
     	int buildingsSoldCount = 0;
     	List<Property> propertiesSold = new ArrayList<Property>();
     	
-    	List<Property> myProperties = this.getListOfProperties();
     	//selling off all buildings first
+    	List<Property> myProperties = this.getListOfProperties();
     	for (Property property: myProperties) {
     		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
     			for (int i=0; i<re.getBuildingStage(); i++) {
         			ammtPayed += re.autoSellHouseHotel(this, model);
         			if (ammtPayed > ammtOwed) return;
         			buildingsSoldCount++;
-        			i++;
     			}
     		}
     	}
+    	
     	//selling off properties
-    	for (Property property: myProperties) {
-
+    	List<Property> propertiesToSell = new ArrayList<>(myProperties); //using a copy of myProperties list since autoSellProperty() will modify list and give weird error
+    	for (Property property: propertiesToSell) {
 			ammtPayed += property.autoSellProperty(this, model);
 			if (ammtPayed > ammtOwed) return;
 			propertiesSold.add(property);
     	}
     	
+    	//checking if gameover
     	if (ammtOwed > ammtPayed) {
-    		
     		this.gameOver = true;
     		System.out.println("GAME OVER");
     		// model.removeplayerfromturncycle
     	}
     	
-    	
+    	//notify view w/ bankruptcy report
     	model.notifyViewBankruptcy(this, ammtPayed, buildingsSoldCount, propertiesSold, this.gameOver);
-    	
-    	
-    	
-    	
     }
     
     /**

@@ -1,6 +1,7 @@
 package Spaces;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 
@@ -141,6 +142,27 @@ public abstract class Property extends CostSpace {
     	
     	return sellPrice;
     	
+    }
+    
+    @Override 
+    public boolean equals(Object other) {
+    	if (this == other) {
+    		return true;
+    	}
+    	
+    	if (other instanceof Property) {
+    		Property otherProp = (Property) other;
+    		if (this.getName().equals(otherProp.getName())) {
+    			return true;
+    		}
+    	}
+    	return false;
+    	
+    }
+    
+    @Override 
+    public int hashCode() {
+    	return Objects.hash(this.getName());
     }
 
 

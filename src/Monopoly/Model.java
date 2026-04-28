@@ -120,7 +120,7 @@ public class Model extends Observable {
 		}
 		// Adding AI PLAYERS  
 		for (int i=0; i<totalAiPlayers; i++) {
-			players.add(new AIPlayer(totalHumanPlayers+i+1,playerIconsToPickFrom.get(i), theme, this));
+			players.add(new AIPlayer(totalHumanPlayers+i+1,playerIconsToPickFrom.get(totalHumanPlayers+i), theme, this));
 		}
 		
 		currentPlayer = players.get(0);

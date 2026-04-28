@@ -39,6 +39,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
@@ -153,14 +154,14 @@ public class View extends Application implements Observer {
 	private VBox coreButtonsVBox; // This will save the core buttons so the jail logic can revert them back 
 	private Node rollDiceButton; // used to grey out when unavailable 
 	private Node endTurnButton; // used to grey out unavailable
+	private Node tradeButton; // used to grey out until they are in the management phase
+	private StackPane buildButton; // disabled until a buildable RealEstate card is selected
 	
 	/**
 	 * These are the sizes of the main buttons also the get out of jail buttons
 	 */
 	private int coreButtonWidth  = 150; 
 	private int coreButtonHeight = 45;
-
-	private StackPane buildButton; // disabled until a buildable RealEstate card is selected
 
 	private Label currPlayerLabel;
 	
@@ -220,8 +221,6 @@ public class View extends Application implements Observer {
 	private Color uiColor = Color.rgb(70, 70, 70);
 	private String uiColorString = "rgb(70, 70, 70)";
 	
-	
-	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
 	 */
@@ -234,14 +233,20 @@ public class View extends Application implements Observer {
 	// main music
 	private MediaPlayer mplayer;
 	
-	
 	//similar to cards, for purchaseprompts
 	private StackPane purchaseOverlay;
+	
+	private Property potentialTradeProperty;
+	private int ammountOfMoneyToPay; // holds the amount of money the buying wants to pay in global scope
+	private int ammountOfGOOJCards;
+	private List<Property> listOfPropertiesToOffer;
+	private Map<Property, Label> propertiesToLabels;
 	
 	/**
 	 * This is used for displaying a properties card detailed information when a user clicks on it 
 	 */
 	private StackPane detailedCardInfoOverlay;
+	private StackPane tradeViewStackPane;
 	
 	private StackPane root;
 	
@@ -258,7 +263,6 @@ public class View extends Application implements Observer {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		
 		
 		
 		// --------------- START SCREEEN --------------- 
@@ -612,7 +616,10 @@ public class View extends Application implements Observer {
 	
 	
 	private Scene createMainGame() {
-		
+		potentialTradeProperty = null;
+		listOfPropertiesToOffer = new ArrayList<>();
+		propertiesToLabels = null;
+		ammountOfMoneyToPay = 0;
 		theme = controller.getThemeString();
 		// Theme changes
 		if(theme.equals("standardTheme")) {
@@ -764,6 +771,11 @@ public class View extends Application implements Observer {
 		detailedCardInfoOverlay.setPickOnBounds(false); // allows "transparent" click thru to the board
 
 		root.getChildren().add(detailedCardInfoOverlay);
+		
+		StackPane tradeViewStackPane = new StackPane();
+		this.tradeViewStackPane = tradeViewStackPane;
+		tradeViewStackPane.setPickOnBounds(false); // allows "transparent" click thru to the board
+		root.getChildren().add(tradeViewStackPane);
 		
 		Scene gameScene = new Scene(root, 1180, 820);
 		return gameScene; // THIS RETURNS TO `def start() -> StartGameBtn.onAction()` code look up ^^ a function
@@ -1087,7 +1099,7 @@ public class View extends Application implements Observer {
 		StackPane freeParkingStackPane = new StackPane();
 		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
+		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
 		baseBottomRect.setStroke(Color.BLACK);
 		freeParkingStackPane.getChildren().add(baseBottomRect);
 		freeParkingStackPane.getChildren().add(pImageView);
@@ -1104,7 +1116,7 @@ public class View extends Application implements Observer {
 		StackPane goSpaceStackPane = new StackPane();
 		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
 		baseBottomRect.setStroke(Color.BLACK);
 		goSpaceStackPane.getChildren().add(baseBottomRect);
 		goSpaceStackPane.getChildren().add(gImageView);
@@ -1125,7 +1137,7 @@ public class View extends Application implements Observer {
 		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
 		baseBottomRect.setStroke(Color.BLACK);
 		jailStackPane.getChildren().add(baseBottomRect);
 		jailStackPane.getChildren().add(jImageView);
@@ -1143,7 +1155,7 @@ public class View extends Application implements Observer {
 		StackPane goToJailStackPane = new StackPane();
 		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUA);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
 		baseBottomRect.setStroke(Color.BLACK);
 		goToJailStackPane.getChildren().add(baseBottomRect);
 		goToJailStackPane.getChildren().add(gjImageView);
@@ -1316,7 +1328,9 @@ public class View extends Application implements Observer {
 		
 		Label tradeLabel = new Label("Trade");
 		StackPane tradeButtonStackPane = new StackPane();
+		this.tradeButton = tradeButtonStackPane;
 		tradeButtonStackPane.getChildren().addAll(tradeButtonRect,tradeLabel);
+		tradeButtonStackPane.setDisable(true);
 		tradeButtonStackPane.setOnMouseClicked(event -> handleTradeButton());
 		
 		
@@ -1327,6 +1341,7 @@ public class View extends Application implements Observer {
 		
 		Label buildLabel = new Label("Build Houses");
 		StackPane buildButtonStackPane = new StackPane();
+		this.buildButton = buildButtonStackPane;
 		buildButtonStackPane.getChildren().addAll(buildButtonRect,buildLabel);
 		buildButtonStackPane.setDisable(true);
 		buildButtonStackPane.setOnMouseClicked(event -> {
@@ -1498,8 +1513,23 @@ public class View extends Application implements Observer {
 					if (!re.getIfCanBuild() || re.getBuildingStage() >=5) { //if already fully developed, don't enable the build button when i click a card
 						buildButton.setDisable(true);
 					}
-					
 					buildButton.setDisable(false); //otherwise, enable the build button and show the card info
+					
+					// if another player clicked on this card from someone elses info card then allow trading
+					Property thisSpacesProperty = (Property) visualPropertyInfoCard.getUserData();
+					Player currentPropertyOwner = thisSpacesProperty.getOwner();
+					Player currentTurnsPlayer = controller.getCurrentPlayer();
+					if (currentTurnsPlayer.getId() != currentPropertyOwner.getId()) {
+						
+						// onlyl if the current player is done rolling are they allowed to trade 
+						if (currentTurnsPlayer.getIsDoneRollingDice() == true) {
+							potentialTradeProperty = thisSpacesProperty;
+							System.out.println("Setting potentialTradeProperty to "+thisSpacesProperty.getName());
+							tradeButton.setDisable(false); // enable the trade button
+						}
+					}
+					
+					
 					showDetailedPropertyInfo(re);
 	
 				});
@@ -1508,6 +1538,12 @@ public class View extends Application implements Observer {
 			} else {
 			visualPropertyInfoCard.setOnMouseClicked((e) -> {
 				showDetailedPropertyInfo((Property) visualPropertyInfoCard.getUserData());
+				// onlyl if the current player is done rolling are they allowed to trade 
+				if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+					potentialTradeProperty = (Property) visualPropertyInfoCard.getUserData();
+					System.out.println("Setting potentialTradeProperty to "+potentialTradeProperty.getName());
+					tradeButton.setDisable(false); // enable the trade button
+				}
 				});
 			}
 
@@ -1582,9 +1618,190 @@ public class View extends Application implements Observer {
 	}
 	
 	/**
-	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) trade button is pressed
+	 *This can only happen when the trade button is turned on by a player pressing on
+	 * another players porperty in their info card 
 	 */
 	private void handleTradeButton() {
+		Player buyingPlayer = controller.getCurrentPlayer();
+		Player sellingPlayer = potentialTradeProperty.getOwner();
+		
+		// Create a trade view to show the buying player 
+		BorderPane tradeViewBorderPane = new BorderPane();
+		
+		Label tradeTitleLabel = new Label("TRADING PANEL");
+		tradeTitleLabel.setFont(new Font(25));
+		tradeViewBorderPane.setTop(tradeTitleLabel);
+		BorderPane.setAlignment(tradeTitleLabel, Pos.CENTER);
+		tradeViewBorderPane.setMaxSize(500, 400);
+		Rectangle backgroundRect = new Rectangle(515,415, Color.CADETBLUE);
+		backgroundRect.setStroke(Color.BLACK); backgroundRect.setStrokeWidth(5);
+		tradeViewStackPane.getChildren().addAll(backgroundRect, tradeViewBorderPane);
+		
+		// Purchase amount in money 
+		TextField amountOfMoneyToPayInput = new TextField();
+		Label amtOfMoneyToPayLabel = new Label("$ for trade:  $0");
+		amountOfMoneyToPayInput.setPromptText("$ for trade ");
+		amountOfMoneyToPayInput.setMaxWidth(150);
+		amountOfMoneyToPayInput.setOnKeyTyped(event -> {
+			String playersInput = amountOfMoneyToPayInput.getText();
+			if (playersInput.length() == 0 || playersInput.equals("200")) {
+				ammountOfMoneyToPay = 0;
+				amtOfMoneyToPayLabel.setText("0$ (default)");
+			}
+			else {
+				try {
+					Integer customAmt = Integer.valueOf(playersInput);
+					
+					// check the player has enough money 
+					if (buyingPlayer.getCashAmmt() < customAmt) {
+						ammountOfMoneyToPay = 0;
+						amtOfMoneyToPayLabel.setText("Not enough money. now $0");
+					}
+					else {
+						ammountOfMoneyToPay = customAmt;
+						amtOfMoneyToPayLabel.setText("$ for trade: $"+customAmt);
+					}
+					
+					
+				} catch (NumberFormatException e) {
+					ammountOfMoneyToPay = 0;
+					amtOfMoneyToPayLabel.setText("Invalid Input, defaulting to $0");
+				}
+				
+			}
+		});
+		
+		// moved them before the end so that we can conditionally add the next two options
+		VBox playersTradeInputsVbox = new VBox(10);
+		playersTradeInputsVbox.getChildren().add(amountOfMoneyToPayInput);
+		tradeViewBorderPane.setLeft(playersTradeInputsVbox);
+		
+		VBox playersTradeOutputsVbox = new VBox(10);
+		playersTradeOutputsVbox.setPadding(new Insets(0,0,0,10));
+		playersTradeOutputsVbox.getChildren().add(amtOfMoneyToPayLabel);
+		
+		StackPane cardToTradeStackPane = buildSpaceCard(potentialTradeProperty, 120);
+		cardToTradeStackPane.setAlignment(Pos.CENTER);
+		tradeViewBorderPane.setRight(cardToTradeStackPane);
+		
+		
+		
+		
+		// The amount of  get out of jail cards, if the user has them then allow them to offer them 
+		if (buyingPlayer.getAmmtOfGOOJCards() >= 1) {
+				TextField amountOfGOOJCardsInput = new TextField();
+				Label amtOfGOOJCardsLabel = new Label("# of GOOJ Cards: ");
+				amountOfGOOJCardsInput.setPromptText("# of GOOJ Cards");
+				amountOfGOOJCardsInput.setMaxWidth(150);
+				amountOfGOOJCardsInput.setOnAction(event -> {
+					String playersInput = amountOfGOOJCardsInput.getText();
+					if (playersInput.length() == 0 || playersInput.equals("200")) {
+						ammountOfGOOJCards = 0;
+						amtOfGOOJCardsLabel.setText("# of GOOJ Cards: 0 (default)");
+					}
+					else {
+						try {
+							Integer customAmt = Integer.valueOf(playersInput);
+							if (customAmt <= buyingPlayer.getAmmtOfGOOJCards()) {
+								ammountOfGOOJCards = customAmt;
+								amtOfGOOJCardsLabel.setText("# of GOOJ Cards: "+customAmt);
+							}
+							else {
+								ammountOfGOOJCards = 0;
+								amtOfGOOJCardsLabel.setText("# of GOOJ Cards: "+customAmt);
+							}
+							
+						} catch (NumberFormatException e) {
+							ammountOfGOOJCards = 0;
+							amtOfGOOJCardsLabel.setText("Invalid Input, defaulting to 0 GOOJ Cards");
+						}
+						
+					}
+				});
+				
+				playersTradeInputsVbox.getChildren().add(amountOfGOOJCardsInput);
+				playersTradeOutputsVbox.getChildren().add(amtOfGOOJCardsLabel);
+		}
+		
+		// if the player has any properties to put into the trade then create a checkbox for each other them for them to select 
+		if (buyingPlayer.getListOfProperties().size() != 0) {
+			listOfPropertiesToOffer.clear();
+			propertiesToLabels = new HashMap<>();
+			// add all the buyers properties as options 
+			for (Property buyersProperty: buyingPlayer.getListOfProperties()) {
+				CheckBox propertyCheckBox = new CheckBox(buyersProperty.getName());
+				propertyCheckBox.setUserData(buyersProperty);
+				propertyCheckBox.setOnAction(event -> {
+					// if the box is now selected then add the property to the list of properties to offer 
+					if (propertyCheckBox.isSelected() == true) {
+						// add the property when selected
+						listOfPropertiesToOffer.add((Property) propertyCheckBox.getUserData());
+						// we have to store this label in a hash map so we know which vbox child to remove when deselected
+						propertiesToLabels.put(buyersProperty, new Label(buyersProperty.getName()+" worth $"+buyersProperty.getPurchaseAmount()));
+						playersTradeOutputsVbox.getChildren().add(propertiesToLabels.get(buyersProperty)); // add label to outputs vbox
+					}
+					else { 
+						listOfPropertiesToOffer.remove((Property) propertyCheckBox.getUserData()); // remove the property when deselected
+						playersTradeOutputsVbox.getChildren().remove(propertiesToLabels.get(buyersProperty));
+					}
+				});
+				// add this check box to the inputs vbox 
+				playersTradeInputsVbox.getChildren().add(propertyCheckBox);
+			}
+		}
+		
+		/// ---------
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		// create the view to show when the submit button is pressed 
+		VBox offeringVBox = new VBox(10);
+		a.getDialogPane().setContent(offeringVBox);
+		
+		Button acceptBtn = new Button("Accept Trade");
+		acceptBtn.setOnAction(event -> {
+			// if the trade is accepted then we send to the controller
+			controller.executeTrade(buyingPlayer, sellingPlayer, potentialTradeProperty, listOfPropertiesToOffer, ammountOfMoneyToPay, ammountOfGOOJCards);
+			tradeViewStackPane.getChildren().clear();
+			a.close();
+		});
+		Button declineBtn = new Button("Decline Trade");
+		declineBtn.setOnAction(event -> {
+			// clear the window 
+			tradeViewStackPane.getChildren().clear();
+			a.close();
+		});
+		/// -------
+		///
+		/// -------
+		
+		a.setTitle("Attempting Trade!");
+		a.setContentText(buyingPlayer.getPlayerName()+" is trying to trade with "+sellingPlayer.getPlayerName());
+		a.setHeaderText("Attempting Trade!");
+		
+		a.setOnCloseRequest(event -> {
+			// clear the window to consider the trade is closed
+			tradeViewStackPane.getChildren().clear();
+		});
+		
+		/// -----
+		
+		// create a submit button 
+		Button submitTradeButton = new Button("Attempt Trade");
+		submitTradeButton.setOnAction(event -> {
+			offeringVBox.getChildren().addAll(playersTradeOutputsVbox, acceptBtn, declineBtn);
+			a.showAndWait();
+		});
+		
+		// create a cancle trade button 
+		Button cancleTradeButton = new Button("Cancel Trade");
+		cancleTradeButton.setOnAction(event -> {
+			tradeViewStackPane.getChildren().clear(); // if trade is cancelled, remove from view 
+		});
+		
+		HBox submitAndCancleTradeButtons = new HBox(10);
+		submitAndCancleTradeButtons.getChildren().addAll(submitTradeButton,cancleTradeButton);
+		tradeViewBorderPane.setBottom(submitAndCancleTradeButtons);
+		
+		tradeViewBorderPane.setCenter(playersTradeOutputsVbox);
 		
 	}
 	
@@ -1917,6 +2134,9 @@ public class View extends Application implements Observer {
 		
 		// if the message is that its the next players turn, switch the bottom left player card to the new player
 		else if (message instanceof NextPlayerMessage) {
+			potentialTradeProperty = null; // there are no selected properties at this stage
+			tradeButton.setDisable(true);
+			buildButton.setDisable(true);
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
 			
@@ -1934,13 +2154,13 @@ public class View extends Application implements Observer {
 			}
 			else {
 				rollDiceButton.setDisable(false);
-				endTurnButton.setDisable(false);
 			}
 			
 			if (currentPlayer instanceof AIPlayer) {
 				rollDiceButton.setDisable(true);
-				endTurnButton.setDisable(true);
 				((AIPlayer) currentPlayer).playAITurn(controller);
+				rollDiceButton.setDisable(false);
+				
 			}
 		}
 		

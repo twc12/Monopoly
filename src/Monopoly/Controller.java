@@ -268,7 +268,18 @@ public class Controller {
 		model.setGameSettingsObj(initGameSettingsObj);
 	}
 	
-	public void executeTrade(Player traderPlayer, Player targetPlayer, Property targetProperty, List<Property> traderPropertiesOffer, int traderCashOffer, int traderJailFreeCardsOffer) {
+	/**
+	 * When a player selects a property they want to acquire and clicks trade.
+	 * Executes a trade initiated by the traderPlayer where the targetPlayer is only selling
+	 * a single property. The traderPlayer can offer a mix of property, cash, and jailfree cards for it.
+	 * @param traderPlayer
+	 * @param targetPlayer
+	 * @param targetProperty
+	 * @param traderPropertiesOffer
+	 * @param traderCashOffer
+	 * @param traderJailFreeCardsOffer
+	 */
+	public void executeTrade(Player traderPlayer, Player targetPlayer, Property targetProperty, List<Property> traderPropertiesOffer, int traderCashOffer, int traderJailFreeCardsOffer) {		
 		
 		//moving ownership of trader's properties to target
 		for (Property myProperty : traderPropertiesOffer) {
@@ -277,18 +288,19 @@ public class Controller {
 			traderPlayer.removeProperty(myProperty);
 		}
 		
-		//transfer cash, added check to avoid potential bankruptcy trigger
+		//transfer cash if valid amount from trader to target, avoid potential bankruptcy trigger
 		if (traderPlayer.getCashAmmt() >= traderCashOffer) {
 			targetPlayer.addCash(traderCashOffer);
 			traderPlayer.addCash(-traderCashOffer);
 		}
 
+		//transfer jailfree cards if valid amount
 		if (traderPlayer.getAmmtOfGOOJCards() >= traderJailFreeCardsOffer) {
 			targetPlayer.addJailCard(traderJailFreeCardsOffer);
 			traderPlayer.removeJailCard(traderJailFreeCardsOffer);
 		}
 		
-		//acquire target property
+		//trader acquires target property
 		targetProperty.setOwner(traderPlayer);
 		traderPlayer.addProperty(targetProperty);
 		targetPlayer.removeProperty(targetProperty);

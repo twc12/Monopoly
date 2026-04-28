@@ -232,12 +232,18 @@ public class Player {
     public void addJailCard() {
     	ammtOfGetOutOfJailCards++;
     }
+    public void addJailCard(int amount) {
+    	ammtOfGetOutOfJailCards+=amount;
+    }
 
     /**
      * Removes the players get out of jail free card when they use it
      */
     public void removeJailCard() {
         ammtOfGetOutOfJailCards--;
+    }
+    public void removeJailCard(int amount) {
+        ammtOfGetOutOfJailCards-=amount;
     }
     
     /**
@@ -369,8 +375,15 @@ public class Player {
     	isDoneRollingDice = playerIsDoneRollingDice;
     }
     
-    private void updatePropertiesMatches(Property property) {
+    
+    /**
+     * Called when a player buys/trades for new property. Will apply matching effects to 
+     * properties
+     * @param property
+     */
+    public void updatePropertiesMatches(Property property) {
        	
+    	//NON-REAL-ESTATE (Utility, Railroad)
     	//updating other properties of the same type that i own to have increased rents
     	if (!(property instanceof RealEstate)) {//only railroads+utility
 	   		
@@ -388,7 +401,9 @@ public class Player {
 					myProperty.applyMatchedPropertyEffect(matchedPropertiesCount);
 				}
 			} 
-		}else {// only real-estate
+			
+		//REAL-ESTATE
+		}else {
 	   		int matchedPropertiesCount = 0;
 	   		RealEstate realEstate = (RealEstate)property;
 	   		

@@ -267,6 +267,32 @@ public class Controller {
 	public void initializeGameSettings(GameSettings initGameSettingsObj) {
 		model.setGameSettingsObj(initGameSettingsObj);
 	}
+	
+	public void executeTrade(Player traderPlayer, Player targetPlayer, Property targetProperty, List<Property> traderPropertiesOffer, int traderCashOffer, int traderJailFreeCardsOffer) {
+		
+		//moving ownership of trader's properties to target
+		for (Property myProperty : traderPropertiesOffer) {
+			myProperty.setOwner(targetPlayer);
+			targetPlayer.addProperty(myProperty);
+			traderPlayer.removeProperty(myProperty);
+		}
+		
+		//transfer cash, added check to avoid potential bankruptcy trigger
+		if (traderPlayer.getCashAmmt() >= traderCashOffer) {
+			targetPlayer.addCash(traderCashOffer);
+			traderPlayer.addCash(-traderCashOffer);
+		}
+
+		if (traderPlayer.getAmmtOfGOOJCards() >= traderJailFreeCardsOffer) {
+			targetPlayer.addJailCard(traderJailFreeCardsOffer);
+			traderPlayer.removeJailCard(traderJailFreeCardsOffer);
+		}
+		
+		//acquire target property
+		targetProperty.setOwner(traderPlayer);
+		traderPlayer.addProperty(targetProperty);
+		targetPlayer.removeProperty(targetProperty);
+	}
 
 
 	

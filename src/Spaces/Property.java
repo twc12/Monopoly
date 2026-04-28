@@ -116,8 +116,15 @@ public abstract class Property extends CostSpace {
 	public int getPurchaseAmount() {
 		return purchaseAmount;
 	}
-	
-	//helper function when player buys a property, will check if matching properties and update rent stage/enable building,etc.
+		
+	/**
+	 * Helper function for when property acquired in player.updatePropertiesMatches()
+	 * Each property type (Utility/Railroad/Real Estate) has their rent scale differently
+	 * based on when matching properties are paired.
+	 * called when checking for matches when acquiring a property via buy/trade.
+	 * 
+	 * @param matchedOwnedPropertiesCount
+	 */
 	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
 
 	

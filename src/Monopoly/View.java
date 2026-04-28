@@ -1510,10 +1510,11 @@ public class View extends Application implements Observer {
 				// adding on-click selects/deselects for building; enables/disables the Build button
 				visualPropertyInfoCard.setOnMouseClicked((e) -> {
 					selectedPropertyToBuild = re;					
-					if (!re.getIfCanBuild() || re.getBuildingStage() >=5) { //if already fully developed, don't enable the build button when i click a card
+					if (!re.getIfCanBuild() || re.getBuildingStage() >=5 || !(re.getOwner().equals(controller.getCurrentPlayer()))) { //if already fully developed, don't enable the build button when i click a card
 						buildButton.setDisable(true);
+					} else {
+						buildButton.setDisable(false); //otherwise, enable the build button and show the card info
 					}
-					buildButton.setDisable(false); //otherwise, enable the build button and show the card info
 					
 					// if another player clicked on this card from someone elses info card then allow trading
 					Property thisSpacesProperty = (Property) visualPropertyInfoCard.getUserData();
@@ -1762,6 +1763,16 @@ public class View extends Application implements Observer {
 			controller.executeTrade(buyingPlayer, sellingPlayer, potentialTradeProperty, listOfPropertiesToOffer, ammountOfMoneyToPay, ammountOfGOOJCards);
 			tradeViewStackPane.getChildren().clear();
 			a.close();
+			
+			// redraw current players' visual inventory
+			populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+			
+			// redraw other players' inventory
+			showOtherPlayersInfoInBottomRight(sellingPlayer); //reusing this function, it will "refresh" the other players' panel correctly dynamically
+			if (otherPlayerInfoCardStackPane.getChildren().size() == 1) {//if it refreshes to the ai console only, redraw on top
+				otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(sellingPlayer)); 
+			}
+			
 		});
 		Button declineBtn = new Button("Decline Trade");
 		declineBtn.setOnAction(event -> {

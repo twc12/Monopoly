@@ -2,12 +2,14 @@ package Monopoly;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import Spaces.Player;
+import Spaces.Property;
 import Spaces.Railroad;
 import Spaces.RealEstate;
 import Spaces.Space;
@@ -168,5 +170,64 @@ class MonopolyTests {
 	    assertEquals(p2Cash - 200, player2.getCashAmmt());
 	}
 	
+	@Test
+    //player 1 wants to acquire a 2nd brown real estate
+	//offering a railroad to p2, 100 cash, and 1 jailfree card
 
+	void testExecuteTrade() {
+		
+		//setting up game state objects
+	    Controller controller = new Controller();
+	    Model model = controller.model;
+	    model.setGameSettingsObj(new GameSettings());
+	    List<Space> spaces = controller.getSpaces();
+	    Player player1 = controller.getAllPlayers().get(0);
+	    Player player2 = controller.getAllPlayers().get(1);
+
+	    //setting up assets for both players
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);  // brown real estate
+	    RealEstate baltic = (RealEstate) spaces.get(3);         // Brown
+	    Railroad reading = (Railroad) spaces.get(5);            // Railroad
+	    controller.purchaseProperty(player1, mediterranean);
+	    controller.purchaseProperty(player1, reading);
+	    controller.purchaseProperty(player2, baltic);
+	    player1.addJailCard();
+	    int p1StartCash = player1.getCashAmmt();
+	    int p2StartCash = player2.getCashAmmt();
+	    int p1StartJailCards = player1.getAmmtOfGOOJCards();
+	    int p2StartJailCards = player2.getAmmtOfGOOJCards();
+	    
+	    
+	    //trade offer/execution
+	    List<Property> traderOffer = new ArrayList<>();
+	    traderOffer.add(reading);
+	    controller.executeTrade(
+	    	player1,           // trader
+	        player2,           // target
+	        baltic,            // targetProperty
+	        traderOffer,        // traderPropertiesOffer containing railroad
+	        100,               // traderCashOffer
+	        1                  // traderJailFreeCardsOffer
+	    );
+
+	    
+	    // after trade executed
+	    // ownership changed correctly
+	    assertEquals(player2, reading.getOwner());
+	    assertEquals(player1, baltic.getOwner());
+	    assertTrue(player2.getListOfProperties().contains(reading));
+	    assertTrue(player1.getListOfProperties().contains(baltic));
+	    assertFalse(player1.getListOfProperties().contains(reading));
+	    
+	    // cash transferred
+	    assertEquals(p1StartCash - 100, player1.getCashAmmt());
+	    assertEquals(p2StartCash + 100, player2.getCashAmmt());
+	    
+	    //verify jailcards transferred
+	    assertEquals(p1StartJailCards, player2.getAmmtOfGOOJCards());
+	    assertEquals(p2StartJailCards, player1.getAmmtOfGOOJCards());
+	    
+	    //very rent stages are updated for the realestate set and can build
+	    assertTrue(baltic.getIfCanBuild());
+	}
 }

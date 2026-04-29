@@ -206,6 +206,17 @@ public class View extends Application implements Observer {
 	private Map<Player, Circle> playerObjToPlayerPiece;
 	
 	/**
+	 * I needed a way position the circles on each space so that they all moved out of their way 
+	 * at least a little bit when they are all on the same space.
+	 * 
+	 * These lists will hold a translate amount of each circle for when there are multiple 
+	 * per space. The first detected circle will be moved to xDeltas[0], yDeltas[0] and 
+	 * so on.
+	 */
+	private int[] xDeltasForStackingPlayerPieces = {0, -10, 10, -10, 10, 10, -10, 0};
+	private int[] yDeltasForStackingPlayerPieces = {0, -10, -10, 15, 10, 0, 0, 0};
+	
+	/**
 	 * I need to store a second set of circle objects for the right player picker side
 	 * So I dont have to load thenm new each and every time 
 	 */
@@ -635,9 +646,12 @@ public class View extends Application implements Observer {
 	private Scene createMainGame() {
 		potentialTradeProperty = null;
 		listOfPropertiesToOffer = new ArrayList<>();
+		// initialize the trade variable, we need it global
+		ammountOfMoneyToPay = 0;
+		
 		propertiesToLabels = null;
 		rightSideIconsMap = null;
-		ammountOfMoneyToPay = 0;
+		
 		theme = controller.getThemeString();
 		// Theme changes
 		if(theme.equals("standardTheme")) {
@@ -2097,6 +2111,17 @@ public class View extends Application implements Observer {
 			
 			// And the players circle piece to the stack pane
 			nextSpacePane.getChildren().add(playersPeiceToMove);
+			
+			// if there are multiple circles on this space pane, offset them 
+			List<Node> childrenOfStackPane = nextSpacePane.getChildren();
+			int circleCount = 0;
+			for (Node child : childrenOfStackPane) {
+				if (child instanceof Circle) {
+					child.setTranslateX(xDeltasForStackingPlayerPieces[circleCount]);
+					child.setTranslateY(yDeltasForStackingPlayerPieces[circleCount]);
+					circleCount++;
+				}
+			}
 			
 			
 			

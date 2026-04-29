@@ -81,7 +81,7 @@ public class Controller {
 		int dice2 = rand.nextInt(6) + 1;
 		model.notifyViewOfDiceResult(dice1, dice2);
 		System.out.println("Dice roll computed: " + dice1 +", " + dice2); // debugging
-		return new int[] {2, 4};
+		return new int[] {dice1, dice2};
 	}
 	
 	/**

@@ -1751,8 +1751,7 @@ public class View extends Application implements Observer {
 		
 		// if the player is in jail then get the user input and process the user decision
 		if (currentPlayer.isInJail() == true) {
-			// lets say they roll doubles for the 3rd time, then they get sent to jail it should be the next players turn 
-			controller.model.notifyViewOfNextPlayersTurn(currentPlayer); // THIS IS WRONG WRONG WRONG, AS SOON AS a player rolls doubles 3 times it has to be detencted somehow, it wasnt so this is a quick fix so after they press roll dice AGAIN after being put in jail it moves on, THIS IS BAD 
+			return;
 		}
 		else{
 			// TESTING
@@ -2304,10 +2303,8 @@ public class View extends Application implements Observer {
 			rollDoublesStackPane.getChildren().addAll(rollDoublesButtonRect,rollDoublesLabel);
 			rollDoublesStackPane.setOnMouseClicked(event -> {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.ROLL_DUBLES);
-				if (!currentPlayer.isInJail()) {
-					mainButtonsGroup.getChildren().clear(); // remove the jail options
-					mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
-				}
+				mainButtonsGroup.getChildren().clear();
+				mainButtonsGroup.getChildren().add(coreButtonsVBox);
 			});
 			
 			jailButtonsVBox.getChildren().add(rollDoublesStackPane);

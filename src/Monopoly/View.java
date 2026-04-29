@@ -1768,7 +1768,15 @@ public class View extends Application implements Observer {
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			// disable the roll dice button because they finished rolling
 			rollDiceButton.setDisable(true);
-			if (!(controller.getCurrentPlayer().getCurrentSpace() instanceof Property))
+			Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
+			if(curSpace instanceof Property) {
+				if (((Property) curSpace).getOwner() == null) {
+					endTurnButton.setDisable(true);
+				}
+				else 
+					endTurnButton.setDisable(false);
+			}
+			else 
 				endTurnButton.setDisable(false);
 		} else { //must have rolled doubles
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 

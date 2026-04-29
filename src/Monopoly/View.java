@@ -286,7 +286,7 @@ public class View extends Application implements Observer {
 		
 		
 		// ------ BUTTONS ----- 
-		Label topStartScreenLabel = new Label("Start Screen");
+		Label topStartScreenLabel = new Label("Welcome to Monopoly! Choose your settings and start the game!");
 		topStartScreenLabel.setFont(new Font(20));
 		BorderPane.setAlignment(topStartScreenLabel, Pos.CENTER);
 		startScreenBorderPane.setTop(topStartScreenLabel);
@@ -305,7 +305,7 @@ public class View extends Application implements Observer {
 		});
 		// PASSING GO MONEY 
 		TextField moneyPassingGoInput = new TextField();
-		moneyPassingGoInput.setPromptText("Amt of money for passing go");
+		moneyPassingGoInput.setPromptText("$ for passing go (press ENTER to apply)");
 		moneyPassingGoInput.setMaxWidth(250);
 		moneyPassingGoInput.setOnAction(event -> {
 			String playersInput = moneyPassingGoInput.getText();
@@ -362,29 +362,29 @@ public class View extends Application implements Observer {
 		
 		// AMOUNT OF STARTING MONEY
 		TextField startingMoneyInput = new TextField();
-		startingMoneyInput.setPromptText("Amt of money you start with");
+		startingMoneyInput.setPromptText("$ you start with (press ENTER to apply)");
 		startingMoneyInput.setMaxWidth(250);
 		//commenting the below code for now, it doesn't apply the user's entered starting money, 
 		//i added code when we hit the start button
-//		startingMoneyInput.setOnAction(event -> {
-//			String playersInput = startingMoneyInput.getText();
-//			if (playersInput.length() == 0 || playersInput.equals("1500")) {
-//				gameSettings.setStartingMoney(1500);
-//				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
-//			}
-//			else {
-//				try {
-//					Integer customAmt = Integer.valueOf(playersInput);
-//					gameSettings.setStartingMoney(customAmt);
-//					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
-//					
-//				} catch (NumberFormatException e) {
-//					gameSettings.setStartingMoney(1500);
-//					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
-//				}
-//				
-//			}
-//		});
+		startingMoneyInput.setOnAction(event -> {
+			String playersInput = startingMoneyInput.getText();
+			if (playersInput.length() == 0 || playersInput.equals("1500")) {
+				gameSettings.setStartingMoney(1500);
+				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
+			}
+			else {
+				try {
+					Integer customAmt = Integer.valueOf(playersInput);
+					gameSettings.setStartingMoney(customAmt);
+					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
+					
+				} catch (NumberFormatException e) {
+					gameSettings.setStartingMoney(1500);
+					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
+				}
+				
+			}
+		});
 		
 		// ENABLE/DISABLE TRADING
 		ToggleButton tradingButton = new ToggleButton("Trading with players");
@@ -511,27 +511,13 @@ public class View extends Application implements Observer {
 		aiPlayersChoicesHBox.getChildren().addAll(new Label("Num of Ai Players"), numberOfAiPlayersChoiceBox);
 		
 		Button startGameButton = new Button("Start Game");
+		startGameButton.setBorder(Border.stroke(Color.GOLD));
+		startGameButton.setMinSize(300, 60);
 		startGameButton.setOnAction(event -> {
-			
-			//set starting money
-		    String moneyInput = startingMoneyInput.getText();
-		    if (moneyInput != null && !moneyInput.isEmpty()) {
-		        try {
-		            gameSettings.setStartingMoney(Integer.valueOf(moneyInput));
-		        } catch (Exception e) {
-		            gameSettings.setStartingMoney(1500);
-		        }
-		    }
-			
-			
-			
 			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
-			
-			
-				
-				
+
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);

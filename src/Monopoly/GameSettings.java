@@ -7,7 +7,7 @@ public class GameSettings  {
 	private int amountOfAIPlayers;
 	private int startingMoney;
 	private int passGoValue;
-	private int propertyPriceAdjust;   //not multiplying, this is just an int
+	private int propertyPriceAdjust;//multiplier
 	private boolean optionalBuying;
     private boolean freeParkingEnabled;
     private boolean tradingEnabled;
@@ -27,7 +27,7 @@ public class GameSettings  {
 		amountOfAIPlayers = 1;
 		startingMoney = 1500;
 		passGoValue = 200;
-		propertyPriceAdjust = 0;   //not multiplying, this is just an int
+		propertyPriceAdjust = 1;//multiplier
 		optionalBuying = true;
 		freeParkingEnabled = false;
 		tradingEnabled = true;
@@ -82,11 +82,7 @@ public class GameSettings  {
 	}
 	
 	public void setPropertyPriceAdjust(int propertyPriceAdjust) {
-		if (propertyPriceAdjust < -60) { //because otherwise baltic avenue would be negative price to buy
-			this.propertyPriceAdjust = -60;
-		} else {
-			this.propertyPriceAdjust = propertyPriceAdjust;
-		}
+		this.propertyPriceAdjust = propertyPriceAdjust;
 	}
 	
 	public int getStartingMoney() {

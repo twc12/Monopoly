@@ -1421,7 +1421,7 @@ public class View extends Application implements Observer {
 		
 		// --- Middle dice roll area ---
 		StackPane diceRollStackPane = new StackPane();
-		diceRollStackPane.setPrefWidth(diceRollAreaWidth);
+		diceRollStackPane.setPrefWidth(diceRollAreaWidth -20);
 		diceRollStackPane.setPrefHeight(bottomHBoxHeight);
 		diceRollStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		this.diceRollStackPane = diceRollStackPane;
@@ -1432,8 +1432,7 @@ public class View extends Application implements Observer {
 		StackPane otherPlayerInfoCardStackPane = new StackPane();
 		otherPlayerInfoCardStackPane.setPrefWidth(diceRollAreaWidth);
 		otherPlayerInfoCardStackPane.setPrefHeight(bottomHBoxHeight);
-		otherPlayerInfoCardStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
-		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//		otherPlayerInfoCardStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
 		
 		if (this.aiLogsEnabled) otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
@@ -1531,7 +1530,7 @@ public class View extends Application implements Observer {
 		VBox coreButtonsVBox = new VBox(5);
 		coreButtonsVBox.setPadding(new Insets(8));
 		coreButtonsVBox.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
-		coreButtonsVBox.setPrefHeight(bottomHBoxHeight+3);
+		coreButtonsVBox.setPrefHeight(bottomHBoxHeight+5);
 		coreButtonsVBox.setAlignment(Pos.CENTER);
 		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
 		coreButtonsVBox.getChildren().addAll(rollDiceButton, tradeButtonStackPane, buildButtonStackPane, endTurnButton);
@@ -2973,9 +2972,8 @@ public class View extends Application implements Observer {
 	this.aiLoggerVBox = aiLoggerVBox;
 	aiLoggerVBox.setAlignment(Pos.TOP_LEFT);
 	ScrollPane aiLoggerScrollPane = new ScrollPane(aiLoggerVBox);
-
-	double aiLogWidth = 290;
-	double aiLogHeight = 210;
+	double aiLogWidth = 300;
+	double aiLogHeight = 223;
 	aiLoggerScrollPane.setMinWidth(aiLogWidth);
 	aiLoggerScrollPane.setPrefWidth(aiLogWidth);
 	aiLoggerScrollPane.setMaxWidth(aiLogWidth);
@@ -2986,7 +2984,7 @@ public class View extends Application implements Observer {
 	aiLoggerScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
 	aiLoggerScrollPane.setPannable(true);
 
-	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black;");
+	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black; " +"-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5;");
 	Label initLabel = new Label(">AI Player Log:          ");
 	initLabel.setStyle(aiLoggerLabelSetStyle);
 	aiLoggerVBox.getChildren().add(initLabel);

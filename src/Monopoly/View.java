@@ -661,7 +661,7 @@ public class View extends Application implements Observer {
 		// __________Position board on screen________________________
 		visualGameBoard.setManaged(false);
 		visualGameBoard.setLayoutX(400);
-		visualGameBoard.setLayoutY(290);
+		visualGameBoard.setLayoutY(286);
 		
 		//____________________________________________________________
 		
@@ -727,6 +727,7 @@ public class View extends Application implements Observer {
 	    bottomFrameImageView.setManaged(false);
 	    if(theme.equals("pirateTheme")) {
 	    	bottomFrameImageView.setFitWidth(1225);
+	    	bottomFrameImageView.setTranslateY(475);
 	    	bottomFrameImageView.setTranslateX(-100);
 	    }
 	    

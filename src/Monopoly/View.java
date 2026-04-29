@@ -549,13 +549,16 @@ public class View extends Application implements Observer {
 		// Create a load button that will prompt the user to select a save file that ends in .monopoly
 		Button loadGameButton = new Button("Load Game");
 		loadGameButton.setOnAction(event -> {
+			// Open up the finder for the user to select a file on their computer
 			FileChooser fileChooser = new FileChooser();
+			// only allow the user to select .monopoly files
 			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save File(*.monopoly)",  "*.monopoly");
 			fileChooser.getExtensionFilters().add(extFilter);
 			fileChooser.setTitle("Pick a Monopoly Save File");
 			
 			File selectedFile = fileChooser.showOpenDialog(stage);
 			
+			// if the user selected a file, then load the game based on this model and start!
 			if (selectedFile != null) {
 				System.out.println("Log: File Selected: "+selectedFile.getAbsolutePath());
 				controller = new Controller(this, selectedFile);

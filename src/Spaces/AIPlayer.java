@@ -6,7 +6,7 @@ import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
 
 /**
- * @author
+ * @author Jarrod Heyer Martinez
  * This class represents the AI, currently all choices are just made at 
  * random by the AI, has implementation for every system currently implemented
  */

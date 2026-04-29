@@ -1,7 +1,5 @@
 package Monopoly;
 
-import java.util.List;
-
 import Cards.Card;
 import Cards.Deck;
 import Spaces.Chance;
@@ -89,10 +87,9 @@ public class Controller {
 
 			// If the attempt succeeded
 			if (dice1 == dice2) {
-				System.out.println("The attempt to get out of jail succeded."); // debugging
 				playerInjail.getOutOfJail();
-				System.out.println("The player has moved: " + dice1 + dice2);
 				playerInjail.move(dice1 + dice2);
+				playerInjail.setIsDoneRollingDice(true); // they used their roll to escape
 			}
 
 			// If the attempt did not succeed

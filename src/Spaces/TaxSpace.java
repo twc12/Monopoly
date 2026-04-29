@@ -18,7 +18,7 @@ public class TaxSpace extends CostSpace{
 	
 	
 	public TaxSpace(TaxSpaceType type) {
-		super("TaxSpace");
+		super("Income Tax");
 		this.taxSpaceType = type;
 	}
 

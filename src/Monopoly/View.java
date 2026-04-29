@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
 import Cards.Card;
 import Messages.AiActionMessage;
@@ -24,6 +25,7 @@ import Monopoly.Controller.JAIL_CHOICE;
 import Monopoly.GameSettings.Theme;
 import Spaces.AIPlayer;
 import Spaces.Chance;
+import Spaces.CommunityChest;
 import Spaces.FreeParking;
 import Spaces.GoSpace;
 import Spaces.GoToJailSpace;
@@ -33,7 +35,12 @@ import Spaces.Property;
 import Spaces.Railroad;
 import Spaces.RealEstate;
 import Spaces.Space;
+import Spaces.TaxSpace;
 import Spaces.Utility;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -82,6 +89,8 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage; 
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.AudioClip;
@@ -242,6 +251,8 @@ public class View extends Application implements Observer {
 	private String generalFont;
 	private Color uiColor = Color.rgb(70, 70, 70);
 	private String uiColorString = "rgb(70, 70, 70)";
+	private Color boardColor;
+	private String uiDividerColor;
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -654,16 +665,22 @@ public class View extends Application implements Observer {
 		rightSideIconsMap = null;
 		
 		theme = controller.getThemeString();
+		
 		// Theme changes
 		if(theme.equals("standardTheme")) {
 			uiColor = Color.DARKSLATEGRAY;
 			uiColorString = "darkslategray";
+
 			this.textThemeColor = "-fx-text-fill: darkslateblue;";
+			boardColor = Color.BISQUE;
+			uiDividerColor = "white";
 		}
 		if(theme.equals("pirateTheme")) {
 			uiColor = Color.rgb(70,70,70);
 			uiColorString = "rgb(70,70,70)";
 			this.textThemeColor = "-fx-text-fill: gold;";
+			boardColor = Color.BISQUE;
+			uiDividerColor = "rgb(140, 99, 52)";
 		}	
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
@@ -682,7 +699,7 @@ public class View extends Application implements Observer {
 		visualGameBoard.setManaged(false);
 		visualGameBoard.setLayoutX(400);
 		visualGameBoard.setLayoutY(290);
-		mainScreen.setCenter(visualGameBoard);
+		
 		//____________________________________________________________
 		
 		// Put all the players pieces on their corresponding space, then track which space the players are on 
@@ -743,8 +760,23 @@ public class View extends Application implements Observer {
 		// bottom playerinfo+controls
 		StackPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
-
 		
+		Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
+		ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
+	    bottomFrameImageView.setPreserveRatio(false);
+	    bottomFrameImageView.setFitHeight(500);
+	    bottomFrameImageView.setFitWidth(1200);
+	    bottomFrameImageView.setTranslateY(470);
+	    bottomFrameImageView.setTranslateX(-75);
+	    bottomFrameImageView.setMouseTransparent(true);
+	    bottomFrameImageView.setManaged(false);
+	    if(theme.equals("pirateTheme")) {
+	    	bottomFrameImageView.setFitWidth(1225);
+	    	bottomFrameImageView.setTranslateX(-100);
+	    }
+	    
+		mainScreen.getChildren().add(bottomFrameImageView);
+	   
 		// ADDED: root StackPane so overlay can sit above mainScreen
 		root = new StackPane();
 		
@@ -1040,18 +1072,8 @@ public class View extends Application implements Observer {
 		StackPane wrapper = new StackPane();
 		
 		
-	    Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
 
 	    
-	  
-	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
-	    bottomFrameImageView.setPreserveRatio(false);
-	    bottomFrameImageView.setFitHeight(500);
-	    bottomFrameImageView.setFitWidth(1200);
-	    bottomFrameImageView.setTranslateY(182);
-	    bottomFrameImageView.setTranslateX(-475);
-	    bottomFrameImageView.setMouseTransparent(true);
-	    bottomFrameImageView.setManaged(false);
 		
 		
 		// TITLE IMAGE added where the backgrounImage is added
@@ -1083,7 +1105,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
-	    wrapper.getChildren().addAll(bottomFrameImageView, titleImageView, centerOverlay, mainBoardGridPane);
+	    wrapper.getChildren().addAll(titleImageView, centerOverlay, mainBoardGridPane);
 
 
 	    return wrapper;
@@ -1196,7 +1218,7 @@ public class View extends Application implements Observer {
 		freeParkingStackPane.setUserData(freeParkingSpaceObj);
 		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		freeParkingStackPane.getChildren().add(baseBottomRect);
 		freeParkingStackPane.getChildren().add(pImageView);
@@ -1214,7 +1236,7 @@ public class View extends Application implements Observer {
 		goSpaceStackPane.setUserData(goSpaceObj);
 		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		goSpaceStackPane.getChildren().add(baseBottomRect);
 		goSpaceStackPane.getChildren().add(gImageView);
@@ -1236,7 +1258,7 @@ public class View extends Application implements Observer {
 		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		jailStackPane.getChildren().add(baseBottomRect);
 		jailStackPane.getChildren().add(jImageView);
@@ -1255,7 +1277,7 @@ public class View extends Application implements Observer {
 		goToJailStackPane.setUserData(goToJailSpaceObj);
 		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		goToJailStackPane.getChildren().add(baseBottomRect);
 		goToJailStackPane.getChildren().add(gjImageView);
@@ -1279,6 +1301,7 @@ public class View extends Application implements Observer {
 	 *                          inputed based on the side of the board
 	 */
 	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
+		int nameFont = 8;
 		// TESTING
 		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
@@ -1291,7 +1314,7 @@ public class View extends Application implements Observer {
 		listOfSpacesPanes.set(spaceIdx, spaceCardPane); // This list is used for player movement in the future
 
 		// The size and shape of normal size space
-		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, Color.BISQUE);
+		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		
 		spaceCardPane.getChildren().add(baseBottomRect);
 
@@ -1303,6 +1326,41 @@ public class View extends Application implements Observer {
 		spaceCardPane.getChildren().add(topColorBandRect);
 		}
 		
+		// Name labels
+		Label name = new Label(space.getName());
+		name.setStyle("-fx-font-size: " + nameFont + ";");
+		name.setTextAlignment(TextAlignment.CENTER);
+		name.setMaxWidth(widthOfPropertySpaceCards);
+		name.setWrapText(true);
+		name.setLineSpacing(-2);
+		name.setAlignment(Pos.TOP_CENTER);
+		if(space instanceof RealEstate)
+			name.setTranslateY(-7);
+		else
+			name.setTranslateY(-20);
+		spaceCardPane.getChildren().add(name);
+		
+		// Cost ammount at bottom
+		Label cost = new Label();
+		cost.setStyle("-fx-font-size: " + nameFont + ";");
+		cost.setTextAlignment(TextAlignment.CENTER);
+		cost.setMaxWidth(widthOfPropertySpaceCards);
+		cost.setWrapText(true);
+		cost.setLineSpacing(-2);
+		cost.setAlignment(Pos.BOTTOM_CENTER);
+		cost.setTranslateY(25);
+		
+		if(space instanceof Property) {
+			String costText = String.valueOf(((Property) space).getPurchaseAmount());
+			cost.setText("$"+costText);
+		}
+		if(space instanceof TaxSpace) {
+			String costText = "200";
+			cost.setText("pay $"+costText);
+		}
+		spaceCardPane.getChildren().add(cost);
+		
+		// Icons
 		if(space.hasImage()) {
 			Image image = new Image("/"+ theme + "/"+space.getImageFile());
 			ImageView icon = new ImageView(image);
@@ -1312,13 +1370,17 @@ public class View extends Application implements Observer {
 			icon.setPreserveRatio(true);
 			icon.setTranslateX(5);
 			icon.setTranslateY(10);
+			if(space instanceof CommunityChest || space instanceof Railroad)
+				icon.setTranslateY(18);
+			if(space instanceof Utility)
+				icon.setTranslateY(15);
 			spaceCardPane.getChildren().add(icon);
 		}
 
 		// Rotate the
 		spaceCardPane.getTransforms().add(new Rotate(rotateAmmt, 33, 9));
 		spaceCardPane.setStyle("-fx-border-style: solid; -fx-border-width: 1; -fx-border-color: black");
-
+		
 		// This is required to keep the rotation effect of the rectangles
 		Group spaceCardGroup = new Group(spaceCardPane);
 		
@@ -1360,8 +1422,7 @@ public class View extends Application implements Observer {
 		StackPane diceRollStackPane = new StackPane();
 		diceRollStackPane.setPrefWidth(diceRollAreaWidth);
 		diceRollStackPane.setPrefHeight(bottomHBoxHeight);
-		diceRollStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		diceRollStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		diceRollStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		this.diceRollStackPane = diceRollStackPane;
 		
 		// --- Make the Roll Dice, Build, Trade, End Turn buttons ---
@@ -1370,7 +1431,7 @@ public class View extends Application implements Observer {
 		StackPane otherPlayerInfoCardStackPane = new StackPane();
 		otherPlayerInfoCardStackPane.setPrefWidth(diceRollAreaWidth);
 		otherPlayerInfoCardStackPane.setPrefHeight(bottomHBoxHeight);
-		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		otherPlayerInfoCardStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
 		
@@ -1390,7 +1451,7 @@ public class View extends Application implements Observer {
 	    // wrapper
 	    StackPane bottomWrapper = new StackPane();
 	    bottomWrapper.setAlignment(Pos.BOTTOM_CENTER);
-
+	    bottomWrapper.setTranslateX(3);
 
 	    bottomWrapper.getChildren().addAll(bottomHBox);
 
@@ -1468,9 +1529,9 @@ public class View extends Application implements Observer {
 		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
 		VBox coreButtonsVBox = new VBox(5);
 		coreButtonsVBox.setPadding(new Insets(8));
-		coreButtonsVBox.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		coreButtonsVBox.setPrefHeight(bottomHBoxHeight);
-		
+		coreButtonsVBox.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
+		coreButtonsVBox.setPrefHeight(bottomHBoxHeight+3);
+		coreButtonsVBox.setAlignment(Pos.CENTER);
 		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
 		coreButtonsVBox.getChildren().addAll(rollDiceButton, tradeButtonStackPane, buildButtonStackPane, endTurnButton);
 		mainButtonsGroup.getChildren().add(coreButtonsVBox);
@@ -1494,7 +1555,7 @@ public class View extends Application implements Observer {
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
 		
 		
-		visualPlayerCardGridPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
+		visualPlayerCardGridPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		
 		Label playerName = new Label(currPlayer.getPlayerName());
 		playerName.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 25));
@@ -1939,23 +2000,80 @@ public class View extends Application implements Observer {
 	 * 	dice2Result (int): The result for the second dice
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
-		// override the group in the bottom center of the screen to be available to show dice
-		diceRollStackPane.getChildren().clear();
-		
-		GridPane diceResultGridPane = new GridPane(20, 0);
-		diceResultGridPane.setPadding(new Insets(20));
-		BorderStroke borderStroke = new BorderStroke(
-				Color.GREY,
-				BorderStrokeStyle.SOLID,
-				CornerRadii.EMPTY,
-				new BorderWidths(2)
-			);
-		diceResultGridPane.setBorder(new Border(borderStroke));
-		
-		diceRollStackPane.getChildren().add(diceResultGridPane);
-		
-		diceResultGridPane.add(createADice(dice1Result), 0, 0);
-		diceResultGridPane.add(createADice(dice2Result), 1, 0);
+	    diceRollStackPane.getChildren().clear();
+
+	    GridPane diceResultGridPane = new GridPane(20, 0);
+	    diceResultGridPane.setPadding(new Insets(20));
+	    diceResultGridPane.setAlignment(Pos.CENTER);
+
+	    BorderStroke borderStroke = new BorderStroke(
+	        Color.TRANSPARENT,
+	        BorderStrokeStyle.SOLID,
+	        CornerRadii.EMPTY,
+	        new BorderWidths(2)
+	    );
+	    diceResultGridPane.setBorder(new Border(borderStroke));
+
+	    diceRollStackPane.getChildren().add(diceResultGridPane);
+
+	    Random rand = new Random();
+
+	    Timeline diceTimeline = new Timeline();
+
+	    for (int i = 0; i < 15; i++) {
+	    	
+	    	// Set animation frame
+	        KeyFrame frame = new KeyFrame(Duration.millis(i * 70), e -> {
+	            diceResultGridPane.getChildren().clear();
+
+	            int tempDice1 = rand.nextInt(6) + 1;
+	            int tempDice2 = rand.nextInt(6) + 1;
+
+	            GridPane dice1 = createADice(tempDice1);
+	            GridPane dice2 = createADice(tempDice2);
+
+	            // Shake effect
+	            dice1.setTranslateY(rand.nextInt(25) - 12);
+	            dice2.setTranslateY(rand.nextInt(25) - 12);
+
+	            dice1.setRotate(rand.nextInt(40) - 20);
+	            dice2.setRotate(rand.nextInt(40) - 20);
+
+	            diceResultGridPane.add(dice1, 0, 0);
+	            diceResultGridPane.add(dice2, 1, 0);
+	        });
+
+	        diceTimeline.getKeyFrames().add(frame);
+	    }
+	    
+	    // Get actual result
+	    diceTimeline.setOnFinished(e -> {
+	        diceResultGridPane.getChildren().clear();
+
+	        GridPane finalDice1 = createADice(dice1Result);
+	        GridPane finalDice2 = createADice(dice2Result);
+
+	        finalDice1.setTranslateY(-20);
+	        finalDice2.setTranslateY(-20);
+
+	        diceResultGridPane.add(finalDice1, 0, 0);
+	        diceResultGridPane.add(finalDice2, 1, 0);
+	        
+	        // Move to center
+	        TranslateTransition bounce1 = new TranslateTransition(Duration.millis(250), finalDice1);
+	        bounce1.setFromY(-20);
+	        bounce1.setToY(0);
+
+	        // Move to center
+	        TranslateTransition bounce2 = new TranslateTransition(Duration.millis(250), finalDice2);
+	        bounce2.setFromY(-20);
+	        bounce2.setToY(0);
+
+	        bounce1.play();
+	        bounce2.play();
+	    });
+
+	    diceTimeline.play();
 	}
 	
 	/**
@@ -1982,6 +2100,7 @@ public class View extends Application implements Observer {
 		newDice.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		newDice.setPadding(new Insets(paddingAroundAllDots));
 		newDice.setBorder(new Border(borderStroke));
+		
 		
 		// Record which slots on the dice got filled, so we can fill others with empty space
 		Circle newDot;
@@ -2487,13 +2606,20 @@ public class View extends Application implements Observer {
 	    buttonBox.setAlignment(Pos.CENTER);
 	    
 		// BUY BUTTON - copying style from roll dice button
-		Rectangle buyButton = new Rectangle(coreButtonWidth-30, coreButtonHeight-5 , Color.LIGHTGREEN);
+		Rectangle buyButton = new Rectangle(coreButtonWidth-50, coreButtonHeight-5 , Color.LIGHTGREEN);
 		buyButton.setArcWidth(30); 
 		buyButton.setArcHeight(30);
-		Label buyLabel = new Label("Buy Property");
+		Label buyLabel = new Label("Buy");
 		StackPane buyStackPane = new StackPane();
-		buyStackPane.getChildren().addAll(buyButton,buyLabel);
 		
+		buyStackPane.getChildren().addAll(buyButton,buyLabel);
+		buyStackPane.setOnMousePressed(event -> {
+			buyButton.setFill(Color.LIGHTGREEN.darker());
+		});
+
+		buyStackPane.setOnMouseReleased(event -> {
+			buyButton.setFill(Color.LIGHTGREEN);
+		});
 		// if can't afford, mark as disabled and don't rig click event
 		if (player.getCashAmmt() < property.getPurchaseAmount()) {
 			buyLabel.setText("(can't afford)");;
@@ -2513,6 +2639,14 @@ public class View extends Application implements Observer {
 		Label skipLabel = new Label("Pass");
 		StackPane skipStackPane = new StackPane();
 		skipStackPane.getChildren().addAll(skipButton,skipLabel);
+		skipStackPane.setOnMousePressed(event -> {
+		    skipButton.setFill(Color.LIGHTSTEELBLUE.darker());
+		});
+
+		skipStackPane.setOnMouseReleased(event -> {
+		    skipButton.setFill(Color.LIGHTSTEELBLUE);
+		});
+		
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");

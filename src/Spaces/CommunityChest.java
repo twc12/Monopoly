@@ -6,7 +6,7 @@ import Monopoly.Model;
 public class CommunityChest extends Space {
 
 	public CommunityChest(String imageFile) {
-		super("CommunityChestSpace");
+		super("Community Chest");
 		this.imageFile = imageFile;
 	}
 

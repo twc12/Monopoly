@@ -847,54 +847,55 @@ public class View extends Application implements Observer {
 
 		root.getChildren().add(detailedCardInfoOverlay);
 		
+		// The save button
+				StackPane saveButtonStackPane = new StackPane();
+				saveButtonStackPane.setPickOnBounds(false);
+				Rectangle saveButtonRect = new Rectangle(80,20,Color.BROWN);
+				Label saveButtonLabel = new Label("Save Game"); saveButtonLabel.setFont(new Font(15)); saveButtonLabel.setTextFill(Color.WHITE);
+				saveButtonStackPane.getChildren().addAll(saveButtonRect, saveButtonLabel);
+				saveButtonStackPane.setOnMouseClicked(event -> {
+					// ONLY ALLOW THE USER TO SAVE TO .monopoly extensions
+					FileChooser fileChooser = new FileChooser();
+					fileChooser.setTitle("Chose a game save location");
+					FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save Files(.monopoly)", ".monopoly");
+					fileChooser.getExtensionFilters().add(extFilter);
+					fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+					fileChooser.setInitialFileName("monopolySave.monopoly");
+					File selectedFile = fileChooser.showSaveDialog(stage);
+					if (selectedFile != null) {
+						System.out.println("Logs: Save file selected: "+selectedFile.getAbsolutePath());
+					} else {
+						System.out.println("Logs: No save folder selected, canclled");
+					}
+					
+					// double check that the name ends with ".monopoly", add it if it doesnt
+					String fileName = selectedFile.getName();
+					if (!fileName.toLowerCase().endsWith(".monopoly")) {
+						selectedFile = new File(selectedFile.getParentFile(), fileName + ".monopoly");
+					}
+					
+					// now lets try to save it 
+					try {
+						ObjectOutputStream objOutStream = new ObjectOutputStream(new FileOutputStream(selectedFile));
+						objOutStream.writeObject(controller.getModel());
+						objOutStream.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("Logs: Failed to save a game state!");
+						infoToTellPlayer.setText("Error: Failed to save game state!");
+					}
+				});
+				root.getChildren().add(saveButtonStackPane);
+				saveButtonStackPane.setTranslateX(200);
+				saveButtonStackPane.setTranslateY(180);
+		
 		StackPane tradeViewStackPane = new StackPane();
 		this.tradeViewStackPane = tradeViewStackPane;
 		tradeViewStackPane.setPickOnBounds(false); // allows "transparent" click thru to the board
 		root.getChildren().add(tradeViewStackPane);
 		
-		// The save button
-		StackPane saveButtonStackPane = new StackPane();
-		saveButtonStackPane.setPickOnBounds(false);
-		Rectangle saveButtonRect = new Rectangle(80,20,Color.BROWN);
-		Label saveButtonLabel = new Label("Save Game"); saveButtonLabel.setFont(new Font(15)); saveButtonLabel.setTextFill(Color.WHITE);
-		saveButtonStackPane.getChildren().addAll(saveButtonRect, saveButtonLabel);
-		saveButtonStackPane.setOnMouseClicked(event -> {
-			// ONLY ALLOW THE USER TO SAVE TO .monopoly extensions
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Chose a game save location");
-			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save Files(.monopoly)", ".monopoly");
-			fileChooser.getExtensionFilters().add(extFilter);
-			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-			fileChooser.setInitialFileName("monopolySave.monopoly");
-			File selectedFile = fileChooser.showSaveDialog(stage);
-			if (selectedFile != null) {
-				System.out.println("Logs: Save file selected: "+selectedFile.getAbsolutePath());
-			} else {
-				System.out.println("Logs: No save folder selected, canclled");
-			}
-			
-			// double check that the name ends with ".monopoly", add it if it doesnt
-			String fileName = selectedFile.getName();
-			if (!fileName.toLowerCase().endsWith(".monopoly")) {
-				selectedFile = new File(selectedFile.getParentFile(), fileName + ".monopoly");
-			}
-			
-			// now lets try to save it 
-			try {
-				ObjectOutputStream objOutStream = new ObjectOutputStream(new FileOutputStream(selectedFile));
-				objOutStream.writeObject(controller.getModel());
-				objOutStream.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Logs: Failed to save a game state!");
-				infoToTellPlayer.setText("Error: Failed to save game state!");
-			}
-		});
-		root.getChildren().add(saveButtonStackPane);
-		saveButtonStackPane.setTranslateX(200);
-		saveButtonStackPane.setTranslateY(180);
 		
-		Scene gameScene = new Scene(root, 1180, 820);
+		Scene gameScene = new Scene(root, 1180, 840);
 		return gameScene; // THIS RETURNS TO `def start() -> StartGameBtn.onAction()` code look up ^^ a function
 	}
 	

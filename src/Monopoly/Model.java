@@ -1,5 +1,6 @@
 package Monopoly;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,9 @@ import javafx.scene.paint.Color;
 
 
 // game state
-public class Model extends Observable {
+public class Model extends Observable implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * This variable must be filled in by a future implementation where the theme is 
@@ -61,7 +64,7 @@ public class Model extends Observable {
 	//constructor for JUNIT, doesn't create a view
 	public Model() {
 		this(null); 
-		}
+	}
 	
 	//constructor, initializes board, players
 	public Model(View viewClassObj) {
@@ -99,14 +102,9 @@ public class Model extends Observable {
 		
 		theme = gameSettings.getActiveThemeString();
 		
-		// Create a list of Colors for player objects to pull from (8 max) - Players should have colors and have pieces assigned to them
-		List<Color> playerColorsToPickFrom = new ArrayList<>();
-		playerColorsToPickFrom.add(Color.RED); playerColorsToPickFrom.add(Color.BLUE); playerColorsToPickFrom.add(Color.GREEN); playerColorsToPickFrom.add(Color.YELLOW); 
-		playerColorsToPickFrom.add(Color.PURPLE); playerColorsToPickFrom.add(Color.PINK); playerColorsToPickFrom.add(Color.BLACK); playerColorsToPickFrom.add(Color.ORANGE); 
-		
-		
 		List<String> playerIconsToPickFrom = new ArrayList<>();
-		playerIconsToPickFrom.add("boat"); playerIconsToPickFrom.add("car"); playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
+		playerIconsToPickFrom.add("boat");    playerIconsToPickFrom.add("car");   playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
+		playerIconsToPickFrom.add("thimble"); playerIconsToPickFrom.add("train"); playerIconsToPickFrom.add("wheeler");
 		
 		
 		

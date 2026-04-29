@@ -7,15 +7,18 @@
  * @author Tyler Carpenter
  */
 package Cards;
+import java.io.Serializable;
 import java.util.*;
 import javafx.scene.image.*;
 import Spaces.Player;
 
 
-public class CardBuilder {
+public class CardBuilder implements Serializable{
+	
+	
+	private static final long serialVersionUID = 1L;
 	String theme;
 	ArrayList<String> cardDescription = new ArrayList<>();
-	ArrayList<Image> cardImage;
 	ArrayList<Card> chanceCards;
 	ArrayList<Card> communityChestCards;
 	
@@ -99,185 +102,219 @@ public class CardBuilder {
 		
 		// Chance Card
 		
+		
+		
 		// #1
-		chanceCards.add(new Card(cardDescription.get(0),"chanceCard0.png" , (player,model)->{
+		CardEffect r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(50);
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(0),"chanceCard0.png" , r));
 		
 		// #2
-		chanceCards.add(new Card(cardDescription.get(1),"chanceCard1.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(150);
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(1),"chanceCard1.png" , r));
 		
 		// #3
-		chanceCards.add(new Card(cardDescription.get(2),"chanceCard2.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(-15);
 			if (model.getGameSettings().getFreeParkingRule()) {
 				model.addToFreeParkingFunds(15);
 			}
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(2),"chanceCard2.png" , r));
 		
 		// #4
-		chanceCards.add(new Card(cardDescription.get(3),"chanceCard3.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(-15);
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(3),"chanceCard3.png" , r));
 		
 		// #5
-		chanceCards.add(new Card(cardDescription.get(4),"chanceCard4.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.putInJail();
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(4),"chanceCard4.png" , r));
 		
 		// #6
-		chanceCards.add(new Card(cardDescription.get(5),"chanceCard5.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToGo();
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(5),"chanceCard5.png" , r));
 		
 		// #7
-		chanceCards.add(new Card(cardDescription.get(6),"chanceCard6.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToRailroad();
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(6),"chanceCard6.png" , r));
 		
 		
 		// #8
-		chanceCards.add(new Card(cardDescription.get(7),"chanceCard7.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToUtility();
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(7),"chanceCard7.png" , r));
 		
 		// #9
-		chanceCards.add(new Card(cardDescription.get(8),"chanceCard8.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToProperty("Illinois Avenue");
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(8),"chanceCard8.png" , r));
 		
 		// #10
-		chanceCards.add(new Card(cardDescription.get(9),"chanceCard9.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToProperty("Board Walk");
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(9),"chanceCard9.png" , r));
 		
 		// #11
-		chanceCards.add(new Card(cardDescription.get(10),"chanceCard10.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToProperty("St. Charles Place");
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(10),"chanceCard10.png" , r));
 		
 		// #12
-		chanceCards.add(new Card(cardDescription.get(11),"chanceCard11.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToProperty("Reading Railroad");
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(11),"chanceCard11.png" , r));
 		
 		// #13
-		chanceCards.add(new Card(cardDescription.get(12),"chanceCard12.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			for(Player opponent : model.getPlayers()) {
 				if(!player.equals(opponent)) {
 					opponent.addCash(50);
 					player.addCash(-50);
 				}
 			};
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(12),"chanceCard3.png" , r));
 		
 		// #14
-		chanceCards.add(new Card(cardDescription.get(13),"chanceCard13.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addJailCard();
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(13),"chanceCard13.png" , r));
 		
 		// #15 TODO need change to move back 3, placeholder for now
-		chanceCards.add(new Card(cardDescription.get(14),"chanceCard14.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.move(3);
-		}));
+		};
+		chanceCards.add(new Card(cardDescription.get(14),"chanceCard14.png" , r));
 		
 		// #16
-		chanceCards.add(new Card(cardDescription.get(15),"chanceCard15.png" , (player,model)->{
-		for(int i = 0; i < player.getHousesOwnedCount(); i++) 
-			player.addCash(25);
-		for(int i = 0; i < player.getHotelsOwnedCount(); i++) 
-			player.addCash(100);
-		}));
+		r = (CardEffect & Serializable)(player, model) -> {
+			for(int i = 0; i < player.getHousesOwnedCount(); i++) 
+				player.addCash(-25);
+			for(int i = 0; i < player.getHotelsOwnedCount(); i++) 
+				player.addCash(-100);
+		};
+		chanceCards.add(new Card(cardDescription.get(15),"chanceCard15.png" , r));
 		
 		//Community chest cards
 		
 		// #1
-		communityChestCards.add(new Card(cardDescription.get(16),"chestCard0.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(100);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(16),"chestCard0.png" , r));
 		
 		// #2
-		communityChestCards.add(new Card(cardDescription.get(17),"chestCard1.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(200);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(17),"chestCard1.png" , r));
 		
 		// #3
-		communityChestCards.add(new Card(cardDescription.get(18),"chestCard2.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(45);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(18),"chestCard2.png" , r));
 		
 		// #4
-		communityChestCards.add(new Card(cardDescription.get(19),"chestCard3.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(10);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(19),"chestCard3.png" , r));
 		
 		// #5
-		communityChestCards.add(new Card(cardDescription.get(20),"chestCard4.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addJailCard();
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(20),"chestCard4.png" , r));
 		
 		// #6
-		communityChestCards.add(new Card(cardDescription.get(21),"chestCard5.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(100);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(21),"chestCard5.png" , r));
 		
 		// #7
-		communityChestCards.add(new Card(cardDescription.get(22),"chestCard6.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(50);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(22),"chestCard6.png" , r));
 		
 		// #8
-		communityChestCards.add(new Card(cardDescription.get(23),"chestCard7.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.advanceToGo();
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(23),"chestCard7.png" , r));
 		
 		// #9
-		communityChestCards.add(new Card(cardDescription.get(24),"chestCard8.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(100);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(24),"chestCard8.png" , r));
 		
 		// #10
-		communityChestCards.add(new Card(cardDescription.get(25),"chestCard9.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(25);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(25),"chestCard9.png" , r));
 		
 		// #11
-		communityChestCards.add(new Card(cardDescription.get(26),"chestCard10.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.putInJail();
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(26),"chestCard10.png" , r));
 		
 		// #12
-		communityChestCards.add(new Card(cardDescription.get(27),"chestCard11.png" , (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(150);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(27),"chestCard11.png" , r));
 		
 		// #13
-		communityChestCards.add(new Card(cardDescription.get(28),"chestCard12.png", (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(20);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(28),"chestCard12.png", r));
 		
 
 		// #14
-		communityChestCards.add(new Card(cardDescription.get(29),"chestCard13.png", (player,model)->{
-			;
-		}));
+		r = (CardEffect & Serializable)(player, model) -> {
+			player.addCash(-50);
+		};
+		communityChestCards.add(new Card(cardDescription.get(29),"chestCard13.png", r));
 		
 		// #15
-		communityChestCards.add(new Card(cardDescription.get(30),"chestCard14.png" ,(player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			for(Player opponent : model.getPlayers()) {
 				if(!player.equals(opponent)) {
 					opponent.addCash(-50);
 					player.addCash(50);
 				}
 			}
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(30),"chestCard14.png" ,r));
 		
 		// #16
-		communityChestCards.add(new Card(cardDescription.get(31),"chestCard15.png", (player,model)->{
+		r = (CardEffect & Serializable)(player, model) -> {
 			player.addCash(50);
-		}));
+		};
+		communityChestCards.add(new Card(cardDescription.get(31),"chestCard15.png", r));
 	
 	}
 }

@@ -7,11 +7,14 @@
  */
 package Spaces;
 
+import java.io.Serializable;
 import java.util.*;
 
 import Monopoly.Model;
 import javafx.scene.image.Image;
-public class Player {
+
+public class Player implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
     private int playerId;
     private boolean inJail;
@@ -21,7 +24,7 @@ public class Player {
     private int ammtOfGetOutOfJailCards; 
     private Model model;
     private boolean isDoneRollingDice;
-    private Image playersIconImage; 
+    private String playersIconStr; 
     private boolean gameOver = false;
     
     /**
@@ -40,8 +43,7 @@ public class Player {
         cashAmmt = model.getGameSettings().getStartingMoney();// FUTURE - This should be updateable from user input on the start screen 
         
         // IMPORTANT NOTE: the naming format for the player icons for this implementation is "namePlayerIcon.png"
-        Image playerIcon = new Image("/"+theme+"/"+playersIconStr+"PlayerIcon.png");
-        playersIconImage = playerIcon;
+        this.playersIconStr = playersIconStr;
        
         // TODO get model method
         currentSpace = model.board.getFirstSpace();
@@ -82,9 +84,9 @@ public class Player {
     public int getCashAmmt() {return cashAmmt;}
     
     /**
-     * @return The players JavaFX Image of their icon
+     * @return The players JavaFX Image PATH AS A STRING of their icon
      */
-    public Image getPlayerIconImage() { return playersIconImage; }
+    public String getPlayerIconStr() { return playersIconStr; }
     
     /**
      * @return The players jail status boolean
@@ -184,6 +186,7 @@ public class Player {
     public boolean getGameOver() {
     	return this.gameOver;
     }
+    
     
     /**
      * Given an amount a player owes on any transaction using .addCash()

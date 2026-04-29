@@ -1,12 +1,16 @@
 package Monopoly;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
 import Cards.Card;
 import Messages.AiActionMessage;
@@ -21,6 +25,7 @@ import Monopoly.Controller.JAIL_CHOICE;
 import Monopoly.GameSettings.Theme;
 import Spaces.AIPlayer;
 import Spaces.Chance;
+import Spaces.CommunityChest;
 import Spaces.FreeParking;
 import Spaces.GoSpace;
 import Spaces.GoToJailSpace;
@@ -30,7 +35,12 @@ import Spaces.Property;
 import Spaces.Railroad;
 import Spaces.RealEstate;
 import Spaces.Space;
+import Spaces.TaxSpace;
 import Spaces.Utility;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -76,7 +86,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage; 
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.AudioClip;
@@ -201,6 +215,23 @@ public class View extends Application implements Observer {
 	private Map<Player, Circle> playerObjToPlayerPiece;
 	
 	/**
+	 * I needed a way position the circles on each space so that they all moved out of their way 
+	 * at least a little bit when they are all on the same space.
+	 * 
+	 * These lists will hold a translate amount of each circle for when there are multiple 
+	 * per space. The first detected circle will be moved to xDeltas[0], yDeltas[0] and 
+	 * so on.
+	 */
+	private int[] xDeltasForStackingPlayerPieces = {0, -10, 10, -10, 10, 10, -10, 0};
+	private int[] yDeltasForStackingPlayerPieces = {0, -10, -10, 15, 10, 0, 0, 0};
+	
+	/**
+	 * I need to store a second set of circle objects for the right player picker side
+	 * So I dont have to load thenm new each and every time 
+	 */
+	private Map<Player, Circle> rightSideIconsMap;
+	
+	/**
 	 * This VBox will have messages added to it for every ai decision made.
 	 * It will get populated in the `update()` function when we recieve a 
 	 * `aiDecisionMessage` from the model 
@@ -220,6 +251,8 @@ public class View extends Application implements Observer {
 	private String generalFont;
 	private Color uiColor = Color.rgb(70, 70, 70);
 	private String uiColorString = "rgb(70, 70, 70)";
+	private Color boardColor;
+	private String uiDividerColor;
 	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
@@ -249,6 +282,7 @@ public class View extends Application implements Observer {
 	private StackPane tradeViewStackPane;
 	
 	private StackPane root;
+	private Stage stage;
 	
 	/**
 	 * This is used for moving the player to jail after they are sent to jail, it will
@@ -263,6 +297,7 @@ public class View extends Application implements Observer {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		this.stage = stage;
 		
 		
 		// --------------- START SCREEEN --------------- 
@@ -512,9 +547,8 @@ public class View extends Application implements Observer {
 		
 		Button startGameButton = new Button("Start Game");
 		startGameButton.setBorder(Border.stroke(Color.GOLD));
-		startGameButton.setMinSize(300, 60);
+		startGameButton.setMinSize(150, 60);
 		startGameButton.setOnAction(event -> {
-			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
 
@@ -523,9 +557,37 @@ public class View extends Application implements Observer {
 			stage.setResizable(false);
 		});
 		
+		// Create a load button that will prompt the user to select a save file that ends in .monopoly
+		Button loadGameButton = new Button("Load Game");
+		loadGameButton.setOnAction(event -> {
+			// Open up the finder for the user to select a file on their computer
+			FileChooser fileChooser = new FileChooser();
+			// only allow the user to select .monopoly files
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save File(*.monopoly)",  "*.monopoly");
+			fileChooser.getExtensionFilters().add(extFilter);
+			fileChooser.setTitle("Pick a Monopoly Save File");
+			
+			File selectedFile = fileChooser.showOpenDialog(stage);
+			
+			// if the user selected a file, then load the game based on this model and start!
+			if (selectedFile != null) {
+				System.out.println("Log: File Selected: "+selectedFile.getAbsolutePath());
+				controller = new Controller(this, selectedFile);
+				Scene gameScene = createMainGame();
+				stage.setScene(gameScene);
+				stage.setResizable(false);
+			} else {
+				System.out.println("Log: File section cancled");
+				
+			}
+		});
+		
+		HBox startAndLoadButtonsHBox = new HBox(10);
+		startAndLoadButtonsHBox.getChildren().addAll(startGameButton, loadGameButton);
+		
 		
 		VBox inputsVBox = new VBox(10); inputsVBox.setPadding(new Insets(10));
-		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startGameButton);
+		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startAndLoadButtonsHBox);
 		startScreenBorderPane.setCenter(inputsVBox);
 		
 
@@ -544,7 +606,6 @@ public class View extends Application implements Observer {
 		RadioButton baseMonopolyRadioBtn = new RadioButton(); 
 		baseMonopolyRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.STANDARD);
-			this.textThemeColor = "-fx-text-fill: darkslateblue;";
 		});
 		baseMonopolyRadioBtn.fire(); // click the button by default
 		baseMonopolyRadioBtn.setToggleGroup(toggleGroup);
@@ -558,7 +619,6 @@ public class View extends Application implements Observer {
 		RadioButton pirateRadioBtn = new RadioButton();
 		pirateRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.PIRATE);
-			this.textThemeColor = "-fx-text-fill: gold;";
 		});
 		pirateRadioBtn.setToggleGroup(toggleGroup);
 		pirateThemeChoiceVBox.getChildren().addAll(piratePreviewView, pirateRadioBtn);
@@ -579,9 +639,6 @@ public class View extends Application implements Observer {
 		startScreenBorderPane.setBottom(themeChoicesHBox);	
 		// ------ END OF THEMES -----
 		
-		
-		
-		
 		Scene startGameScene = new Scene(startScreenBorderPane, 590,500);
 		stage.setScene(startGameScene);
 		stage.setTitle("MONOPOLY");
@@ -598,23 +655,32 @@ public class View extends Application implements Observer {
 	 * This should make sense, we only create the main game once its ready to be made.
 	 * @return
 	 */
-	
-	
-	
 	private Scene createMainGame() {
 		potentialTradeProperty = null;
 		listOfPropertiesToOffer = new ArrayList<>();
-		propertiesToLabels = null;
+		// initialize the trade variable, we need it global
 		ammountOfMoneyToPay = 0;
+		
+		propertiesToLabels = null;
+		rightSideIconsMap = null;
+		
 		theme = controller.getThemeString();
+		
 		// Theme changes
 		if(theme.equals("standardTheme")) {
 			uiColor = Color.DARKSLATEGRAY;
 			uiColorString = "darkslategray";
+
+			this.textThemeColor = "-fx-text-fill: darkslateblue;";
+			boardColor = Color.BISQUE;
+			uiDividerColor = "white";
 		}
 		if(theme.equals("pirateTheme")) {
 			uiColor = Color.rgb(70,70,70);
 			uiColorString = "rgb(70,70,70)";
+			this.textThemeColor = "-fx-text-fill: gold;";
+			boardColor = Color.BISQUE;
+			uiDividerColor = "rgb(140, 99, 52)";
 		}	
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
@@ -627,31 +693,39 @@ public class View extends Application implements Observer {
 		topLabelSection.setAlignment(Pos.TOP_CENTER);
 
 		// Create the board
-		StackPane visualGameBoard = buildMonopolyBoard();
+		StackPane visualGameBoard = buildMonopolyBoard(); 
 		
 		// __________Position board on screen________________________
 		visualGameBoard.setManaged(false);
 		visualGameBoard.setLayoutX(400);
-		visualGameBoard.setLayoutY(290);
-		mainScreen.setCenter(visualGameBoard);
+		visualGameBoard.setLayoutY(286);
+		
 		//____________________________________________________________
 		
-		// Put all the players pieces on the go space, then track which space the players are on 
-		StackPane goSpacePane = listOfSpacesPanes.get(0);
+		// Put all the players pieces on their corresponding space, then track which space the players are on 
 		List<Player> allPlayers = controller.getAllPlayers();
-		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
+		 
+		// for each player, pull their space, then find the stack pane for their current space 
 		for (Player currPlayer: allPlayers) {
-			// Create a new circle for each player 
-			Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
-			Image playersIconImage = currPlayer.getPlayerIconImage();
-			playersIconCircle.setFill(new ImagePattern(playersIconImage));
-			playerObjToPlayerPiece.put(currPlayer, playersIconCircle);
 			
-			// Move the circles into the GO SPACE
-			goSpacePane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
-			
-			// initualize which pane the player is on 
-			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
+			// pull out the space, then find the stack pane that has that space in the user data 
+			Space playersCurrentSpaceObj = currPlayer.getCurrentSpace();
+			for (StackPane currStackPane: listOfSpacesPanes) {
+				if (currStackPane.getUserData().equals(playersCurrentSpaceObj)) {
+					// Create a new circle for each player 
+					Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
+					System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+			        Image playersIconImage = new Image("/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+					playersIconCircle.setFill(new ImagePattern(playersIconImage));
+					playerObjToPlayerPiece.put(currPlayer, playersIconCircle);
+					
+					// Move the circles into the GO SPACE
+					currStackPane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
+					
+					// initualize which pane the player is on 
+					whichStackPanesPlayersAreOn.put(currPlayer, currStackPane);
+				}
+			}
 		}
 
 		mainScreen.setCenter(visualGameBoard);
@@ -686,8 +760,24 @@ public class View extends Application implements Observer {
 		// bottom playerinfo+controls
 		StackPane bottomArea = buildBottomSection();
 		mainScreen.setBottom(bottomArea);
-
 		
+		Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
+		ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
+	    bottomFrameImageView.setPreserveRatio(false);
+	    bottomFrameImageView.setFitHeight(500);
+	    bottomFrameImageView.setFitWidth(1200);
+	    bottomFrameImageView.setTranslateY(470);
+	    bottomFrameImageView.setTranslateX(-75);
+	    bottomFrameImageView.setMouseTransparent(true);
+	    bottomFrameImageView.setManaged(false);
+	    if(theme.equals("pirateTheme")) {
+	    	bottomFrameImageView.setFitWidth(1235);
+	    	bottomFrameImageView.setTranslateY(475);
+	    	bottomFrameImageView.setTranslateX(-100);
+	    }
+	    
+		mainScreen.getChildren().add(bottomFrameImageView);
+	   
 		// ADDED: root StackPane so overlay can sit above mainScreen
 		root = new StackPane();
 		
@@ -763,6 +853,48 @@ public class View extends Application implements Observer {
 		tradeViewStackPane.setPickOnBounds(false); // allows "transparent" click thru to the board
 		root.getChildren().add(tradeViewStackPane);
 		
+		// The save button
+		StackPane saveButtonStackPane = new StackPane();
+		saveButtonStackPane.setPickOnBounds(false);
+		Rectangle saveButtonRect = new Rectangle(80,20,Color.BROWN);
+		Label saveButtonLabel = new Label("Save Game"); saveButtonLabel.setFont(new Font(15)); saveButtonLabel.setTextFill(Color.WHITE);
+		saveButtonStackPane.getChildren().addAll(saveButtonRect, saveButtonLabel);
+		saveButtonStackPane.setOnMouseClicked(event -> {
+			// ONLY ALLOW THE USER TO SAVE TO .monopoly extensions
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Chose a game save location");
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save Files(.monopoly)", ".monopoly");
+			fileChooser.getExtensionFilters().add(extFilter);
+			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+			fileChooser.setInitialFileName("monopolySave.monopoly");
+			File selectedFile = fileChooser.showSaveDialog(stage);
+			if (selectedFile != null) {
+				System.out.println("Logs: Save file selected: "+selectedFile.getAbsolutePath());
+			} else {
+				System.out.println("Logs: No save folder selected, canclled");
+			}
+			
+			// double check that the name ends with ".monopoly", add it if it doesnt
+			String fileName = selectedFile.getName();
+			if (!fileName.toLowerCase().endsWith(".monopoly")) {
+				selectedFile = new File(selectedFile.getParentFile(), fileName + ".monopoly");
+			}
+			
+			// now lets try to save it 
+			try {
+				ObjectOutputStream objOutStream = new ObjectOutputStream(new FileOutputStream(selectedFile));
+				objOutStream.writeObject(controller.getModel());
+				objOutStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Logs: Failed to save a game state!");
+				infoToTellPlayer.setText("Error: Failed to save game state!");
+			}
+		});
+		root.getChildren().add(saveButtonStackPane);
+		saveButtonStackPane.setTranslateX(200);
+		saveButtonStackPane.setTranslateY(180);
+		
 		Scene gameScene = new Scene(root, 1180, 820);
 		return gameScene; // THIS RETURNS TO `def start() -> StartGameBtn.onAction()` code look up ^^ a function
 	}
@@ -780,13 +912,28 @@ public class View extends Application implements Observer {
 		VBox playersRectangleStack = new VBox(10);
 		List<Player> allPlayers = controller.getAllPlayers();
 		
+		// Loading the images each time would make the game slow, so now we load them to a map of players to circles
+		if (rightSideIconsMap == null) {
+			rightSideIconsMap = new HashMap<>();
+			for (Player player: allPlayers) {
+				System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
+		        Image playerIconImage = new Image("/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
+				Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
+				rightSideIconsMap.put(player, playersIconCircle);
+				System.out.println("Log: rightPicker: maping="+rightSideIconsMap.get(currPlayer));
+			}
+		}
+		
+		System.out.println("Log: rightPicker: the entire map: "+rightSideIconsMap);
+		
 		// loop over all the players, adding their rectangle to the right size with their color and Id 
 		for (Player player : allPlayers) {
 			Rectangle newRectangle;
 			Label currPlayerLabel; 
 			StackPane currPlayerStackPane;
-			Image playerIconImage = player.getPlayerIconImage();
-			Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
+			
+			Circle playersIconCircle = rightSideIconsMap.get(player);
+			System.out.println("Logs: buildRightSidePicker: playersIconCirlce="+playersIconCircle);
 			
 			// for the current player, create a empty white box for them
 			if (player.equals(currPlayer)) {
@@ -807,9 +954,6 @@ public class View extends Application implements Observer {
 				currPlayerStackPane.setOnMouseClicked((e) -> {
 					showOtherPlayersInfoInBottomRight((Player)currPlayerStackPane.getUserData());
 				});
-				
-
-				
 			}
 			
 			currPlayerLabel.setTextFill(Color.BISQUE);
@@ -821,7 +965,6 @@ public class View extends Application implements Observer {
 			newRectangle.setArcHeight(20);
 			newRectangle.setStroke(Color.rgb(0, 0, 0, 0.2));
 			newRectangle.setStrokeWidth(1.5);
-			
 			
 			currPlayerLabel.setFont(Font.font("Futura", FontWeight.BOLD, 15));
 			
@@ -930,18 +1073,8 @@ public class View extends Application implements Observer {
 		StackPane wrapper = new StackPane();
 		
 		
-	    Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
 
 	    
-	  
-	    ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
-	    bottomFrameImageView.setPreserveRatio(false);
-	    bottomFrameImageView.setFitHeight(500);
-	    bottomFrameImageView.setFitWidth(1200);
-	    bottomFrameImageView.setTranslateY(182);
-	    bottomFrameImageView.setTranslateX(-475);
-	    bottomFrameImageView.setMouseTransparent(true);
-	    bottomFrameImageView.setManaged(false);
 		
 		
 		// TITLE IMAGE added where the backgrounImage is added
@@ -973,7 +1106,7 @@ public class View extends Application implements Observer {
 	    centerOverlay.getChildren().add(centerContent);
 	    centerContent.getChildren().addAll(currPlayerLabel, infoToTellPlayer);
 	    
-	    wrapper.getChildren().addAll(bottomFrameImageView, titleImageView, centerOverlay, mainBoardGridPane);
+	    wrapper.getChildren().addAll(titleImageView, centerOverlay, mainBoardGridPane);
 
 
 	    return wrapper;
@@ -1083,9 +1216,10 @@ public class View extends Application implements Observer {
 		
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
+		freeParkingStackPane.setUserData(freeParkingSpaceObj);
 		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		freeParkingStackPane.getChildren().add(baseBottomRect);
 		freeParkingStackPane.getChildren().add(pImageView);
@@ -1100,9 +1234,10 @@ public class View extends Application implements Observer {
 		gImageView.setTranslateX(-5);
 		
 		StackPane goSpaceStackPane = new StackPane();
+		goSpaceStackPane.setUserData(goSpaceObj);
 		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		goSpaceStackPane.getChildren().add(baseBottomRect);
 		goSpaceStackPane.getChildren().add(gImageView);
@@ -1120,10 +1255,11 @@ public class View extends Application implements Observer {
 		jImageView.setTranslateX(3);
 		
 		StackPane jailStackPane = new StackPane();
+		jailStackPane.setUserData(jailSpaceObj);
 		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		jailStackPane.getChildren().add(baseBottomRect);
 		jailStackPane.getChildren().add(jImageView);
@@ -1139,9 +1275,10 @@ public class View extends Application implements Observer {
 		gjImageView.setTranslateX(-5);
 		
 		StackPane goToJailStackPane = new StackPane();
+		goToJailStackPane.setUserData(goToJailSpaceObj);
 		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
-		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
+		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		baseBottomRect.setStroke(Color.BLACK);
 		goToJailStackPane.getChildren().add(baseBottomRect);
 		goToJailStackPane.getChildren().add(gjImageView);
@@ -1165,6 +1302,7 @@ public class View extends Application implements Observer {
 	 *                          inputed based on the side of the board
 	 */
 	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
+		int nameFont = 8;
 		// TESTING
 		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
@@ -1172,11 +1310,12 @@ public class View extends Application implements Observer {
 		// IN THE FUTURE WE WILL CALL A FUNCTION THAT RETURNS A STACK FRAME WHICH REPRESENTS THE SPACE CARD
 		
 		StackPane spaceCardPane = new StackPane();
+		spaceCardPane.setUserData(space);
 		
 		listOfSpacesPanes.set(spaceIdx, spaceCardPane); // This list is used for player movement in the future
 
 		// The size and shape of normal size space
-		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, Color.BISQUE);
+		Rectangle baseBottomRect = new Rectangle(widthOfPropertySpaceCards, heightOfPropertySpaceCards, boardColor);
 		
 		spaceCardPane.getChildren().add(baseBottomRect);
 
@@ -1188,6 +1327,41 @@ public class View extends Application implements Observer {
 		spaceCardPane.getChildren().add(topColorBandRect);
 		}
 		
+		// Name labels
+		Label name = new Label(space.getName());
+		name.setStyle("-fx-font-size: " + nameFont + ";");
+		name.setTextAlignment(TextAlignment.CENTER);
+		name.setMaxWidth(widthOfPropertySpaceCards);
+		name.setWrapText(true);
+		name.setLineSpacing(-2);
+		name.setAlignment(Pos.TOP_CENTER);
+		if(space instanceof RealEstate)
+			name.setTranslateY(-7);
+		else
+			name.setTranslateY(-20);
+		spaceCardPane.getChildren().add(name);
+		
+		// Cost ammount at bottom
+		Label cost = new Label();
+		cost.setStyle("-fx-font-size: " + nameFont + ";");
+		cost.setTextAlignment(TextAlignment.CENTER);
+		cost.setMaxWidth(widthOfPropertySpaceCards);
+		cost.setWrapText(true);
+		cost.setLineSpacing(-2);
+		cost.setAlignment(Pos.BOTTOM_CENTER);
+		cost.setTranslateY(25);
+		
+		if(space instanceof Property) {
+			String costText = String.valueOf(((Property) space).getPurchaseAmount());
+			cost.setText("$"+costText);
+		}
+		if(space instanceof TaxSpace) {
+			String costText = "200";
+			cost.setText("pay $"+costText);
+		}
+		spaceCardPane.getChildren().add(cost);
+		
+		// Icons
 		if(space.hasImage()) {
 			Image image = new Image("/"+ theme + "/"+space.getImageFile());
 			ImageView icon = new ImageView(image);
@@ -1197,13 +1371,17 @@ public class View extends Application implements Observer {
 			icon.setPreserveRatio(true);
 			icon.setTranslateX(5);
 			icon.setTranslateY(10);
+			if(space instanceof CommunityChest || space instanceof Railroad)
+				icon.setTranslateY(18);
+			if(space instanceof Utility)
+				icon.setTranslateY(15);
 			spaceCardPane.getChildren().add(icon);
 		}
 
 		// Rotate the
 		spaceCardPane.getTransforms().add(new Rotate(rotateAmmt, 33, 9));
 		spaceCardPane.setStyle("-fx-border-style: solid; -fx-border-width: 1; -fx-border-color: black");
-
+		
 		// This is required to keep the rotation effect of the rectangles
 		Group spaceCardGroup = new Group(spaceCardPane);
 		
@@ -1243,10 +1421,9 @@ public class View extends Application implements Observer {
 		
 		// --- Middle dice roll area ---
 		StackPane diceRollStackPane = new StackPane();
-		diceRollStackPane.setPrefWidth(diceRollAreaWidth);
+		diceRollStackPane.setPrefWidth(diceRollAreaWidth -20);
 		diceRollStackPane.setPrefHeight(bottomHBoxHeight);
-		diceRollStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		diceRollStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		diceRollStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		this.diceRollStackPane = diceRollStackPane;
 		
 		// --- Make the Roll Dice, Build, Trade, End Turn buttons ---
@@ -1255,8 +1432,7 @@ public class View extends Application implements Observer {
 		StackPane otherPlayerInfoCardStackPane = new StackPane();
 		otherPlayerInfoCardStackPane.setPrefWidth(diceRollAreaWidth);
 		otherPlayerInfoCardStackPane.setPrefHeight(bottomHBoxHeight);
-		otherPlayerInfoCardStackPane.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		otherPlayerInfoCardStackPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//		otherPlayerInfoCardStackPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		this.otherPlayerInfoCardStackPane = otherPlayerInfoCardStackPane;
 		
 		if (this.aiLogsEnabled) otherPlayerInfoCardStackPane.getChildren().add(this.buildAILoggerScrollPane());
@@ -1275,7 +1451,7 @@ public class View extends Application implements Observer {
 	    // wrapper
 	    StackPane bottomWrapper = new StackPane();
 	    bottomWrapper.setAlignment(Pos.BOTTOM_CENTER);
-
+	    bottomWrapper.setTranslateX(3);
 
 	    bottomWrapper.getChildren().addAll(bottomHBox);
 
@@ -1353,9 +1529,9 @@ public class View extends Application implements Observer {
 		// FUTURE NOTE - READ FUTURE NOTE ABOVE IF YOU ARE CHANGING THESE BUTTONS
 		VBox coreButtonsVBox = new VBox(5);
 		coreButtonsVBox.setPadding(new Insets(8));
-		coreButtonsVBox.setBackground(new Background(new BackgroundFill(uiColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		coreButtonsVBox.setPrefHeight(bottomHBoxHeight);
-		
+		coreButtonsVBox.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
+		coreButtonsVBox.setPrefHeight(bottomHBoxHeight+5);
+		coreButtonsVBox.setAlignment(Pos.CENTER);
 		this.coreButtonsVBox = coreButtonsVBox; // I need this saved so the getOutOfJailLogic can bring these buttons back 
 		coreButtonsVBox.getChildren().addAll(rollDiceButton, tradeButtonStackPane, buildButtonStackPane, endTurnButton);
 		mainButtonsGroup.getChildren().add(coreButtonsVBox);
@@ -1379,14 +1555,15 @@ public class View extends Application implements Observer {
 		visualPlayerCardGridPane.setPrefHeight(heighOfPlayerInfoCard);
 		
 		
-		visualPlayerCardGridPane.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
+		visualPlayerCardGridPane.setStyle("-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5; -fx-background-color: "+ uiColorString + " ;");
 		
 		Label playerName = new Label(currPlayer.getPlayerName());
 		playerName.setFont(Font.font("Roboto Mono", FontWeight.BOLD, 25));
 		playerName.setTextFill(Color.BISQUE);
 		playerName.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 		
-		Image playerIconImage = currPlayer.getPlayerIconImage();
+		System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+        Image playerIconImage = new Image("/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
 		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 		
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
@@ -1822,23 +1999,80 @@ public class View extends Application implements Observer {
 	 * 	dice2Result (int): The result for the second dice
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
-		// override the group in the bottom center of the screen to be available to show dice
-		diceRollStackPane.getChildren().clear();
-		
-		GridPane diceResultGridPane = new GridPane(20, 0);
-		diceResultGridPane.setPadding(new Insets(20));
-		BorderStroke borderStroke = new BorderStroke(
-				Color.GREY,
-				BorderStrokeStyle.SOLID,
-				CornerRadii.EMPTY,
-				new BorderWidths(2)
-			);
-		diceResultGridPane.setBorder(new Border(borderStroke));
-		
-		diceRollStackPane.getChildren().add(diceResultGridPane);
-		
-		diceResultGridPane.add(createADice(dice1Result), 0, 0);
-		diceResultGridPane.add(createADice(dice2Result), 1, 0);
+	    diceRollStackPane.getChildren().clear();
+
+	    GridPane diceResultGridPane = new GridPane(20, 0);
+	    diceResultGridPane.setPadding(new Insets(20));
+	    diceResultGridPane.setAlignment(Pos.CENTER);
+
+	    BorderStroke borderStroke = new BorderStroke(
+	        Color.TRANSPARENT,
+	        BorderStrokeStyle.SOLID,
+	        CornerRadii.EMPTY,
+	        new BorderWidths(2)
+	    );
+	    diceResultGridPane.setBorder(new Border(borderStroke));
+
+	    diceRollStackPane.getChildren().add(diceResultGridPane);
+
+	    Random rand = new Random();
+
+	    Timeline diceTimeline = new Timeline();
+
+	    for (int i = 0; i < 15; i++) {
+	    	
+	    	// Set animation frame
+	        KeyFrame frame = new KeyFrame(Duration.millis(i * 70), e -> {
+	            diceResultGridPane.getChildren().clear();
+
+	            int tempDice1 = rand.nextInt(6) + 1;
+	            int tempDice2 = rand.nextInt(6) + 1;
+
+	            GridPane dice1 = createADice(tempDice1);
+	            GridPane dice2 = createADice(tempDice2);
+
+	            // Shake effect
+	            dice1.setTranslateY(rand.nextInt(25) - 12);
+	            dice2.setTranslateY(rand.nextInt(25) - 12);
+
+	            dice1.setRotate(rand.nextInt(40) - 20);
+	            dice2.setRotate(rand.nextInt(40) - 20);
+
+	            diceResultGridPane.add(dice1, 0, 0);
+	            diceResultGridPane.add(dice2, 1, 0);
+	        });
+
+	        diceTimeline.getKeyFrames().add(frame);
+	    }
+	    
+	    // Get actual result
+	    diceTimeline.setOnFinished(e -> {
+	        diceResultGridPane.getChildren().clear();
+
+	        GridPane finalDice1 = createADice(dice1Result);
+	        GridPane finalDice2 = createADice(dice2Result);
+
+	        finalDice1.setTranslateY(-20);
+	        finalDice2.setTranslateY(-20);
+
+	        diceResultGridPane.add(finalDice1, 0, 0);
+	        diceResultGridPane.add(finalDice2, 1, 0);
+	        
+	        // Move to center
+	        TranslateTransition bounce1 = new TranslateTransition(Duration.millis(250), finalDice1);
+	        bounce1.setFromY(-20);
+	        bounce1.setToY(0);
+
+	        // Move to center
+	        TranslateTransition bounce2 = new TranslateTransition(Duration.millis(250), finalDice2);
+	        bounce2.setFromY(-20);
+	        bounce2.setToY(0);
+
+	        bounce1.play();
+	        bounce2.play();
+	    });
+
+	    diceTimeline.play();
 	}
 	
 	/**
@@ -1865,6 +2099,7 @@ public class View extends Application implements Observer {
 		newDice.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		newDice.setPadding(new Insets(paddingAroundAllDots));
 		newDice.setBorder(new Border(borderStroke));
+		
 		
 		// Record which slots on the dice got filled, so we can fill others with empty space
 		Circle newDot;
@@ -1997,6 +2232,17 @@ public class View extends Application implements Observer {
 			
 			// And the players circle piece to the stack pane
 			nextSpacePane.getChildren().add(playersPeiceToMove);
+			
+			// if there are multiple circles on this space pane, offset them 
+			List<Node> childrenOfStackPane = nextSpacePane.getChildren();
+			int circleCount = 0;
+			for (Node child : childrenOfStackPane) {
+				if (child instanceof Circle) {
+					child.setTranslateX(xDeltasForStackingPlayerPieces[circleCount]);
+					child.setTranslateY(yDeltasForStackingPlayerPieces[circleCount]);
+					circleCount++;
+				}
+			}
 			
 			
 			
@@ -2310,6 +2556,7 @@ public class View extends Application implements Observer {
 			cardTitle.setText("Chance");		
 		else 
 			cardTitle.setText("Community Chest");
+		System.out.println("Logs: showcard attempting to load image: "+"/"+theme + "/" +card.getImage());
 		cardImage = new Image("/"+theme + "/" +card.getImage());
 		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());
@@ -2356,13 +2603,20 @@ public class View extends Application implements Observer {
 	    buttonBox.setAlignment(Pos.CENTER);
 	    
 		// BUY BUTTON - copying style from roll dice button
-		Rectangle buyButton = new Rectangle(coreButtonWidth-30, coreButtonHeight-5 , Color.LIGHTGREEN);
+		Rectangle buyButton = new Rectangle(coreButtonWidth-50, coreButtonHeight-5 , Color.LIGHTGREEN);
 		buyButton.setArcWidth(30); 
 		buyButton.setArcHeight(30);
-		Label buyLabel = new Label("Buy Property");
+		Label buyLabel = new Label("Buy");
 		StackPane buyStackPane = new StackPane();
-		buyStackPane.getChildren().addAll(buyButton,buyLabel);
 		
+		buyStackPane.getChildren().addAll(buyButton,buyLabel);
+		buyStackPane.setOnMousePressed(event -> {
+			buyButton.setFill(Color.LIGHTGREEN.darker());
+		});
+
+		buyStackPane.setOnMouseReleased(event -> {
+			buyButton.setFill(Color.LIGHTGREEN);
+		});
 		// if can't afford, mark as disabled and don't rig click event
 		if (player.getCashAmmt() < property.getPurchaseAmount()) {
 			buyLabel.setText("(can't afford)");;
@@ -2382,6 +2636,14 @@ public class View extends Application implements Observer {
 		Label skipLabel = new Label("Pass");
 		StackPane skipStackPane = new StackPane();
 		skipStackPane.getChildren().addAll(skipButton,skipLabel);
+		skipStackPane.setOnMousePressed(event -> {
+		    skipButton.setFill(Color.LIGHTSTEELBLUE.darker());
+		});
+
+		skipStackPane.setOnMouseReleased(event -> {
+		    skipButton.setFill(Color.LIGHTSTEELBLUE);
+		});
+		
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");
@@ -2707,9 +2969,8 @@ public class View extends Application implements Observer {
 	this.aiLoggerVBox = aiLoggerVBox;
 	aiLoggerVBox.setAlignment(Pos.TOP_LEFT);
 	ScrollPane aiLoggerScrollPane = new ScrollPane(aiLoggerVBox);
-
-	double aiLogWidth = 290;
-	double aiLogHeight = 210;
+	double aiLogWidth = 300;
+	double aiLogHeight = 223;
 	aiLoggerScrollPane.setMinWidth(aiLogWidth);
 	aiLoggerScrollPane.setPrefWidth(aiLogWidth);
 	aiLoggerScrollPane.setMaxWidth(aiLogWidth);
@@ -2720,7 +2981,7 @@ public class View extends Application implements Observer {
 	aiLoggerScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
 	aiLoggerScrollPane.setPannable(true);
 
-	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black;");
+	aiLoggerScrollPane.setStyle("-fx-background-color: black; -fx-background: black; " +"-fx-border-color: "+uiDividerColor + "; -fx-border-width: 3; -fx-padding: 5;");
 	Label initLabel = new Label(">AI Player Log:          ");
 	initLabel.setStyle(aiLoggerLabelSetStyle);
 	aiLoggerVBox.getChildren().add(initLabel);

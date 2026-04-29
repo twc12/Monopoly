@@ -1,11 +1,13 @@
 package Spaces;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import Monopoly.Model;
 import javafx.scene.paint.Color;
-public abstract class Space {
+public abstract class Space implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
 	
 	public Space nextSpace;
@@ -46,6 +48,24 @@ public abstract class Space {
 	
 	public String getImageFile() {
 		return imageFile;
+	}
+	
+	/**
+	 * Checks if another object equals this space based on name
+	 * @param Object other the other object
+	 */
+	@Override 
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other instanceof Space) {
+			Space otherSpace = (Space) other;
+			if (otherSpace.name.equals(this.name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected abstract void processSpace(Player player, Model model);

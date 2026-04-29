@@ -270,9 +270,9 @@ public class Player implements Serializable{
      * Removes the player from jail
      */
     public void getOutOfJail() {
-    	inJail = false; 
-    	model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
-        // FUTURE PROOF: Call a model.notifyViewthatPlayerisOutOfJail() message so it can do sounds
+        inJail = false;
+        setIsDoneRollingDice(false);
+        model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
     }
     
     /**

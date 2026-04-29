@@ -2444,6 +2444,7 @@ public class View extends Application implements Observer {
 			currentSpacesPane.getChildren().remove(playersPeiceToMove);
 			
 			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
+			whichStackPanesPlayersAreOn.put(player, jailSpaceStackPane);
 		}
 		
 		//generic string can be used to update player info label in the center

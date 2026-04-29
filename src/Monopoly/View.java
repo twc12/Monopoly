@@ -771,7 +771,7 @@ public class View extends Application implements Observer {
 	    bottomFrameImageView.setMouseTransparent(true);
 	    bottomFrameImageView.setManaged(false);
 	    if(theme.equals("pirateTheme")) {
-	    	bottomFrameImageView.setFitWidth(1225);
+	    	bottomFrameImageView.setFitWidth(1235);
 	    	bottomFrameImageView.setTranslateY(475);
 	    	bottomFrameImageView.setTranslateX(-100);
 	    }

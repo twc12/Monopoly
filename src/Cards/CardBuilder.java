@@ -189,7 +189,7 @@ public class CardBuilder implements Serializable{
 				}
 			};
 		};
-		chanceCards.add(new Card(cardDescription.get(12),"chanceCard12.png" , r));
+		chanceCards.add(new Card(cardDescription.get(12),"chanceCard3.png" , r));
 		
 		// #14
 		r = (CardEffect & Serializable)(player, model) -> {

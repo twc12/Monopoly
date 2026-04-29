@@ -11,7 +11,6 @@ import java.util.*;
 
 import Monopoly.Model;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 public class Player {
 	
     private int playerId;
@@ -203,7 +202,7 @@ public class Player {
     		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
     			for (int i=0; i<re.getBuildingStage(); i++) {
         			ammtPayed += re.autoSellHouseHotel(this, model);
-        			if (ammtPayed > ammtOwed) return;
+        			if (ammtPayed > ammtOwed) break;
         			buildingsSoldCount++;
     			}
     		}
@@ -213,7 +212,7 @@ public class Player {
     	List<Property> propertiesToSell = new ArrayList<>(myProperties); //using a copy of myProperties list since autoSellProperty() will modify list and give weird error
     	for (Property property: propertiesToSell) {
 			ammtPayed += property.autoSellProperty(this, model);
-			if (ammtPayed > ammtOwed) return;
+			if (ammtPayed > ammtOwed) break;
 			propertiesSold.add(property);
     	}
     	
@@ -222,6 +221,8 @@ public class Player {
     		this.gameOver = true;
     		System.out.println("GAME OVER");
     		// model.removeplayerfromturncycle
+    	} else {//if not game over, then that means you've raised enough funds to pay properly
+    		this.addCash(-ammtOwed);
     	}
     	
     	//notify view w/ bankruptcy report

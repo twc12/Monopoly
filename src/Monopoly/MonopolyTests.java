@@ -230,4 +230,47 @@ class MonopolyTests {
 	    //very rent stages are updated for the realestate set and can build
 	    assertTrue(baltic.getIfCanBuild());
 	}
+	
+	
+	@Test
+	//player forced to sell buildings then properties, able to cover the bankruptcy with property alone
+	//then give a player another bankruptcy they can't cover, game over
+	void testBankruptcy() {
+	    Controller controller = new Controller();
+	    Model model = controller.model;
+	    model.setGameSettingsObj(new GameSettings());
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+
+	    
+	    // SETUP, player gets 2 properties/buildings
+	    controller.purchaseProperty(player, mediterranean); //will sell for $30  (half of 
+	    controller.purchaseProperty(player, baltic);		//will sell for $30
+	    controller.buildHouseHotel(player, mediterranean);  //house will sell for $25
+	    controller.buildHouseHotel(player, baltic);         //house will sell for $25
+	    													//total 110
+	    													//player will owe 1$ less than property sales value and be able to cover it
+	    int debt = 109;
+	    int prevCash = player.getCashAmmt();
+ 	    
+	    //force liquidate the properties, skipping the regular player.addCash route
+	    player.bankruptcy(debt);
+	    assertFalse(player.getGameOver());
+	    assertEquals(0, player.getListOfProperties().size());
+	    assertEquals(prevCash+1, player.getCashAmmt());	//player will have $1 more in cash after liquidating
+	    assertEquals(0, player.getHousesOwnedCount());
+	    
+	    //initiate another bankruptcy, this time via .addCash
+	    player.addCash(-(player.getCashAmmt()+1));
+	    assertTrue(player.getGameOver());
+	    assertEquals(-1, player.getCashAmmt());
+
+	}
+
+	
+	
+	
+
 }

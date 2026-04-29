@@ -328,6 +328,11 @@ public class Controller {
 	 */
 	public void executeTrade(Player traderPlayer, Player targetPlayer, Property targetProperty, List<Property> traderPropertiesOffer, int traderCashOffer, int traderJailFreeCardsOffer) {		
 		
+		if (model.getGameSettings().getTradingEnabled() == false) {
+			model.notifyViewOfInfoMessage("Trading is disabled, trade not executed!");
+			return;
+		}
+		
 		//moving ownership of trader's properties to target
 		for (Property myProperty : traderPropertiesOffer) {
 			myProperty.setOwner(targetPlayer);

@@ -138,7 +138,7 @@ public class RealEstate extends Property {
         	player.addCash(-buildPrice);
         	this.rentStageIndex += 1;
         	this.buildingStage += 1;
-    		model.notifyViewOfInfoMessage((player.toString() + " built on\n" + this.name + "\nBuild stage: " + this.getBuildingStage()));
+    		model.notifyViewOfInfoMessage((player.toString() + " built on " + this.name));
 	    }else {
 	    	if (!player.isAI()) model.notifyViewOfInfoMessage("Not enough funds!");
     	}

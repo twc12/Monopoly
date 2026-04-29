@@ -8,6 +8,7 @@ import java.util.Observable;
 import java.util.Stack;
 
 import Spaces.AIPlayer;
+import Spaces.GoSpace;
 import Cards.Card;
 import Cards.Deck;
 import Messages.AiActionMessage;
@@ -105,7 +106,23 @@ public class Model extends Observable implements Serializable{
 		playerIconsToPickFrom.add("boat");    playerIconsToPickFrom.add("car");   playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
 		playerIconsToPickFrom.add("thimble"); playerIconsToPickFrom.add("train"); playerIconsToPickFrom.add("wheeler");
 		
+		
+		
+		//instantiate the board of spaces and apply gamesettings
 		board = new Board();
+		GoSpace goSpace = (GoSpace) board.firstSpace;
+		//applying go value to go space
+		goSpace.setAmountEarnedWhenPassingGo(gameSettings.getCustomGoValue());
+		//apply price multiplier to all properties' rents
+		for (Space space : board.getSpaces()) {
+		    if (space instanceof Property p) {
+		        ArrayList<Integer> oldRents = p.getRentStages();
+		        for (int i = 0; i < oldRents.size(); i++) {
+		            int newRentVal = (int) (oldRents.get(i) * gameSettings.getPropertyPriceAdjust());
+		            oldRents.set(i, newRentVal);
+		        }
+		    }
+		}
 		
 		Deck deck = new Deck();
 		chanceCards = deck.getChanceCards();

@@ -164,6 +164,4 @@ public abstract class Property extends CostSpace {
     public int hashCode() {
     	return Objects.hash(this.getName());
     }
-
-
 }

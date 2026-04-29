@@ -12,7 +12,7 @@ import java.util.*;
 
 import Monopoly.Model;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+
 public class Player implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
@@ -187,6 +187,7 @@ public class Player implements Serializable{
     	return this.gameOver;
     }
     
+    
     /**
      * Given an amount a player owes on any transaction using .addCash()
      * Will auto-sell buildings, then properties, in order to meet debt.
@@ -204,7 +205,7 @@ public class Player implements Serializable{
     		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
     			for (int i=0; i<re.getBuildingStage(); i++) {
         			ammtPayed += re.autoSellHouseHotel(this, model);
-        			if (ammtPayed > ammtOwed) return;
+        			if (ammtPayed > ammtOwed) break;
         			buildingsSoldCount++;
     			}
     		}
@@ -214,7 +215,7 @@ public class Player implements Serializable{
     	List<Property> propertiesToSell = new ArrayList<>(myProperties); //using a copy of myProperties list since autoSellProperty() will modify list and give weird error
     	for (Property property: propertiesToSell) {
 			ammtPayed += property.autoSellProperty(this, model);
-			if (ammtPayed > ammtOwed) return;
+			if (ammtPayed > ammtOwed) break;
 			propertiesSold.add(property);
     	}
     	

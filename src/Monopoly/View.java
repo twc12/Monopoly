@@ -206,6 +206,12 @@ public class View extends Application implements Observer {
 	private Map<Player, Circle> playerObjToPlayerPiece;
 	
 	/**
+	 * I need to store a second set of circle objects for the right player picker side
+	 * So I dont have to load thenm new each and every time 
+	 */
+	private Map<Player, Circle> rightSideIconsMap;
+	
+	/**
 	 * This VBox will have messages added to it for every ai decision made.
 	 * It will get populated in the `update()` function when we recieve a 
 	 * `aiDecisionMessage` from the model 
@@ -293,7 +299,7 @@ public class View extends Application implements Observer {
 		
 		
 		// ------ BUTTONS ----- 
-		Label topStartScreenLabel = new Label("Start Screen");
+		Label topStartScreenLabel = new Label("Welcome to Monopoly! Choose your settings and start the game!");
 		topStartScreenLabel.setFont(new Font(20));
 		BorderPane.setAlignment(topStartScreenLabel, Pos.CENTER);
 		startScreenBorderPane.setTop(topStartScreenLabel);
@@ -312,7 +318,7 @@ public class View extends Application implements Observer {
 		});
 		// PASSING GO MONEY 
 		TextField moneyPassingGoInput = new TextField();
-		moneyPassingGoInput.setPromptText("Amt of money for passing go");
+		moneyPassingGoInput.setPromptText("$ for passing go (press ENTER to apply)");
 		moneyPassingGoInput.setMaxWidth(250);
 		moneyPassingGoInput.setOnAction(event -> {
 			String playersInput = moneyPassingGoInput.getText();
@@ -369,29 +375,29 @@ public class View extends Application implements Observer {
 		
 		// AMOUNT OF STARTING MONEY
 		TextField startingMoneyInput = new TextField();
-		startingMoneyInput.setPromptText("Amt of money you start with");
+		startingMoneyInput.setPromptText("$ you start with (press ENTER to apply)");
 		startingMoneyInput.setMaxWidth(250);
 		//commenting the below code for now, it doesn't apply the user's entered starting money, 
 		//i added code when we hit the start button
-//		startingMoneyInput.setOnAction(event -> {
-//			String playersInput = startingMoneyInput.getText();
-//			if (playersInput.length() == 0 || playersInput.equals("1500")) {
-//				gameSettings.setStartingMoney(1500);
-//				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
-//			}
-//			else {
-//				try {
-//					Integer customAmt = Integer.valueOf(playersInput);
-//					gameSettings.setStartingMoney(customAmt);
-//					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
-//					
-//				} catch (NumberFormatException e) {
-//					gameSettings.setStartingMoney(1500);
-//					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
-//				}
-//				
-//			}
-//		});
+		startingMoneyInput.setOnAction(event -> {
+			String playersInput = startingMoneyInput.getText();
+			if (playersInput.length() == 0 || playersInput.equals("1500")) {
+				gameSettings.setStartingMoney(1500);
+				amtOfStartingMoneyLabel.setText("Amt of money you start with: $1500 (default)");
+			}
+			else {
+				try {
+					Integer customAmt = Integer.valueOf(playersInput);
+					gameSettings.setStartingMoney(customAmt);
+					amtOfStartingMoneyLabel.setText("Amt of money you start with: $"+customAmt);
+					
+				} catch (NumberFormatException e) {
+					gameSettings.setStartingMoney(1500);
+					amtOfStartingMoneyLabel.setText("Invalid Input, defaulting to $1500");
+				}
+				
+			}
+		});
 		
 		// ENABLE/DISABLE TRADING
 		ToggleButton tradingButton = new ToggleButton("Trading with players");
@@ -518,21 +524,12 @@ public class View extends Application implements Observer {
 		aiPlayersChoicesHBox.getChildren().addAll(new Label("Num of Ai Players"), numberOfAiPlayersChoiceBox);
 		
 		Button startGameButton = new Button("Start Game");
+		startGameButton.setBorder(Border.stroke(Color.GOLD));
+		startGameButton.setMinSize(150, 60);
 		startGameButton.setOnAction(event -> {
-			
-			//set starting money
-		    String moneyInput = startingMoneyInput.getText();
-		    if (moneyInput != null && !moneyInput.isEmpty()) {
-		        try {
-		            gameSettings.setStartingMoney(Integer.valueOf(moneyInput));
-		        } catch (Exception e) {
-		            gameSettings.setStartingMoney(1500);
-		        }
-		    }
-			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
-				
+
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);
@@ -639,6 +636,7 @@ public class View extends Application implements Observer {
 		potentialTradeProperty = null;
 		listOfPropertiesToOffer = new ArrayList<>();
 		propertiesToLabels = null;
+		rightSideIconsMap = null;
 		ammountOfMoneyToPay = 0;
 		theme = controller.getThemeString();
 		// Theme changes
@@ -864,14 +862,28 @@ public class View extends Application implements Observer {
 		VBox playersRectangleStack = new VBox(10);
 		List<Player> allPlayers = controller.getAllPlayers();
 		
+		// Loading the images each time would make the game slow, so now we load them to a map of players to circles
+		if (rightSideIconsMap == null) {
+			rightSideIconsMap = new HashMap<>();
+			for (Player player: allPlayers) {
+				System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
+		        Image playerIconImage = new Image("/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
+				Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
+				rightSideIconsMap.put(player, playersIconCircle);
+				System.out.println("Log: rightPicker: maping="+rightSideIconsMap.get(currPlayer));
+			}
+		}
+		
+		System.out.println("Log: rightPicker: the entire map: "+rightSideIconsMap);
+		
 		// loop over all the players, adding their rectangle to the right size with their color and Id 
 		for (Player player : allPlayers) {
 			Rectangle newRectangle;
 			Label currPlayerLabel; 
 			StackPane currPlayerStackPane;
-			System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
-	        Image playerIconImage = new Image("/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
-			Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
+			
+			Circle playersIconCircle = rightSideIconsMap.get(player);
+			System.out.println("Logs: buildRightSidePicker: playersIconCirlce="+playersIconCircle);
 			
 			// for the current player, create a empty white box for them
 			if (player.equals(currPlayer)) {
@@ -892,9 +904,6 @@ public class View extends Application implements Observer {
 				currPlayerStackPane.setOnMouseClicked((e) -> {
 					showOtherPlayersInfoInBottomRight((Player)currPlayerStackPane.getUserData());
 				});
-				
-
-				
 			}
 			
 			currPlayerLabel.setTextFill(Color.BISQUE);
@@ -906,7 +915,6 @@ public class View extends Application implements Observer {
 			newRectangle.setArcHeight(20);
 			newRectangle.setStroke(Color.rgb(0, 0, 0, 0.2));
 			newRectangle.setStrokeWidth(1.5);
-			
 			
 			currPlayerLabel.setFont(Font.font("Futura", FontWeight.BOLD, 15));
 			
@@ -1587,10 +1595,11 @@ public class View extends Application implements Observer {
 				// adding on-click selects/deselects for building; enables/disables the Build button
 				visualPropertyInfoCard.setOnMouseClicked((e) -> {
 					selectedPropertyToBuild = re;					
-					if (!re.getIfCanBuild() || re.getBuildingStage() >=5) { //if already fully developed, don't enable the build button when i click a card
+					if (!re.getIfCanBuild() || re.getBuildingStage() >=5 || !(re.getOwner().equals(controller.getCurrentPlayer()))) { //if already fully developed, don't enable the build button when i click a card
 						buildButton.setDisable(true);
+					} else {
+						buildButton.setDisable(false); //otherwise, enable the build button and show the card info
 					}
-					buildButton.setDisable(false); //otherwise, enable the build button and show the card info
 					
 					// if another player clicked on this card from someone elses info card then allow trading
 					Property thisSpacesProperty = (Property) visualPropertyInfoCard.getUserData();
@@ -1839,6 +1848,16 @@ public class View extends Application implements Observer {
 			controller.executeTrade(buyingPlayer, sellingPlayer, potentialTradeProperty, listOfPropertiesToOffer, ammountOfMoneyToPay, ammountOfGOOJCards);
 			tradeViewStackPane.getChildren().clear();
 			a.close();
+			
+			// redraw current players' visual inventory
+			populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+			
+			// redraw other players' inventory
+			showOtherPlayersInfoInBottomRight(sellingPlayer); //reusing this function, it will "refresh" the other players' panel correctly dynamically
+			if (otherPlayerInfoCardStackPane.getChildren().size() == 1) {//if it refreshes to the ai console only, redraw on top
+				otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(sellingPlayer)); 
+			}
+			
 		});
 		Button declineBtn = new Button("Decline Trade");
 		declineBtn.setOnAction(event -> {

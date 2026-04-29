@@ -2202,6 +2202,10 @@ public class View extends Application implements Observer {
 	 * @param ammtToMove (int): The amount they moved and should be moved
 	 */
 	public void animatePlayerMoving(Player player, int ammtToMove) {
+		System.out.println("animatePlayerMoving: player=" + player.getPlayerName() 
+			+ " startIndex=" + listOfSpacesPanes.indexOf(whichStackPanesPlayersAreOn.get(player)) 
+			+ " ammtToMove=" + ammtToMove);
+
 		// TESTING
 		System.out.println("view: animatePlayerMoving");
 		
@@ -2325,6 +2329,8 @@ public class View extends Application implements Observer {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.PAY_FIFTY);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
+				rollDiceButton.setDisable(true);
+				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(payCashStackPane);
 		}
@@ -2343,6 +2349,8 @@ public class View extends Application implements Observer {
 				controller.processJailLogic(currentPlayer, JAIL_CHOICE.OUT_OF_JAIL_CARD);
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
+				rollDiceButton.setDisable(true);
+				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(useGOOJStackPane);
 			
@@ -2390,6 +2398,7 @@ public class View extends Application implements Observer {
 			
 			// if the next player is in jail, show their next options for getting out of jail 
 			Player currentPlayer = nextPlayerMsg.getNextPlayer();
+			System.out.println("NextPlayer: " + currentPlayer.getPlayerName() + " isInJail=" + currentPlayer.isInJail());
 			if (currentPlayer.isInJail()) {
 				showOptionsForGettingOutOfJail(currentPlayer); // this will change the buttons in the bottom right 
 			}
@@ -2445,6 +2454,7 @@ public class View extends Application implements Observer {
 			currentSpacesPane.getChildren().remove(playersPeiceToMove);
 			
 			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
+			whichStackPanesPlayersAreOn.put(player, jailSpaceStackPane);
 		}
 		
 		//generic string can be used to update player info label in the center
@@ -2574,6 +2584,10 @@ public class View extends Application implements Observer {
 	        cardOverlay.setOnMouseClicked(null);
 	        controller.resolveCard(card, controller.getCurrentPlayer());
 	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer()); // incase they get a get out of jail free card
+			if (controller.getCurrentPlayer().isInJail()) {
+				rollDiceButton.setDisable(true);
+				endTurnButton.setDisable(false);
+			}
 	        e.consume();
 	    });
 	}
@@ -2627,6 +2641,7 @@ public class View extends Application implements Observer {
 	        controller.purchaseProperty(player, property);
 	        populatePlayerCardWithNewInfo(player);
 	        this.purchaseOverlay.setVisible(false);
+
 			});
 		}
 	    	    

@@ -1,6 +1,9 @@
 package Monopoly;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +79,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage; 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -249,6 +254,7 @@ public class View extends Application implements Observer {
 	private StackPane tradeViewStackPane;
 	
 	private StackPane root;
+	private Stage stage;
 	
 	/**
 	 * This is used for moving the player to jail after they are sent to jail, it will
@@ -263,6 +269,7 @@ public class View extends Application implements Observer {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		this.stage = stage;
 		
 		
 		// --------------- START SCREEEN --------------- 
@@ -523,23 +530,42 @@ public class View extends Application implements Observer {
 		        }
 		    }
 			
-			
-			
-			
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
-			
-			
-				
 				
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);
 		});
 		
+		// Create a load button that will prompt the user to select a save file that ends in .monopoly
+		Button loadGameButton = new Button("Load Game");
+		loadGameButton.setOnAction(event -> {
+			FileChooser fileChooser = new FileChooser();
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save File(*.monopoly)",  "*.monopoly");
+			fileChooser.getExtensionFilters().add(extFilter);
+			fileChooser.setTitle("Pick a Monopoly Save File");
+			
+			File selectedFile = fileChooser.showOpenDialog(stage);
+			
+			if (selectedFile != null) {
+				System.out.println("Log: File Selected: "+selectedFile.getAbsolutePath());
+				controller = new Controller(this, selectedFile);
+				Scene gameScene = createMainGame();
+				stage.setScene(gameScene);
+				stage.setResizable(false);
+			} else {
+				System.out.println("Log: File section cancled");
+				
+			}
+		});
+		
+		HBox startAndLoadButtonsHBox = new HBox(10);
+		startAndLoadButtonsHBox.getChildren().addAll(startGameButton, loadGameButton);
+		
 		
 		VBox inputsVBox = new VBox(10); inputsVBox.setPadding(new Insets(10));
-		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startGameButton);
+		inputsVBox.getChildren().addAll(allowSkippingPropertyPurchaseButton, moneyPassingGoInput, pricePerSpaceMultiplyerInput, freeParkingRewardsButton, startingMoneyInput, tradingButton, humanPlayersChoicesHBox, aiPlayersChoicesHBox, startAndLoadButtonsHBox);
 		startScreenBorderPane.setCenter(inputsVBox);
 		
 
@@ -593,9 +619,6 @@ public class View extends Application implements Observer {
 		startScreenBorderPane.setBottom(themeChoicesHBox);	
 		// ------ END OF THEMES -----
 		
-		
-		
-		
 		Scene startGameScene = new Scene(startScreenBorderPane, 590,500);
 		stage.setScene(startGameScene);
 		stage.setTitle("MONOPOLY");
@@ -612,9 +635,6 @@ public class View extends Application implements Observer {
 	 * This should make sense, we only create the main game once its ready to be made.
 	 * @return
 	 */
-	
-	
-	
 	private Scene createMainGame() {
 		potentialTradeProperty = null;
 		listOfPropertiesToOffer = new ArrayList<>();
@@ -641,7 +661,7 @@ public class View extends Application implements Observer {
 		topLabelSection.setAlignment(Pos.TOP_CENTER);
 
 		// Create the board
-		StackPane visualGameBoard = buildMonopolyBoard();
+		StackPane visualGameBoard = buildMonopolyBoard(); 
 		
 		// __________Position board on screen________________________
 		visualGameBoard.setManaged(false);
@@ -650,22 +670,30 @@ public class View extends Application implements Observer {
 		mainScreen.setCenter(visualGameBoard);
 		//____________________________________________________________
 		
-		// Put all the players pieces on the go space, then track which space the players are on 
-		StackPane goSpacePane = listOfSpacesPanes.get(0);
+		// Put all the players pieces on their corresponding space, then track which space the players are on 
 		List<Player> allPlayers = controller.getAllPlayers();
-		// FUTURAL REMOVAL (the circle part) - Go over each player and assign them a piece 
+		 
+		// for each player, pull their space, then find the stack pane for their current space 
 		for (Player currPlayer: allPlayers) {
-			// Create a new circle for each player 
-			Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
-			Image playersIconImage = currPlayer.getPlayerIconImage();
-			playersIconCircle.setFill(new ImagePattern(playersIconImage));
-			playerObjToPlayerPiece.put(currPlayer, playersIconCircle);
 			
-			// Move the circles into the GO SPACE
-			goSpacePane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
-			
-			// initualize which pane the player is on 
-			whichStackPanesPlayersAreOn.put(currPlayer, goSpacePane);
+			// pull out the space, then find the stack pane that has that space in the user data 
+			Space playersCurrentSpaceObj = currPlayer.getCurrentSpace();
+			for (StackPane currStackPane: listOfSpacesPanes) {
+				if (currStackPane.getUserData().equals(playersCurrentSpaceObj)) {
+					// Create a new circle for each player 
+					Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
+					System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+			        Image playersIconImage = new Image("/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+					playersIconCircle.setFill(new ImagePattern(playersIconImage));
+					playerObjToPlayerPiece.put(currPlayer, playersIconCircle);
+					
+					// Move the circles into the GO SPACE
+					currStackPane.getChildren().add(playerObjToPlayerPiece.get(currPlayer));
+					
+					// initualize which pane the player is on 
+					whichStackPanesPlayersAreOn.put(currPlayer, currStackPane);
+				}
+			}
 		}
 
 		mainScreen.setCenter(visualGameBoard);
@@ -777,6 +805,48 @@ public class View extends Application implements Observer {
 		tradeViewStackPane.setPickOnBounds(false); // allows "transparent" click thru to the board
 		root.getChildren().add(tradeViewStackPane);
 		
+		// The save button
+		StackPane saveButtonStackPane = new StackPane();
+		saveButtonStackPane.setPickOnBounds(false);
+		Rectangle saveButtonRect = new Rectangle(80,20,Color.BROWN);
+		Label saveButtonLabel = new Label("Save Game"); saveButtonLabel.setFont(new Font(15)); saveButtonLabel.setTextFill(Color.WHITE);
+		saveButtonStackPane.getChildren().addAll(saveButtonRect, saveButtonLabel);
+		saveButtonStackPane.setOnMouseClicked(event -> {
+			// ONLY ALLOW THE USER TO SAVE TO .monopoly extensions
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Chose a game save location");
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Monopoly Save Files(.monopoly)", ".monopoly");
+			fileChooser.getExtensionFilters().add(extFilter);
+			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+			fileChooser.setInitialFileName("monopolySave.monopoly");
+			File selectedFile = fileChooser.showSaveDialog(stage);
+			if (selectedFile != null) {
+				System.out.println("Logs: Save file selected: "+selectedFile.getAbsolutePath());
+			} else {
+				System.out.println("Logs: No save folder selected, canclled");
+			}
+			
+			// double check that the name ends with ".monopoly", add it if it doesnt
+			String fileName = selectedFile.getName();
+			if (!fileName.toLowerCase().endsWith(".monopoly")) {
+				selectedFile = new File(selectedFile.getParentFile(), fileName + ".monopoly");
+			}
+			
+			// now lets try to save it 
+			try {
+				ObjectOutputStream objOutStream = new ObjectOutputStream(new FileOutputStream(selectedFile));
+				objOutStream.writeObject(controller.getModel());
+				objOutStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Logs: Failed to save a game state!");
+				infoToTellPlayer.setText("Error: Failed to save game state!");
+			}
+		});
+		root.getChildren().add(saveButtonStackPane);
+		saveButtonStackPane.setTranslateX(200);
+		saveButtonStackPane.setTranslateY(180);
+		
 		Scene gameScene = new Scene(root, 1180, 820);
 		return gameScene; // THIS RETURNS TO `def start() -> StartGameBtn.onAction()` code look up ^^ a function
 	}
@@ -799,7 +869,8 @@ public class View extends Application implements Observer {
 			Rectangle newRectangle;
 			Label currPlayerLabel; 
 			StackPane currPlayerStackPane;
-			Image playerIconImage = player.getPlayerIconImage();
+			System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
+	        Image playerIconImage = new Image("/"+theme+"/"+player.getPlayerIconStr()+"PlayerIcon.png");
 			Circle playersIconCircle = new Circle(12,new ImagePattern(playerIconImage));
 			
 			// for the current player, create a empty white box for them
@@ -1097,6 +1168,7 @@ public class View extends Application implements Observer {
 		
 		// FREE PARKING
 		StackPane freeParkingStackPane = new StackPane();
+		freeParkingStackPane.setUserData(freeParkingSpaceObj);
 		listOfSpacesPanes.set(20, freeParkingStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		Rectangle baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
@@ -1114,6 +1186,7 @@ public class View extends Application implements Observer {
 		gImageView.setTranslateX(-5);
 		
 		StackPane goSpaceStackPane = new StackPane();
+		goSpaceStackPane.setUserData(goSpaceObj);
 		listOfSpacesPanes.set(0, goSpaceStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
@@ -1134,6 +1207,7 @@ public class View extends Application implements Observer {
 		jImageView.setTranslateX(3);
 		
 		StackPane jailStackPane = new StackPane();
+		jailStackPane.setUserData(jailSpaceObj);
 		jailSpaceStackPane = jailStackPane;
 		listOfSpacesPanes.set(10, jailStackPane); // this list is used for player movement later 
 		// The size and shape of normal size space
@@ -1153,6 +1227,7 @@ public class View extends Application implements Observer {
 		gjImageView.setTranslateX(-5);
 		
 		StackPane goToJailStackPane = new StackPane();
+		goToJailStackPane.setUserData(goToJailSpaceObj);
 		listOfSpacesPanes.set(30, goToJailStackPane); // this list is used for player movement later
 		// The size and shape of normal size space
 		baseBottomRect = new Rectangle(heightOfPropertySpaceCards, heightOfPropertySpaceCards, Color.AQUAMARINE);
@@ -1186,6 +1261,7 @@ public class View extends Application implements Observer {
 		// IN THE FUTURE WE WILL CALL A FUNCTION THAT RETURNS A STACK FRAME WHICH REPRESENTS THE SPACE CARD
 		
 		StackPane spaceCardPane = new StackPane();
+		spaceCardPane.setUserData(space);
 		
 		listOfSpacesPanes.set(spaceIdx, spaceCardPane); // This list is used for player movement in the future
 
@@ -1400,7 +1476,8 @@ public class View extends Application implements Observer {
 		playerName.setTextFill(Color.BISQUE);
 		playerName.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 		
-		Image playerIconImage = currPlayer.getPlayerIconImage();
+		System.out.println("Logs: Attempting to load playerIcon at addr: "+"/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
+        Image playerIconImage = new Image("/"+theme+"/"+currPlayer.getPlayerIconStr()+"PlayerIcon.png");
 		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 		
 		Label playerCash = new Label("$"+currPlayer.getCashAmmt());
@@ -2316,6 +2393,7 @@ public class View extends Application implements Observer {
 			cardTitle.setText("Chance");		
 		else 
 			cardTitle.setText("Community Chest");
+		System.out.println("Logs: showcard attempting to load image: "+"/"+theme + "/" +card.getImage());
 		cardImage = new Image("/"+theme + "/" +card.getImage());
 		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());

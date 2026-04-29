@@ -6,9 +6,13 @@
  * @author Tyler Carpenter
  */
 package Cards;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.*;
 
-public class Deck {
+public class Deck implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private CardBuilder cards;
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
@@ -40,5 +44,10 @@ public class Deck {
 		Collections.shuffle(unShuffled);
 		stack.addAll(unShuffled);
 		return stack;
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+		in.defaultReadObject();
+		
 	}
 }

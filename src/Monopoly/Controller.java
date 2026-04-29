@@ -17,6 +17,11 @@ import Spaces.Space;
 import Spaces.TaxSpace;
 import Spaces.Utility;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
 public class Controller {
 	
@@ -29,6 +34,36 @@ public class Controller {
 	//contructor for JUNIT, doesn't create a view
 	public Controller() {
 		this.model = new Model();
+	}
+	
+	/**
+	 * Constructor: This constructor will be called 
+	 * when the user selects "Load Game" in the start menu.
+	 * This constructor will load the model object from the file given 
+	 * and then it will create a model and start the game from this point in 
+	 * that games saved history with its entire state as is was at saving
+	 * 
+	 * @param viewClassObj (View): This is the view class object that will be added 
+	 * 								as a "Observer" of the model 
+	 * @param selectedFile (File): This file is expected to end in ".monopoly" so we know
+	 * 								for sure that is has a model object we need.
+	 */
+	public Controller(View viewClassObj, File selectedFile) {
+		ObjectInputStream objInputStream = null;
+		try {
+			objInputStream = new ObjectInputStream(new FileInputStream(selectedFile));
+			Model myModel = null;
+			myModel = (Model) objInputStream.readObject();
+			myModel.deleteObservers();
+			myModel.addObserver(viewClassObj);
+			model = myModel;
+			System.out.println("Log: Hopefullly the model is loaded now");
+			objInputStream.close();
+		} catch (Exception e){
+			System.out.println("Log: File not found/io exception when loading model from file. Will create default game");
+			model = new Model(viewClassObj);
+			return;
+		}
 	}
 	
 	
@@ -194,6 +229,18 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Getter: This function is only used
+	 * when the view needs to save the model to a file 
+	 * 
+	 * !!! THIS SHOULD NOT BE USED FOR ANYTHING ELSE !!!
+	 * !!! THIS SHOULD NOT BE USED FOR ANYTHING ELSE !!!
+	 * 
+	 * @return Model: The loaded model from a file 
+	 */
+	public Model getModel() {
+		return model; 
+	}
 
 	public int getTotalSpaces() {
 		return model.board.getTotalSpaces();

@@ -6,10 +6,13 @@
  * @author Tyler Carpenter
  */
 package Cards;
+import java.io.Serializable;
+
 import Monopoly.Model;
 import Spaces.Player;
 import javafx.scene.image.Image;
-public class Card {
+public class Card implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String description;
 	private String imageFile;
 	private CardEffect effect;

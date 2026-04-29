@@ -59,6 +59,9 @@ public class Controller {
 			model = myModel;
 			System.out.println("Log: Hopefullly the model is loaded now");
 			objInputStream.close();
+			if (model.getGameSettings().getAmountOfAIPlayers()> 0) {
+				model.notifyViewAILogsEnabled();
+			}
 		} catch (Exception e){
 			System.out.println("Log: File not found/io exception when loading model from file. Will create default game");
 			model = new Model(viewClassObj);

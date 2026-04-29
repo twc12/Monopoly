@@ -1768,7 +1768,8 @@ public class View extends Application implements Observer {
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			// disable the roll dice button because they finished rolling
 			rollDiceButton.setDisable(true);
-			endTurnButton.setDisable(false);
+			if (!(controller.getCurrentPlayer().getCurrentSpace() instanceof Property))
+				endTurnButton.setDisable(false);
 		} else { //must have rolled doubles
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
 		}
@@ -2438,16 +2439,32 @@ public class View extends Application implements Observer {
 		
 		// if the message is that a player landed on an unowned property, buying is optional
 		else if (message instanceof PurchasePromptMessage) {
+			endTurnButton.setDisable(true);
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
 			Property property = purchasePromptMsg.getProperty();
-			showPurchasePrompt(player, property);
+		
+			Timeline promptDelay = new Timeline(
+					new KeyFrame(Duration.seconds(2), e -> {
+						showPurchasePrompt(player, property);
+						
+					})
+				);
+				promptDelay.play();
+			
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card
 		else if (message instanceof CardDrawnMessage) {
 		    CardDrawnMessage msg = (CardDrawnMessage) message;
-		    showCard(msg.getCard());
+		    Timeline cardDelay = new Timeline(
+					new KeyFrame(Duration.seconds(2), e -> {
+						showCard(msg.getCard());
+						
+					})
+				);
+				cardDelay.play();
+		    
 		}
 		
 		// if the message is that a Ai Took an action, display the action to the other players 
@@ -2674,6 +2691,7 @@ public class View extends Application implements Observer {
 	        controller.purchaseProperty(player, property);
 	        populatePlayerCardWithNewInfo(player);
 	        this.purchaseOverlay.setVisible(false);
+	        endTurnButton.setDisable(false);
 
 			});
 		}
@@ -2697,6 +2715,7 @@ public class View extends Application implements Observer {
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");
+	    	endTurnButton.setDisable(false);
 		});
 
 	    

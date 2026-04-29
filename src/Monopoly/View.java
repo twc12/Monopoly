@@ -595,7 +595,6 @@ public class View extends Application implements Observer {
 		RadioButton baseMonopolyRadioBtn = new RadioButton(); 
 		baseMonopolyRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.STANDARD);
-			this.textThemeColor = "-fx-text-fill: darkslateblue;";
 		});
 		baseMonopolyRadioBtn.fire(); // click the button by default
 		baseMonopolyRadioBtn.setToggleGroup(toggleGroup);
@@ -609,7 +608,6 @@ public class View extends Application implements Observer {
 		RadioButton pirateRadioBtn = new RadioButton();
 		pirateRadioBtn.setOnAction(event -> {
 			gameSettings.setTheme(Theme.PIRATE);
-			this.textThemeColor = "-fx-text-fill: gold;";
 		});
 		pirateRadioBtn.setToggleGroup(toggleGroup);
 		pirateThemeChoiceVBox.getChildren().addAll(piratePreviewView, pirateRadioBtn);
@@ -660,10 +658,12 @@ public class View extends Application implements Observer {
 		if(theme.equals("standardTheme")) {
 			uiColor = Color.DARKSLATEGRAY;
 			uiColorString = "darkslategray";
+			this.textThemeColor = "-fx-text-fill: darkslateblue;";
 		}
 		if(theme.equals("pirateTheme")) {
 			uiColor = Color.rgb(70,70,70);
 			uiColorString = "rgb(70,70,70)";
+			this.textThemeColor = "-fx-text-fill: gold;";
 		}	
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();

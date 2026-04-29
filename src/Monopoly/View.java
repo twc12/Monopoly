@@ -674,6 +674,7 @@ public class View extends Application implements Observer {
 			this.textThemeColor = "-fx-text-fill: darkslateblue;";
 			boardColor = Color.BISQUE;
 			uiDividerColor = "white";
+			generalFont = "Arial Black";
 		}
 		if(theme.equals("pirateTheme")) {
 			uiColor = Color.rgb(70,70,70);
@@ -681,6 +682,7 @@ public class View extends Application implements Observer {
 			this.textThemeColor = "-fx-text-fill: gold;";
 			boardColor = Color.BISQUE;
 			uiDividerColor = "rgb(140, 99, 52)";
+			generalFont = "Serif";
 		}	
 		
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
@@ -1760,18 +1762,15 @@ public class View extends Application implements Observer {
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
 			
-			AudioClip sound = new AudioClip(
-				    getClass().getResource("/" + theme + "/dice.mp3").toExternalForm()
-				);
-
-				sound.play();
+			
 		}
 		
 		// if the player is done rolling dice then dont allow them to roll dice
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			// disable the roll dice button because they finished rolling
 			rollDiceButton.setDisable(true);
-			endTurnButton.setDisable(false);
+			if (!(controller.getCurrentPlayer().getCurrentSpace() instanceof Property))
+				endTurnButton.setDisable(false);
 		} else { //must have rolled doubles
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
 		}
@@ -2000,6 +1999,11 @@ public class View extends Application implements Observer {
 	 * 	dice2Result (int): The result for the second dice
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
+		AudioClip sound = new AudioClip(
+			    getClass().getResource("/" + theme + "/dice.mp3").toExternalForm()
+			);
+
+			sound.play();
 	    diceRollStackPane.getChildren().clear();
 
 	    GridPane diceResultGridPane = new GridPane(20, 0);
@@ -2016,6 +2020,7 @@ public class View extends Application implements Observer {
 
 	    diceRollStackPane.getChildren().add(diceResultGridPane);
 
+	    
 	    Random rand = new Random();
 
 	    Timeline diceTimeline = new Timeline();
@@ -2203,59 +2208,64 @@ public class View extends Application implements Observer {
 	 */
 	public void animatePlayerMoving(Player player, int ammtToMove) {
 		System.out.println("animatePlayerMoving: player=" + player.getPlayerName() 
-			+ " startIndex=" + listOfSpacesPanes.indexOf(whichStackPanesPlayersAreOn.get(player)) 
-			+ " ammtToMove=" + ammtToMove);
+		+ " startIndex=" + listOfSpacesPanes.indexOf(whichStackPanesPlayersAreOn.get(player)) 
+		+ " ammtToMove=" + ammtToMove);
 
-		// TESTING
 		System.out.println("view: animatePlayerMoving");
 		
-		// get the current pane the player is one, then use it to find the index in the list of all panes
-		StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
-		if (currentSpacesPane == null) System.out.println("ERROR: Player object is not in hash map somehow");
-		// Now find the index in the list of all the pains so we can loop nicely
-		int indexOfCurrentSpacesPane = listOfSpacesPanes.indexOf(currentSpacesPane);
+		Timeline moveTimeline = new Timeline();
 		
+		StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
+		if (currentSpacesPane == null) {
+			System.out.println("ERROR: Player object is not in hash map somehow");
+			return;
+		}
+	
+		int indexOfCurrentSpacesPane = listOfSpacesPanes.indexOf(currentSpacesPane);
 		Circle playersPeiceToMove = playerObjToPlayerPiece.get(player);
 		
-		// start our looping from this index, moving our player circle 
-		int currMoved = 0;
-		StackPane nextSpacePane = listOfSpacesPanes.get(indexOfCurrentSpacesPane);
-		while (currMoved < ammtToMove) {
+		for (int step = 1; step <= ammtToMove; step++) { 
 			
-			nextSpacePane.getChildren().remove(playersPeiceToMove);
+			 if (indexOfCurrentSpacesPane == listOfSpacesPanes.size() - 1) {
+			        indexOfCurrentSpacesPane = 0;
+			 } 
+			 else {
+			        indexOfCurrentSpacesPane++;
+			 }
+
+			final int nextIndex = indexOfCurrentSpacesPane; 
 			
-			// if the index is the last index then WRAP AROUND
-			if (indexOfCurrentSpacesPane == listOfSpacesPanes.size()-1) {
-				indexOfCurrentSpacesPane = 0;
-			}
-			else {
-				indexOfCurrentSpacesPane++;
-			}
-			
-			
-			nextSpacePane = listOfSpacesPanes.get(indexOfCurrentSpacesPane);
-			
-			// And the players circle piece to the stack pane
-			nextSpacePane.getChildren().add(playersPeiceToMove);
-			
-			// if there are multiple circles on this space pane, offset them 
-			List<Node> childrenOfStackPane = nextSpacePane.getChildren();
-			int circleCount = 0;
-			for (Node child : childrenOfStackPane) {
-				if (child instanceof Circle) {
-					child.setTranslateX(xDeltasForStackingPlayerPieces[circleCount]);
-					child.setTranslateY(yDeltasForStackingPlayerPieces[circleCount]);
-					circleCount++;
+			KeyFrame frame = new KeyFrame(Duration.millis(200 * step), e -> {
+				AudioClip sound = new AudioClip(
+					    getClass().getResource("/"+theme+"/moveSound.mp3").toExternalForm()
+					);
+
+					sound.play();
+				
+				StackPane oldSpacePane = whichStackPanesPlayersAreOn.get(player);
+				StackPane nextSpacePane = listOfSpacesPanes.get(nextIndex);
+				
+				oldSpacePane.getChildren().remove(playersPeiceToMove);
+				nextSpacePane.getChildren().add(playersPeiceToMove);
+				
+				List<Node> childrenOfStackPane = nextSpacePane.getChildren();
+				int circleCount = 0;
+				
+				for (Node child : childrenOfStackPane) {
+					if (child instanceof Circle) {
+						child.setTranslateX(xDeltasForStackingPlayerPieces[circleCount]);
+						child.setTranslateY(yDeltasForStackingPlayerPieces[circleCount]);
+						circleCount++;
+					}
 				}
-			}
-			
-			
-			
-			
-			currMoved++;
+				
+				whichStackPanesPlayersAreOn.put(player, nextSpacePane);
+			});
+	
+			moveTimeline.getKeyFrames().add(frame);
 		}
 		
-		whichStackPanesPlayersAreOn.put(player, nextSpacePane);
+		moveTimeline.play();
 		
 	}
 	
@@ -2377,8 +2387,17 @@ public class View extends Application implements Observer {
 		
 		// if the message is that a player moved, animate the player moving on the board
 		else if (message instanceof PlayerMovedMessage) {
+			
 			PlayerMovedMessage movedMessage = (PlayerMovedMessage) message;
-			animatePlayerMoving(movedMessage.getPlayer(), movedMessage.getAmmtMoved());
+			
+			// For letting dice roll first
+			Timeline moveDelay = new Timeline(
+					new KeyFrame(Duration.seconds(1), e -> {
+						animatePlayerMoving(movedMessage.getPlayer(), movedMessage.getAmmtMoved());;
+						
+					})
+				);
+				moveDelay.play();
 		}
 		
 		// if the message is that its the next players turn, switch the bottom left player card to the new player
@@ -2408,24 +2427,45 @@ public class View extends Application implements Observer {
 			
 			if (currentPlayer instanceof AIPlayer) {
 				rollDiceButton.setDisable(true);
-				((AIPlayer) currentPlayer).playAITurn(controller);
-				rollDiceButton.setDisable(false);
-				
+
+				Timeline aiDelay = new Timeline(
+					new KeyFrame(Duration.seconds(2), e -> {
+						((AIPlayer) currentPlayer).playAITurn(controller);
+					})
+				);
+
+				aiDelay.play();
 			}
 		}
 		
 		// if the message is that a player landed on an unowned property, buying is optional
 		else if (message instanceof PurchasePromptMessage) {
+			endTurnButton.setDisable(true);
 			PurchasePromptMessage purchasePromptMsg = (PurchasePromptMessage) message;
 			Player player = purchasePromptMsg.getCurrentPlayer();
 			Property property = purchasePromptMsg.getProperty();
-			showPurchasePrompt(player, property);
+		
+			Timeline promptDelay = new Timeline(
+					new KeyFrame(Duration.seconds(2), e -> {
+						showPurchasePrompt(player, property);
+						
+					})
+				);
+				promptDelay.play();
+			
 		}
 		
 		// if the message is that a chance/chest card was drawn, show the card
 		else if (message instanceof CardDrawnMessage) {
 		    CardDrawnMessage msg = (CardDrawnMessage) message;
-		    showCard(msg.getCard());
+		    Timeline cardDelay = new Timeline(
+					new KeyFrame(Duration.seconds(2), e -> {
+						showCard(msg.getCard());
+						
+					})
+				);
+				cardDelay.play();
+		    
 		}
 		
 		// if the message is that a Ai Took an action, display the action to the other players 
@@ -2434,9 +2474,18 @@ public class View extends Application implements Observer {
 			// IMPORTANT NOTE; We must pause between messages some how because the ai will kinda happen instantly, this is a problem.
 			
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
-			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
-			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
-			aiLoggerVBox.getChildren().add(newAiActionLabel);			
+//			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
+//			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
+//			aiLoggerVBox.getChildren().add(newAiActionLabel);		
+			Timeline delay = new Timeline(
+			        new KeyFrame(Duration.seconds(2), e -> {
+			            Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
+			            newAiActionLabel.setStyle(aiLoggerLabelSetStyle);
+			            aiLoggerVBox.getChildren().add(newAiActionLabel);
+			        })
+			    );
+
+			    delay.play();
 		}
 		
 		// if the view is notified that a player is going to jail, you can play sounds and animate
@@ -2612,6 +2661,7 @@ public class View extends Application implements Observer {
 	    //adding card to the left spot in the hbox
 	    StackPane spaceCard = this.buildSpaceCard(property, 150);
 	    hboxContainer.getChildren().add(spaceCard);
+	    
 
 	    //adding buttons to the right spot in the hbox
 	    VBox buttonBox = new VBox();
@@ -2619,6 +2669,7 @@ public class View extends Application implements Observer {
 	    
 		// BUY BUTTON - copying style from roll dice button
 		Rectangle buyButton = new Rectangle(coreButtonWidth-50, coreButtonHeight-5 , Color.LIGHTGREEN);
+		buyButton.setStroke(Color.BLACK);
 		buyButton.setArcWidth(30); 
 		buyButton.setArcHeight(30);
 		Label buyLabel = new Label("Buy");
@@ -2641,12 +2692,14 @@ public class View extends Application implements Observer {
 	        controller.purchaseProperty(player, property);
 	        populatePlayerCardWithNewInfo(player);
 	        this.purchaseOverlay.setVisible(false);
+	        endTurnButton.setDisable(false);
 
 			});
 		}
 	    	    
 	    //On click for skip, just hide overlay
 		Rectangle skipButton = new Rectangle(coreButtonWidth-50, coreButtonHeight-5, Color.LIGHTSTEELBLUE);
+		skipButton.setStroke(Color.BLACK);
 		skipButton.setArcWidth(30); 
 		skipButton.setArcHeight(30);
 		Label skipLabel = new Label("Pass");
@@ -2663,6 +2716,7 @@ public class View extends Application implements Observer {
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");
+	    	endTurnButton.setDisable(false);
 		});
 
 	    

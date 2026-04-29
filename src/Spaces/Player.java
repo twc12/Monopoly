@@ -221,8 +221,6 @@ public class Player {
     		this.gameOver = true;
     		System.out.println("GAME OVER");
     		// model.removeplayerfromturncycle
-    	} else {//if not game over, then that means you've raised enough funds to pay properly
-    		this.addCash(-ammtOwed);
     	}
     	
     	//notify view w/ bankruptcy report

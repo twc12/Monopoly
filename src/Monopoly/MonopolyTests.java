@@ -253,19 +253,20 @@ class MonopolyTests {
 	    													//total 110
 	    													//player will owe 1$ less than property sales value and be able to cover it
 	    int debt = 109;
-	    int prevCash = player.getCashAmmt();
- 	    
+ 	    player.addCash(-player.getCashAmmt()); // make player's cash = 0
+	    
+	    
 	    //force liquidate the properties, skipping the regular player.addCash route
-	    player.bankruptcy(debt);
+	    player.addCash(-debt);
 	    assertFalse(player.getGameOver());
 	    assertEquals(0, player.getListOfProperties().size());
-	    assertEquals(prevCash+1, player.getCashAmmt());	//player will have $1 more in cash after liquidating
+	    assertEquals(1, player.getCashAmmt());	//player will have $1 after liquidating
 	    assertEquals(0, player.getHousesOwnedCount());
 	    
-	    //initiate another bankruptcy, this time via .addCash
-	    player.addCash(-(player.getCashAmmt()+1));
+	    //initiate another bankruptcy when player only has $1
+	    player.addCash(-5);
 	    assertTrue(player.getGameOver());
-	    assertEquals(-1, player.getCashAmmt());
+	    assertEquals(-4, player.getCashAmmt());
 
 	}
 

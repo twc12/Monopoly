@@ -1481,7 +1481,10 @@ public class View extends Application implements Observer {
 		Label rollDiceLabel = new Label("Roll Dice");
 		StackPane rollDiceStackPane = new StackPane();
 		rollDiceStackPane.getChildren().addAll(rollDiceButtonRect,rollDiceLabel);
-		rollDiceStackPane.setOnMouseClicked(event -> handleDiceRoll());
+		rollDiceStackPane.setOnMouseClicked(event -> {
+			rollDiceStackPane.setDisable(true);
+			handleDiceRoll();
+		});
 		this.rollDiceButton = rollDiceStackPane; // used for disabling the button later
 		
 		
@@ -2268,8 +2271,15 @@ public class View extends Application implements Observer {
 				
 				whichStackPanesPlayersAreOn.put(player, nextSpacePane);
 			});
-	
+			
+			moveTimeline.setOnFinished(e -> {
+				if (player.getIsDoneRollingDice() == false) {
+					rollDiceButton.setDisable(false);
+				}
+			});
+			
 			moveTimeline.getKeyFrames().add(frame);
+			
 		}
 		
 		moveTimeline.play();
@@ -2405,6 +2415,7 @@ public class View extends Application implements Observer {
 					})
 				);
 				moveDelay.play();
+				System.out.println("player on" + movedMessage.getPlayer().getCurrentSpace().getName());
 		}
 		
 		// if the message is that its the next players turn, switch the bottom left player card to the new player
@@ -2617,12 +2628,22 @@ public class View extends Application implements Observer {
 			    getClass().getResource("/"+theme+"/cardSound.mp3").toExternalForm()
 			);
 
+			
+		AudioClip jailSound = new AudioClip(
+				getClass().getResource("/"+theme+"/goToJail.mp3").toExternalForm()
+				);
+		if	(controller.getCurrentPlayer().getCurrentSpace() instanceof GoToJailSpace) {
+			cardTitle.setText("Go To Jail!");
+			jailSound.play();
+		}
+		else if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) {
+			cardTitle.setText("Chance");	
 			sound.play();
-		
-		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
-			cardTitle.setText("Chance");		
-		else 
+		}
+		else {
 			cardTitle.setText("Community Chest");
+			sound.play();
+		}
 		System.out.println("Logs: showcard attempting to load image: "+"/"+theme + "/" +card.getImage());
 		cardImage = new Image("/"+theme + "/" +card.getImage());
 		cardIcon.setImage(cardImage);

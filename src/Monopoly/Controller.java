@@ -127,7 +127,7 @@ public class Controller {
 			if (dice1 == dice2) {
 				playerInjail.getOutOfJail();
 				playerInjail.move(dice1 + dice2);
-				playerInjail.setIsDoneRollingDice(true); // they used their roll to escape
+
 			}
 
 			// If the attempt did not succeed

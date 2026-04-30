@@ -261,9 +261,16 @@ public class Player implements Serializable{
      * putInJail()
      */
     public void putInJail() {
+    	int ammtMoved = 0;
+    	currentSpace.getPlayersOnSpace().remove(this);
+    	while (!(currentSpace instanceof Jail)) {
+    		ammtMoved++;
+    		currentSpace = currentSpace.getNextSpace();
+    	}
+    	model.notifyViewOfPlayerMoved(this, ammtMoved);
         setIsDoneRollingDice(true);
     	inJail = true;	
-    	model.putPlayerInJail(this);
+    	currentSpace.getPlayersOnSpace().add(this);
     }
     
     /**

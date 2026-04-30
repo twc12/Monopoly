@@ -34,6 +34,7 @@ public class FreeParking extends Space {
 		// Checks if the rule to collect tax money from free parking is enabled
 		if (model.getGameSettings().getFreeParkingRule()) {
 			player.addCash(currFreeParkingReward);
+			model.notifyViewOfInfoMessage("Free parking giving player $"+currFreeParkingReward);
 			currFreeParkingReward = 0;
 		}
 		return;

@@ -192,31 +192,28 @@ public class Controller {
 	 * This is called from the view when the player presses "end turn"
 	 * This function will move the models current player to the next on 
 	 * in the list of players.
-	 * 
-	 * This function doesnt accept a currentPlayer parameter because 
-	 * this controller can get the current player anyways 
-	 * 
-	 * What does it mean to end a turn?
-	 * Is it just changing the "currentPlayer" to the next one?
-	 * 	- if so then great!
 	 */
 	public void processEndTurn() {
-		Player originalPlayer = model.getCurrentPlayer();
 		
-		model.setCurrentPlayerToNext();
+		Player originalPlayer = getCurrentPlayer();
 		
-		
-		// after reference to new player, check if they already lost, if so, call processendturn again
-		if (getCurrentPlayer().getGameOver() == true) {	
-			
-			//checked if we've looped through all players, if so, do something? 
-			if (getCurrentPlayer() == originalPlayer) {
-				model.setGameFinished(true);
-				//model.notifyWinner()
-		
-			}
-			processEndTurn();
-		}
+	    while (true) {
+	        model.setCurrentPlayerToNext();
+	        Player currentPlayer = getCurrentPlayer();
+
+	        //If looped back to the original player, then that mean's they're the last player=winner
+	        if (currentPlayer == originalPlayer) {
+	            model.setGameFinished(true);
+	            model.notifyViewGameWinner(currentPlayer);
+	            model.notifyViewOfInfoMessage("You did it!");
+	            return;
+	        }
+
+	        //Normal case where the next player goes, as long as theyre still in the game
+	        if (!currentPlayer.getGameOver()) {
+	            return;
+	        }
+	    }
 	}
 
 	/**

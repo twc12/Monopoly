@@ -15,8 +15,10 @@ import java.util.Random;
 import Cards.Card;
 import Messages.AiActionMessage;
 import Messages.AiLogsEnabledMessage;
+import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
+import Messages.GameOverMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -2565,25 +2567,51 @@ public class View extends Application implements Observer {
 		
 		else if (message instanceof BankruptcyMessage) {
 			BankruptcyMessage bnkMsg = (BankruptcyMessage) message;
-			int ammtPayed = bnkMsg.getAmmtPayed();
+			int ammtOwed = bnkMsg.getAmmtOwed();
 			int buildingsSoldCount = bnkMsg.getBuildingsSoldCount();
 			List<Property> propertiesSold = bnkMsg.getPropertiesSold();
-			boolean gameOver = bnkMsg.gameGameOver();
-			
-			
-	        Alert alert = new Alert(AlertType.INFORMATION);
+			boolean gameOver = bnkMsg.getGameOver();
+	        Alert alert = new Alert(AlertType.WARNING);
 	        alert.setTitle("Bankruptcy!");
 	        
-	        String testString = "ammtPayed: " + ammtPayed + "buildingsSoldCount: " + buildingsSoldCount + "gameover: " + gameOver;
+	        alert.setHeaderText("Bankruptcy Report for " + bnkMsg.getPlayer().toString());
 	        
-	        alert.setContentText(testString);
+	        String messageString = "Amount Owed: $" + ammtOwed + 
+	        					   "\nBuildings Sold: " + buildingsSoldCount;
 	        
-	        buildRightPlayerPicker(controller.getCurrentPlayer());
-	        controller.processEndTurn();
+	        if (propertiesSold.isEmpty()) messageString += "\nNo properties sold.";
+	        else {
+				for (Property p:propertiesSold) {
+					messageString += "\nProperty Sold: " + p.getName();
+		        }
+	        }
+			if (gameOver) messageString += "\nNot enough, game over!";
+			else {
+				messageString += "\nSurvived bankruptcy!";
+			}
 	        
+	        alert.setContentText(messageString);
 	        alert.showAndWait();
-	        		
+
+	        buildRightPlayerPicker(controller.getCurrentPlayer());
+//	        controller.processEndTurn();
 		}
+		
+		else if (message instanceof GameOverMessage) {
+			GameOverMessage gameOverMsg = (GameOverMessage) message;
+			this.endTurnButton.setDisable(true);
+			this.rollDiceButton.setDisable(true);
+			
+			AudioClip sound = new AudioClip(
+				    getClass().getResource("/"+theme+"/cardSound.mp3").toExternalForm()
+				);
+			sound.play();
+			
+			
+			this.currPlayerLabel.setText(gameOverMsg.getPlayerName() + " wins!");
+			this.currPlayerLabel.setStyle(this.textThemeColor + "-fx-font-size: 50px; -fx-font-weight: bold;");
+		}
+		
 	}
 	
 	/**

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
-
 import Spaces.AIPlayer;
 import Spaces.GoSpace;
 import Cards.Card;
@@ -14,8 +13,10 @@ import Cards.CardEffect;
 import Cards.Deck;
 import Messages.AiActionMessage;
 import Messages.AiLogsEnabledMessage;
+import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
+import Messages.GameOverMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -23,8 +24,6 @@ import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Space;
-import javafx.scene.paint.Color;
-
 
 // game state
 public class Model extends Observable implements Serializable{
@@ -317,7 +316,12 @@ public class Model extends Observable implements Serializable{
 		this.clearChanged();	
 	}
 	
-
+	public void notifyViewGameWinner(Player player) {
+		GameOverMessage gameOverMessage = new GameOverMessage(player);
+		this.setChanged();
+		this.notifyObservers(gameOverMessage);
+		this.clearChanged();	
+	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {
 		this.lastDiceRollAmmt = ammtMoved;
@@ -369,6 +373,7 @@ public class Model extends Observable implements Serializable{
 	public void setGameFinished(boolean val) {
 		this.gameFinished = val;
 	}
+	
 	/**
 	 * For moving player to jail, using a Card to display and delay
 	 * the view to fix a bug. 

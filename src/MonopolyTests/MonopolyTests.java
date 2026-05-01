@@ -1,4 +1,4 @@
-package Monopoly;
+package MonopolyTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,6 +8,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import Monopoly.Controller;
+import Monopoly.GameSettings;
+import Monopoly.Model;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;

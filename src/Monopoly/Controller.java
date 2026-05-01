@@ -66,8 +66,7 @@ public class Controller {
 			return;
 		}
 	}
-	
-	
+		
 	public Controller(View viewClassObj) {
 		model = new Model(viewClassObj);
 	}
@@ -172,6 +171,11 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Pays the player $50 and checks if it should add that amount to the 
+	 * free parking reward, if that rule is enabled
+	 * @param player The object of the player who is paying
+	 */
 	private void pay50(Player player) {
 		player.addCash(-50);
 		if (model.getGameSettings().getFreeParkingRule()) {
@@ -179,6 +183,11 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Processes the purchase of this property
+	 * @param player The object of the player making a purchase
+	 * @param property The object of the property being purchased
+	 */
 	public void purchaseProperty (Player player, Property property) {
 		property.purchaseProperty(player, model);		
 	}
@@ -196,19 +205,16 @@ public class Controller {
 	 * 	- if so then great!
 	 */
 	public void processEndTurn() {
-		Player originalPlayer = model.getCurrentPlayer();
-		
-		model.setCurrentPlayerToNext();
-		
-		
+		Player originalPlayer = model.getCurrentPlayer();	
+		model.setCurrentPlayerToNext();		
+
 		// after reference to new player, check if they already lost, if so, call processendturn again
 		if (getCurrentPlayer().getGameOver() == true) {	
 			
 			//checked if we've looped through all players, if so, do something? 
 			if (getCurrentPlayer() == originalPlayer) {
 				model.setGameFinished(true);
-				//model.notifyWinner()
-		
+				//model.notifyWinner()		
 			}
 			processEndTurn();
 		}
@@ -216,7 +222,7 @@ public class Controller {
 
 	/**
 	 * This function applies the card affect to the player from the `cardBuilder` class
-	 * @param card
+	 * @param card 
 	 * @param player
 	 */
 	public void resolveCard(Card card, Player player) {
@@ -242,6 +248,10 @@ public class Controller {
 		return model; 
 	}
 
+	/**
+	 * Gets the total amount of spaces on the board
+	 * @return an integer, the total number of spaces
+	 */
 	public int getTotalSpaces() {
 		return model.board.getTotalSpaces();
 	}
@@ -255,19 +265,34 @@ public class Controller {
 		return model.board.getSpaces();
 	}
 	
-	
+	/**
+	 * Grabs the board width 
+	 * @return an integer, representing the width of the board
+	 */
 	public int getBoardWidth() {
 		return model.board.getBoardWidth();
 	}
 	
+	/**
+	 * Grabs the first space on the board
+	 * @return An object representing the first space
+	 */
 	public Space getFirstSpace() {
 		return model.board.getFirstSpace();
 	}
 	
+	/**
+	 * Grabs the object of the current player
+	 * @return A player object representing the current player
+	 */
 	public Player getCurrentPlayer() {
 		return model.getCurrentPlayer();
 	}
 	
+	/**
+	 * Pulls a list of ALL the players in the game
+	 * @return A List of every player object
+	 */
 	public List<Player> getAllPlayers(){
 		return model.getPlayers();
 	}
@@ -356,8 +381,5 @@ public class Controller {
 		targetProperty.setOwner(traderPlayer);
 		traderPlayer.addProperty(targetProperty);
 		targetPlayer.removeProperty(targetProperty);
-	}
-
-
-	
+	}	
 }

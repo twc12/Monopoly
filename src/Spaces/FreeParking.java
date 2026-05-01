@@ -16,10 +16,20 @@ public class FreeParking extends Space {
 		this.imageFile = imageFile;
 	}
 	
+	/**
+	 * SETTER: Adds cash to the freeparking reward when the associated game
+	 * setting is enabled
+	 * @param cashAmount the money to be added to the reward
+	 */
 	public void addCashToFreeParkingReward(int cashAmount) {
 		currFreeParkingReward += cashAmount;
 	}
 	
+	/**
+	 * GETTTER: Pulls the current reward for free parking from the associated
+	 * field in this class
+	 * @return an integer representing the current free parking reward
+	 */
 	public int getFreeParkingRewardAmount() {
 		return currFreeParkingReward;
 	}
@@ -38,6 +48,5 @@ public class FreeParking extends Space {
 			currFreeParkingReward = 0;
 		}
 		return;
-	}
-	
+	}	
 }

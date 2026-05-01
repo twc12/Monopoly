@@ -98,22 +98,42 @@ public class Board implements Serializable{
  
     }
 
+    /**
+     * Grabs the free parking space
+     * @return the free parking space object
+     */
     public FreeParking getFreeParking() {
         return parking;
     }
 	
+    /**
+     * Grabs the total amount of spaces in the board
+     * @return an integer, the number of board spaces
+     */
 	public int getTotalSpaces() {
 		return totalSpaces;
 	}
 	
+    /**
+     * Grabs the first space of the game
+     * @return the object of the first space
+     */
 	public Space getFirstSpace() {
 		return firstSpace;
 	}
 	
+    /**
+     * Grabs the jail space object
+     * @return the jail space object
+     */
 	public Jail getJailSpace() {
 		return jailSpace;
 	}
 	
+    /**
+     * Grabs the width of the board
+     * @return an integer, the boards width
+     */
 	public int getBoardWidth() {
 		return boardWidth;
 	}
@@ -125,7 +145,5 @@ public class Board implements Serializable{
 	 */
 	public List<Space> getSpaces() {
 	    return spacesLinkedList;
-	}
-	
-	
+	}	
 }

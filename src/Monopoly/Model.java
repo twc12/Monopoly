@@ -176,35 +176,66 @@ public class Model extends Observable implements Serializable{
 		board.getFreeParking().addCashToFreeParkingReward(moneyToAdd);
 	}
 	
+	/**
+	 * Returns the game settings object
+	 * @return the game settings object
+	 */
 	public GameSettings getGameSettings() {
 		return gameSettings;
 	}
 	
+	/**
+	 * Returns all of the spaces in the board as a list
+	 * @return a list of all game spaces
+	 */
 	public List<Space> getSpaces() {
 	    return board.getSpaces();
 	}
 	
+	/**
+	 * Gets all of  the players in the game as a list 
+	 * @return a list of all player objects
+	 */
 	public List<Player> getPlayers() {
 		return players;
 	}
 	
+	/**
+	 * Gets the current player object, the one who is playing their turn out
+	 * @return the current players object
+	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 	
+	/**
+	 * Gets the CHANCE cards, every single one in a stack
+	 * @return a stack of chance cards
+	 */
 	public Stack<Card> getChanceCards(){
 		return chanceCards;
 	}
 	
-	
+	/**
+	 * Gets the COMMUNITY CHEST cards, every single one in a stack
+	 * @return a stack of community chest cards
+	 */	
 	public Stack<Card> getCommunityChestCards(){
 		return communityChestCards;
 	}
 	
+	/**
+	 * Sets the stack of chance cards to an input stack
+	 * @param stack a stack of card objects
+	 */
 	public void setChanceCards(Stack<Card> stack) {
 		this.chanceCards = stack;
 	}
 	
+	/**
+	 * Sets the stack of community chest cards to an input stack
+	 * @param stack a stack of card objects
+	 */
 	public void setCommunityChestCards(Stack<Card> stack) {
 		this.communityChestCards = stack;
 	}
@@ -325,13 +356,19 @@ public class Model extends Observable implements Serializable{
 		this.notifyObservers(bankruptcyMessage);
 		this.clearChanged();	
 	}
-	
 
-
+	/**
+	 * Sets the amount moved during the last dice roll for hte PREVIOUS dice roll
+	 * @param ammtMoved number of spaces moved
+	 */
 	public void setLastDiceRollAmmt(int ammtMoved) {
 		this.lastDiceRollAmmt = ammtMoved;
 	}
 	
+	/**
+	 * Grabs the number of spaces the last dice roll moved a player
+	 * @return the number of spaced moved
+	 */
 	public int getLastDiceRollAmmt() {
 		return this.lastDiceRollAmmt;
 	}
@@ -355,6 +392,10 @@ public class Model extends Observable implements Serializable{
 		return attemptsAmmount;
 	}
 	
+	/**
+	 * Gets a hash map of all the themes for the game
+	 * @return A hash map of all game themes
+	 */
 	public HashMap<String, Boolean> getThemes() {
 		return themes;
 	}
@@ -376,10 +417,18 @@ public class Model extends Observable implements Serializable{
 		
 	}
 	
+	/**
+	 * Checks if the game is over or not based on return
+	 * @return true if the game is over, false if not
+	 */
 	public boolean getGameFinished() {
 		return this.gameFinished;
 	}
 	
+	/**
+	 * Sets the game to end 
+	 * @param val boolean parameter to change the game status to
+	 */
 	public void setGameFinished(boolean val) {
 		this.gameFinished = val;
 	}
@@ -395,7 +444,8 @@ public class Model extends Observable implements Serializable{
 	}
 	
 	/**
-	 * 
+	 * Grabs the card that send the player to jail
+	 * @return the jail card, a card object
 	 */
 	public Card getGoToJail() {
 		return jailCard;

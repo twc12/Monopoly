@@ -18,10 +18,18 @@ public class CardDrawnMessage {
         this.card = card;
     }
 
+    /**
+     * Gets the player object that pulled the card
+     * @return the player object
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Gets the card being pulled
+     * @return the card object pulled
+     */
     public Card getCard() {
         return card;
     }

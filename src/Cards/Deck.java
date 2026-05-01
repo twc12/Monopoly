@@ -30,14 +30,19 @@ public class Deck implements Serializable{
 		communityChestCards = shuffle(unShuffled);
 	}
 	
+	/**
+	 * @return Stack of card objects for the chance cards
+	 */
 	public Stack<Card> getChanceCards(){
 		return chanceCards;
 	}
 	
+	/**
+	 * @return Stack of card objects for the community chest cards
+	 */
 	public Stack<Card> getCommunityChestCards(){
 		return communityChestCards;
 	}
-	
 	
 	private Stack<Card> shuffle(ArrayList<Card> unShuffled) {
 		Stack<Card> stack = new Stack<>();

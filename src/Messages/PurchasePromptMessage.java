@@ -17,10 +17,18 @@ public class PurchasePromptMessage {
 		this.property = property;
 	}
 
+	/**
+	 * Gets the current player purchasing a property
+	 * @return the object of the current player
+	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 	
+	/**
+	 * Gets the current property being purchased
+	 * @return the current property being purchased
+	 */
 	public Property getProperty() {
 		return property;
 	}

@@ -86,18 +86,31 @@ public abstract class Property extends CostSpace {
 		
 	}
 	
+	/**
+	 * @return an array list of the rent stages for a property
+	 */
 	public ArrayList<Integer> getRentStages(){
 		return rentStages;
 	}
 	
+	/**
+	 * @return the amount to charge a player for rent
+	 */
 	public int getCostToCharge(Player player, int diceRoll) {
 		return rentStages.get(rentStageIndex);
 	}
 	
+	/**
+	 * @return the owner of this property
+	 */
 	public Player getOwner() {
 		return owner;
 	}
 	
+	/**
+	 * Sets the owner of the property
+	 * @param player the new owner
+	 */
 	public void setOwner(Player player) {
 		this.owner = player;
 	}
@@ -110,10 +123,18 @@ public abstract class Property extends CostSpace {
 //		this.isMortgaged = val;
 //	}
 	
+	/**
+	 * Gets worth of property mortgage
+	 * @return amount mortgage is worth
+	 */
 	public int getMortgageAmount() {
 		return purchaseAmount/2;
 	}
 	
+	/**
+	 * Gets the amount this porperty is being purchased for
+	 * @return amount purchased for
+	 */
 	public int getPurchaseAmount() {
 		return purchaseAmount;
 	}

@@ -234,6 +234,10 @@ public class Player implements Serializable{
     public void addJailCard() {
     	ammtOfGetOutOfJailCards++;
     }
+    /**
+     * Gives the player a set amount of get out of jail free cards
+     * @param amount number of cards to be given
+     */
     public void addJailCard(int amount) {
     	ammtOfGetOutOfJailCards+=amount;
     }
@@ -244,6 +248,10 @@ public class Player implements Serializable{
     public void removeJailCard() {
         ammtOfGetOutOfJailCards--;
     }
+    /**
+     * Removes a set amount of the players get out of jail free cards
+     * @param amount number of cards to be removed
+     */
     public void removeJailCard(int amount) {
         ammtOfGetOutOfJailCards-=amount;
     }

@@ -556,6 +556,11 @@ public class View extends Application implements Observer {
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);
+			
+			// if the first player is an ai, send message to model, to send back to us to start ai player
+			if (controller.getCurrentPlayer() instanceof AIPlayer) {
+				controller.model.notifyViewOfNextPlayersTurn(controller.getCurrentPlayer());
+			}
 		});
 		
 		// Create a load button that will prompt the user to select a save file that ends in .monopoly
@@ -1769,29 +1774,8 @@ public class View extends Application implements Observer {
 		}
 		
 		// if the player is done rolling dice then dont allow them to roll dice
-		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-			// disable the roll dice button because they finished rolling
-			rollDiceButton.setDisable(true);
-			Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
-			if(curSpace instanceof Property) {
-				if (((Property) curSpace).getOwner() == null) {
-					endTurnButton.setDisable(true);
-				}
-				else {
-					System.out.println("Log: endTurnButton.setDisable(false) 1780");
-					endTurnButton.setDisable(false);
-				}
-			}
-			else {
-				// only if the player wasnt given a card prompt should you allow the end turn button to be pressed
-				if (! (curSpace instanceof Chance) && ! (curSpace instanceof CommunityChest)) {
-					System.out.println("Log: endTurnButton.setDisable(false) 1785");
-					endTurnButton.setDisable(false);
-					
-				}
-			}
-		} else { //must have rolled doubles
-			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
+		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
+			 infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
 		}
 		
 		populatePlayerCardWithNewInfo(currentPlayer);  //refresh player card after dice-roll phase resolves
@@ -2283,10 +2267,11 @@ public class View extends Application implements Observer {
 			
 			moveTimeline.setOnFinished(e -> {
 				boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
+				System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is "+purchaseOverlayIsOn);
 				boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance || player.getCurrentSpace() instanceof CommunityChest; 
 				if (player.getIsDoneRollingDice() == false) {
 					// if there is currently a purchase prompt on the screen then done enable the roll dice button
-					if (! purchaseOverlayIsOn && ! cardPromptIsBeingShown) {
+					if (! cardPromptIsBeingShown) {
 						System.out.println("Log: rollDiceButton.setDisable(false) 2281");
 						rollDiceButton.setDisable(false);						
 					}
@@ -2295,6 +2280,29 @@ public class View extends Application implements Observer {
 				else if (! purchaseOverlayIsOn && ! cardPromptIsBeingShown){
 					System.out.println("Log: endTurnButton.setDisable(false); 2296");
 					endTurnButton.setDisable(false);
+				}
+				// if the player is done rolling dice then dont allow them to roll dice
+				else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+					// disable the roll dice button because they finished rolling
+					rollDiceButton.setDisable(true);
+					Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
+					if(curSpace instanceof Property) {
+						if (((Property) curSpace).getOwner() == null) {
+							endTurnButton.setDisable(true);
+						}
+						else {
+							System.out.println("Log: endTurnButton.setDisable(false) 2310");
+							endTurnButton.setDisable(false);
+						}
+					}
+					else {
+						// only if the player wasnt given a card prompt should you allow the end turn button to be pressed
+						if (! (curSpace instanceof Chance) && ! (curSpace instanceof CommunityChest)) {
+							System.out.println("Log: endTurnButton.setDisable(false) 2317");
+							endTurnButton.setDisable(false);
+							
+						}
+					}
 				}
 			});
 			
@@ -2442,14 +2450,12 @@ public class View extends Application implements Observer {
 		
 		// if the message is that its the next players turn, switch the bottom left player card to the new player
 		else if (message instanceof NextPlayerMessage) {
+			System.out.println("\n\n----NextPlayer----");
 			potentialTradeProperty = null; // there are no selected properties at this stage
 			tradeButton.setDisable(true);
 			buildButton.setDisable(true);
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
-			
-			// at the start of another player, clear the Ai logger of any potential messages
-//			aiLoggerVBox.getChildren();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 			
@@ -2470,7 +2476,7 @@ public class View extends Application implements Observer {
 				rollDiceButton.setDisable(true);
 
 				Timeline aiDelay = new Timeline(
-					new KeyFrame(Duration.seconds(2), e -> {
+					new KeyFrame(Duration.seconds(4), e -> {
 						((AIPlayer) currentPlayer).playAITurn(controller);
 					})
 				);
@@ -2519,7 +2525,7 @@ public class View extends Application implements Observer {
 //			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
 //			aiLoggerVBox.getChildren().add(newAiActionLabel);		
 			Timeline delay = new Timeline(
-			        new KeyFrame(Duration.seconds(2), e -> {
+			        new KeyFrame(Duration.seconds(6), e -> {
 			            Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			            newAiActionLabel.setStyle(aiLoggerLabelSetStyle);
 			            aiLoggerVBox.getChildren().add(newAiActionLabel);
@@ -2724,7 +2730,8 @@ public class View extends Application implements Observer {
 
 	//purchaseprompt hbox with property infocard on left, buttons on right
 	public void showPurchasePrompt(Player player, Property property) {
-		
+		rollDiceButton.setDisable(true);
+		System.out.println("Log: rollDiceButton.setDisable(true) 2731");
 	    this.purchaseOverlay.getChildren().clear();//clear old version
 	    
 	    //copying style from cardprompt

@@ -14,8 +14,10 @@ import Cards.CardEffect;
 import Cards.Deck;
 import Messages.AiActionMessage;
 import Messages.AiLogsEnabledMessage;
+import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
+import Messages.GameOverMessage;
 import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
@@ -341,7 +343,12 @@ public class Model extends Observable implements Serializable{
 		this.clearChanged();	
 	}
 	
-
+	public void notifyViewGameWinner(Player player) {
+		GameOverMessage gameOverMessage = new GameOverMessage(player);
+		this.setChanged();
+		this.notifyObservers(gameOverMessage);
+		this.clearChanged();	
+	}
 
 	public void setLastDiceRollAmmt(int ammtMoved) {
 		this.lastDiceRollAmmt = ammtMoved;

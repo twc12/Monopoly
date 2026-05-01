@@ -150,16 +150,15 @@ public class Model extends Observable implements Serializable{
 		
 		int currPlayerIndex = players.indexOf(currentPlayer);
 		int nextPlayerIndex;
-		while (currentPlayer.getGameOver() == true) {
-			// if the index is the last player then wrap around
-			if (currPlayerIndex == players.size()-1) {
-				nextPlayerIndex = 0;
-			}
-			else {
-				nextPlayerIndex = currPlayerIndex+1;
-			}
-			currentPlayer = players.get(nextPlayerIndex);
+		// if the index is the last player then wrap around
+		if (currPlayerIndex == players.size()-1) {
+			nextPlayerIndex = 0;
 		}
+		else {
+			nextPlayerIndex = currPlayerIndex+1;
+		}
+		currentPlayer = players.get(nextPlayerIndex);
+	
 		
 		
 		this.turnCounter++;

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
-
 import Spaces.AIPlayer;
 import Spaces.GoSpace;
 import Cards.Card;
@@ -18,7 +17,6 @@ import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GameOverMessage;
-import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -26,8 +24,6 @@ import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Space;
-import javafx.scene.paint.Color;
-
 
 // game state
 public class Model extends Observable implements Serializable{
@@ -300,20 +296,6 @@ public class Model extends Observable implements Serializable{
 	    this.clearChanged();
 	}
 
-	/**
-	 * Notifies the view that a player has landed on the "go to jail" space
-	 * @param player (Player): The player going to jail
-	 */
-	public void notifyViewOfPlayerGoingToJail(Player player) {
-		GoToJailMessage jailMsg = new GoToJailMessage(player);
-		this.setChanged();
-		this.notifyObservers(jailMsg);
-		this.clearChanged();	
-	}
-
-	public void notifyViewOfPlayerTryingToGetOutOfJail(Player player) {
-
-	}
 
 	/**
 	 * Generic notify view method for displaying string message to the view (ex: "Player X charged rent!")
@@ -396,8 +378,6 @@ public class Model extends Observable implements Serializable{
 		Jail jailSpace = board.getJailSpace();
 		jailSpace.addPlayerToJail(player); // adds the player to the jail mapping of attempts to get out 
 		
-    	notifyViewOfPlayerGoingToJail(player);
-		
 	}
 	
 	public boolean getGameFinished() {
@@ -407,6 +387,7 @@ public class Model extends Observable implements Serializable{
 	public void setGameFinished(boolean val) {
 		this.gameFinished = val;
 	}
+	
 	/**
 	 * For moving player to jail, using a Card to display and delay
 	 * the view to fix a bug. 

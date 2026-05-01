@@ -19,7 +19,6 @@ import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
 import Messages.GameOverMessage;
-import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
@@ -2519,10 +2518,8 @@ public class View extends Application implements Observer {
 		}
 		
 		// if the message is that a Ai Took an action, display the action to the other players 
-		else if (message instanceof AiActionMessage) {
-			
+		else if (message instanceof AiActionMessage) {		
 			// IMPORTANT NOTE; We must pause between messages some how because the ai will kinda happen instantly, this is a problem.
-			
 			AiActionMessage aiActionMsg = (AiActionMessage) message;
 //			Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 //			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
@@ -2842,8 +2839,15 @@ public class View extends Application implements Observer {
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");
-	    	System.out.println("Log: endTurnButton.setDisable(false) 2752");
-	    	endTurnButton.setDisable(false);
+	    	// only if the player is done rolling then enable the end turn button
+	    	if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+	    		System.out.println("Log: endTurnButton.setDisable(false) 2752");
+	    		endTurnButton.setDisable(false);
+	    	}
+	    	else {
+	    		System.out.println("Log: rollDiceButton.setDisable(false); 2822");
+		        rollDiceButton.setDisable(false);
+	    	}
 		});
 
 	    

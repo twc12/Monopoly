@@ -172,6 +172,11 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * This function will have the player pay 50 dollars to the center pot if its enables
+	 * when they paid $50 to get out of jail 
+	 * @param player (Player): The player trying to get out of jail
+	 */
 	private void pay50(Player player) {
 		player.addCash(-50);
 		if (model.getGameSettings().getFreeParkingRule()) {
@@ -221,12 +226,6 @@ public class Controller {
 	 */
 	public void resolveCard(Card card, Player player) {
 		card.apply(player, model);
-		if(model.getChanceCards().isEmpty()) {
-			model.setChanceCards(new Deck().getChanceCards());
-		}
-		if(model.getCommunityChestCards().isEmpty()) {
-			model.setCommunityChestCards(new Deck().getCommunityChestCards());
-		}
 	}
 
 	/**

@@ -49,8 +49,7 @@ public class Model extends Observable implements Serializable{
 	private List<Player> players;
 	private Player currentPlayer;
 	
-	private Stack<Card> chanceCards;
-	private Stack<Card> communityChestCards;
+	private Deck cardDeck;
 	private Card jailCard;
 	
 	private int lastDiceRollAmmt;
@@ -108,7 +107,6 @@ public class Model extends Observable implements Serializable{
 		playerIconsToPickFrom.add("thimble"); playerIconsToPickFrom.add("train"); playerIconsToPickFrom.add("wheeler");
 		
 		
-		
 		//instantiate the board of spaces and apply gamesettings
 		board = new Board();
 		GoSpace goSpace = (GoSpace) board.firstSpace;
@@ -125,9 +123,7 @@ public class Model extends Observable implements Serializable{
 		    }
 		}
 		
-		Deck deck = new Deck();
-		chanceCards = deck.getChanceCards();
-		communityChestCards = deck.getCommunityChestCards();
+		cardDeck = new Deck();
 
 		// Create all the HUMAN players 
 		players = new ArrayList<>();
@@ -155,14 +151,17 @@ public class Model extends Observable implements Serializable{
 		
 		int currPlayerIndex = players.indexOf(currentPlayer);
 		int nextPlayerIndex;
-		// if the index is the last player then wrap around
-		if (currPlayerIndex == players.size()-1) {
-			nextPlayerIndex = 0;
+		while (currentPlayer.getGameOver() == true) {
+			// if the index is the last player then wrap around
+			if (currPlayerIndex == players.size()-1) {
+				nextPlayerIndex = 0;
+			}
+			else {
+				nextPlayerIndex = currPlayerIndex+1;
+			}
+			currentPlayer = players.get(nextPlayerIndex);
 		}
-		else {
-			nextPlayerIndex = currPlayerIndex+1;
-		}
-		currentPlayer = players.get(nextPlayerIndex);
+		
 		
 		this.turnCounter++;
 		this.notifyViewOfNextPlayersTurn(currentPlayer);
@@ -193,20 +192,12 @@ public class Model extends Observable implements Serializable{
 	}
 	
 	public Stack<Card> getChanceCards(){
-		return chanceCards;
+		return cardDeck.getChanceCards();
 	}
 	
 	
 	public Stack<Card> getCommunityChestCards(){
-		return communityChestCards;
-	}
-	
-	public void setChanceCards(Stack<Card> stack) {
-		this.chanceCards = stack;
-	}
-	
-	public void setCommunityChestCards(Stack<Card> stack) {
-		this.communityChestCards = stack;
+		return cardDeck.getCommunityChestCards();
 	}
 	
 	/**
@@ -347,11 +338,6 @@ public class Model extends Observable implements Serializable{
 	 */
 	public int getAmmtOfJailAttempts(Player playerInJail) {
 		int attemptsAmmount = board.jailSpace.getAmmtOfJailAttempts(playerInJail);
-		// if the returned value was -1 that means the player given is not in the jail space, report error hopefully they see 
-		if (attemptsAmmount == -1) {
-			notifyViewOfAiAction("PLAYER GIVEN WAS NOT IN THE JAIL MAPPING DEBUG DEBUG DEBUG");
-			return -1;
-		}
 		return attemptsAmmount;
 	}
 	

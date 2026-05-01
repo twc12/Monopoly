@@ -25,7 +25,7 @@ public class Player implements Serializable{
     private Model model;
     private boolean isDoneRollingDice;
     private String playersIconStr; 
-    private boolean gameOver = false;
+    private boolean gameOver;
     
     /**
      * Constructor for the Player Class
@@ -37,6 +37,7 @@ public class Player implements Serializable{
      * @param theme (String): The theme folder for this player icon to be loaded
      */
     public Player(int id, String playersIconStr, String theme, Model model) {
+    	gameOver = false;
         playerId = id;
         this.model = model;
         inJail = false;

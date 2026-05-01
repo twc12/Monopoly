@@ -31,11 +31,37 @@ public class Deck implements Serializable{
 	}
 	
 	public Stack<Card> getChanceCards(){
+		if (chanceCards.isEmpty()) {
+			return replenishChanceCards();
+		}
+		return chanceCards;
+	}
+	
+	/**
+	 * The cards would run out in testing so this was made
+	 * @return
+	 */
+	public Stack<Card> replenishChanceCards(){
+		ArrayList<Card> unShuffled = cards.getChanceCards();
+		chanceCards = shuffle(unShuffled);
 		return chanceCards;
 	}
 	
 	public Stack<Card> getCommunityChestCards(){
+		if (communityChestCards.isEmpty()) {
+			return replenishCommunityChestCards();
+		}
 		return communityChestCards;
+	}
+	
+	/**
+	 * The cards would run out in testing so this was made
+	 * @return
+	 */
+	public Stack<Card> replenishCommunityChestCards(){
+		ArrayList<Card> unShuffled = cards.getCommunityChestCards();
+		chanceCards = shuffle(unShuffled);
+		return chanceCards;
 	}
 	
 	
@@ -46,8 +72,4 @@ public class Deck implements Serializable{
 		return stack;
 	}
 	
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
-		in.defaultReadObject();
-		
-	}
 }

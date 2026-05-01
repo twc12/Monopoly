@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
 import Monopoly.Model;
+import Monopoly.Controller.JAIL_CHOICE;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
@@ -262,6 +263,83 @@ class MonopolyTests {
 	    assertTrue(player.getGameOver());
 	    assertEquals(-4, player.getCashAmmt());
 
+	}
+	
+	@Test
+	void testAlex() {
+		Controller controller = new Controller();
+	    Model model = controller.model;
+	    GameSettings customSettings = new GameSettings();
+	    customSettings.setAmountOfPlayers(2);
+	    customSettings.setAmountOfAIPlayers(0);
+	    customSettings.setFreeParkingRule(true);
+	    model.setGameSettingsObj(customSettings);
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    model.setCurrentPlayerToNext();
+	    model.setCurrentPlayerToNext();
+	    model.setCurrentPlayerToNext();
+	    
+	    model.addToFreeParkingFunds(100);
+	    
+	    model.getSpaces();
+
+	    model.notifyViewOfNextPlayersTurn(player);
+	    
+	    model.notifyViewCardDrawn(player, null);
+	    
+	    model.notifyViewOfAiAction(null);
+	    
+	    model.getLastDiceRollAmmt();
+	    
+	    model.getAmmtOfJailAttempts(player);
+	    
+	    model.getThemes();
+	    
+	    model.putPlayerInJail(player);
+	    
+	    assertEquals(model.getGameFinished(), false);
+	    
+	    model.setGameFinished(model.getGameFinished());
+	    
+	    model.makeJailCard();
+	    
+	    model.getGoToJail().apply(player, model);
+	    
+	    model.board.getTotalSpaces();
+	    
+	    model.board.getBoardWidth();
+	    
+	    controller.processJailLogic(player, JAIL_CHOICE.PAY_FIFTY);
+	    for (int i=0; i<100; i++)
+	    	controller.processJailLogic(player, JAIL_CHOICE.ROLL_DUBLES); // gaurenty they roll doubles
+	    controller.processJailLogic(player, JAIL_CHOICE.OUT_OF_JAIL_CARD);
+	    
+	    controller.processEndTurn();
+	    controller.processEndTurn();controller.processEndTurn();
+	    controller.getCurrentPlayer().getGameOver();
+	    controller.getCurrentPlayer().bankruptcy(3000);
+	    controller.processEndTurn();controller.processEndTurn();
+	    
+	    model.getCommunityChestCards();
+	    
+	    controller.resolveCard(model.getChanceCards().pop(), player);
+	    controller.getModel();
+	    controller.getTotalSpaces();
+	    
+	    controller.getBoardWidth();
+	    controller.getFirstSpace();
+	    
+	    controller.getThemeString();
+
+	    GameSettings customSettings2 = new GameSettings();
+	    customSettings2.setTradingEnabled(false);
+	    controller.initializeGameSettings(customSettings2);
+	    
+	    controller.executeTrade(player, player, baltic, null, 0, 0);
+	    
 	}
 
 	

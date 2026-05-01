@@ -23,7 +23,9 @@ public class TaxSpace extends CostSpace{
 	}
 
 	/**
-	 * 
+	 * Calculates the amount to charge the player who landed on it for this tax
+	 * space
+	 * @return the amount to charge the player
 	 */
 	public int getCostToCharge(Player player, int diceRoll) {
 		// Check for if it's a Luxury tax space

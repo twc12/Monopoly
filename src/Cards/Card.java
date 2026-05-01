@@ -46,6 +46,9 @@ public class Card implements Serializable{
 		return description;
 	}
 	
+	/**
+	 * @return path to the image file
+	 */
 	public String getImage() {
 		return imageFile;
 	}

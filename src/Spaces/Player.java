@@ -222,12 +222,10 @@ public class Player implements Serializable{
     	//checking if gameover
     	if (ammtOwed > ammtPayed) {
     		this.gameOver = true;
-    		System.out.println("GAME OVER");
-    		// model.removeplayerfromturncycle
     	}
     	
     	//notify view w/ bankruptcy report
-    	model.notifyViewBankruptcy(this, ammtPayed, buildingsSoldCount, propertiesSold, this.gameOver);
+    	model.notifyViewBankruptcy(this, ammtOwed, buildingsSoldCount, propertiesSold, this.gameOver);
     }
     
     /**

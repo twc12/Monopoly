@@ -1,4 +1,4 @@
-package Monopoly;
+package Messages;
 
 import java.util.List;
 
@@ -7,25 +7,26 @@ import Spaces.Property;
 
 public class BankruptcyMessage {
 
-	private int ammtPayed;
+	private int ammtOwed;
 	private int buildingsSoldCount;
 	private List<Property> propertiesSold;
 	private Player player;
 	private boolean gameOver;
 	
-	public BankruptcyMessage(Player player, int ammtPayed, int buildingsSoldCount, List<Property> propertiesSold, boolean gameOver) {
-		this.ammtPayed = ammtPayed;
+	public BankruptcyMessage(Player player, int ammtOwed, int buildingsSoldCount, List<Property> propertiesSold, boolean gameOver) {
+		this.ammtOwed = ammtOwed;
 		this.buildingsSoldCount = buildingsSoldCount;
 		this.propertiesSold = propertiesSold;
 		this.gameOver = gameOver;
+		this.player = player;
 	}
-	
+
 	/**
 	 * GETTER: Gets the amount of money the player pays to get out of bankrupcy
 	 * @return an integer representing the amount of money needed to pay
 	 */
-	public int getAmmtPayed() {
-		return ammtPayed;
+	public int getAmmtOwed() {
+		return ammtOwed;
 	}
 	
 	/**
@@ -48,8 +49,12 @@ public class BankruptcyMessage {
 	 * GETTER: Gets the status of this player's game, if the game is over or not
 	 * @return a boolean representing the game state for this current player
 	 */
-	public boolean gameGameOver() {
+	public boolean getGameOver() {
 		return gameOver;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 	
 	

@@ -721,7 +721,7 @@ public class View extends Application implements Observer {
 		if (theme.equals("tucsonTheme")) {
 			uiColor = Color.rgb(60, 25, 30);
 			uiColorString = "rgb(60, 25, 30)";
-			this.textThemeColor = "-fx-text-fill: gold;";
+			this.textThemeColor = "-fx-text-fill: maroon;";
 			boardColor = Color.BISQUE;
 			uiDividerColor = "rgb(212, 170, 82)";
 			generalFont = "Serif";
@@ -1205,7 +1205,7 @@ public class View extends Application implements Observer {
 
 		// CURR PLAYER LABEL
 		Label currPlayerLabel = new Label("Player " + controller.getCurrentPlayer().getId() + "'s Turn");
-		currPlayerLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;" + textThemeColor);
+		currPlayerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;" + textThemeColor);
 		this.currPlayerLabel = currPlayerLabel;
 
 		// PLAYER INFO LABEL for when there are errors

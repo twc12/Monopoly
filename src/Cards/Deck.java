@@ -16,9 +16,11 @@ public class Deck implements Serializable{
 	private CardBuilder cards;
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
+	private String theme;
 	
-	public Deck(){
-		cards = new CardBuilder("standard");
+	public Deck(String theme){
+		this.theme = theme;
+		cards = new CardBuilder(theme);
 		ArrayList<Card> unShuffled;
 		
 		// Shuffle Chance Cards

@@ -43,6 +43,7 @@ public class GameSettings implements Serializable{
 		switch(activeTheme) {
 			case STANDARD: return "standardTheme"; 
 			case PIRATE: return "pirateTheme";
+			case TUCSON: return "tucsonTheme";
 			default: return "standardTheme";	
 		}
 	}

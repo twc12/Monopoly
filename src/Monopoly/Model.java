@@ -122,7 +122,7 @@ public class Model extends Observable implements Serializable{
 		    }
 		}
 		
-		cardDeck = new Deck();
+		cardDeck = new Deck(theme);
 
 		// Create all the HUMAN players 
 		players = new ArrayList<>();

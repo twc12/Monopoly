@@ -8,7 +8,11 @@ public class Utility extends Property {
 		this.imageFile = imageFile;
 	}
 	
-	//will need to multiply this amount by the dice roll...
+
+	/**
+	 * Gets the amount to charge a player who lands on this utility
+	 * @return the amount to charge
+	 */
     public int getCostToCharge(Player player, int diceRoll) {
     	
     	// if not owned, or is mortgaged, return 0

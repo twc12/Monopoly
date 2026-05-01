@@ -18,6 +18,10 @@ public class Jail extends Space {
 		this.imageFile = imageFile;
 	}
 	
+	/**
+	 * Gets every player currently in jail
+	 * @return a SET container the PLAYER objects of all players in jail
+	 */
 	public Set<Player> getCurrentPlayersInJail(){
 		return currPlayersInJail;
 	}

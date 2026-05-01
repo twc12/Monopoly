@@ -24,28 +24,47 @@ public abstract class Space implements Serializable{
 		playersOnSpace = new HashSet<Player>();
 	}
 	
+	/**
+	 * @return A string, the name of this space
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * @return A set of each player on this space
+	 */
 	public Set<Player> getPlayersOnSpace(){
 		return playersOnSpace;
 	}
 	
+	/**
+	 * sets the space after this current space
+	 * @param newSpace the space after
+	 */
 	public void setNextSpace(Space newSpace) {
 		nextSpace = newSpace;
 	}
 	
+	/**
+	 * @return the sequential next space from this one
+	 */
 	public Space getNextSpace() {
 		return nextSpace;
 	}
 	
+	/**
+	 * @return boolean, if hte space has an image or not
+	 */
 	public boolean hasImage() {
 		if(!imageFile.equals(""))
 			return true;
 		return false;
 	}
 	
+	/**
+	 * @return a string, the path of the image file
+	 */
 	public String getImageFile() {
 		return imageFile;
 	}

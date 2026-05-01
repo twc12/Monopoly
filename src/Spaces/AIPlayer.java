@@ -24,6 +24,11 @@ public class AIPlayer extends Player {
 
     private static final HashMap<RealEstate.Color, Integer> SET_SIZES = new HashMap<>();
     
+    /**
+     * A simple field to hold the proper amount of cards for each color set of
+     * properties, since some colors have different amounts of properties associated
+     * we set this up for easy access
+     */
     static {
         SET_SIZES.put(RealEstate.Color.BROWN, 2);
         SET_SIZES.put(RealEstate.Color.BLUE, 2);

@@ -30,6 +30,9 @@ public class Deck implements Serializable{
 		communityChestCards = shuffle(unShuffled);
 	}
 	
+	/**
+	 * @return Stack of card objects for the chance cards
+	 */
 	public Stack<Card> getChanceCards(){
 		if (chanceCards.isEmpty()) {
 			return replenishChanceCards();
@@ -47,6 +50,9 @@ public class Deck implements Serializable{
 		return chanceCards;
 	}
 	
+	/**
+	 * @return Stack of card objects for the community chest cards
+	 */
 	public Stack<Card> getCommunityChestCards(){
 		if (communityChestCards.isEmpty()) {
 			return replenishCommunityChestCards();
@@ -63,8 +69,6 @@ public class Deck implements Serializable{
 		chanceCards = shuffle(unShuffled);
 		return chanceCards;
 	}
-	
-	
 	private Stack<Card> shuffle(ArrayList<Card> unShuffled) {
 		Stack<Card> stack = new Stack<>();
 		Collections.shuffle(unShuffled);

@@ -52,14 +52,26 @@ public class RealEstate extends Property {
 		
 	}
 
+	/**
+	 * The color representing the group this property is part of
+	 * @return the color of the property
+	 */
 	public Color getColor() {
 		return color;
 	}
 	
+	/**
+	 * Sets new color for property
+	 * @param color Color object, that will be the new color
+	 */
 	public void setColor(Color color) {
 		this.color = color;
 	}
 	
+	/**
+	 * Gets the cost to build on this space
+	 * @return A number representing the cost
+	 */
 	public int getBuildPrice() {
 		return buildPrice;
 	}
@@ -90,10 +102,18 @@ public class RealEstate extends Property {
         
     }
 
+	/**
+	 * The current building stage of this property
+	 * @return the stage number
+	 */
     public int getBuildingStage() {
     	return buildingStage;
     }
     
+	/**
+	 * Checks if building is allowed on this property
+	 * @return true if so, false otherwise
+	 */
     public boolean getIfCanBuild() {
     	return canBuild;
     }

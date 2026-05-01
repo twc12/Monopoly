@@ -43,7 +43,7 @@ public class CardBuilder implements Serializable{
 	private void buildDescription(){
 		
 		// Standard Theme
-		if (theme.equals("standard") || theme.equals("tucsonTheme")) {
+		if (theme.equals("standardTheme") || theme.equals("tucsonTheme")) {
 			// Chance
 			cardDescription.add("Bank Pays You $50");
 			cardDescription.add("Your Building Loan Matures, Collect $150");

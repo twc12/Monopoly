@@ -997,8 +997,14 @@ public class View extends Application implements Observer {
 			}
 		});
 		root.getChildren().add(saveButtonStackPane);
-		saveButtonStackPane.setTranslateX(200);
-		saveButtonStackPane.setTranslateY(180);
+		if (theme.equals("tucsonTheme")){
+			saveButtonStackPane.setTranslateX(0);
+			saveButtonStackPane.setTranslateY(190);
+		}
+		else {
+			saveButtonStackPane.setTranslateX(200);
+			saveButtonStackPane.setTranslateY(190);
+		}
 
 		StackPane tradeViewStackPane = new StackPane();
 		this.tradeViewStackPane = tradeViewStackPane;

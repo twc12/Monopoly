@@ -297,20 +297,6 @@ public class Model extends Observable implements Serializable{
 	    this.clearChanged();
 	}
 
-	/**
-	 * Notifies the view that a player has landed on the "go to jail" space
-	 * @param player (Player): The player going to jail
-	 */
-	public void notifyViewOfPlayerGoingToJail(Player player) {
-		GoToJailMessage jailMsg = new GoToJailMessage(player);
-		this.setChanged();
-		this.notifyObservers(jailMsg);
-		this.clearChanged();	
-	}
-
-	public void notifyViewOfPlayerTryingToGetOutOfJail(Player player) {
-
-	}
 
 	/**
 	 * Generic notify view method for displaying string message to the view (ex: "Player X charged rent!")
@@ -387,8 +373,6 @@ public class Model extends Observable implements Serializable{
     	// Move the player to the jail space
 		Jail jailSpace = board.getJailSpace();
 		jailSpace.addPlayerToJail(player); // adds the player to the jail mapping of attempts to get out 
-		
-    	notifyViewOfPlayerGoingToJail(player);
 		
 	}
 	

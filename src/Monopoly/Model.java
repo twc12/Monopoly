@@ -355,8 +355,6 @@ public class Model extends Observable implements Serializable{
 		this.notifyObservers(bankruptcyMessage);
 		this.clearChanged();	
 	}
-<<<<<<< HEAD
-=======
 	
 	public void notifyViewGameWinner(Player player) {
 		GameOverMessage gameOverMessage = new GameOverMessage(player);
@@ -364,7 +362,6 @@ public class Model extends Observable implements Serializable{
 		this.notifyObservers(gameOverMessage);
 		this.clearChanged();	
 	}
->>>>>>> main
 
 	/**
 	 * Sets the amount moved during the last dice roll for hte PREVIOUS dice roll

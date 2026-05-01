@@ -198,21 +198,6 @@ public class Controller {
 	 * in the list of players.
 	 */
 	public void processEndTurn() {
-<<<<<<< HEAD
-		Player originalPlayer = model.getCurrentPlayer();	
-		model.setCurrentPlayerToNext();		
-
-		// after reference to new player, check if they already lost, if so, call processendturn again
-		if (getCurrentPlayer().getGameOver() == true) {	
-			
-			//checked if we've looped through all players, if so, do something? 
-			if (getCurrentPlayer() == originalPlayer) {
-				model.setGameFinished(true);
-				//model.notifyWinner()		
-			}
-			processEndTurn();
-		}
-=======
 		
 		Player originalPlayer = getCurrentPlayer();
 		
@@ -233,7 +218,6 @@ public class Controller {
 	            return;
 	        }
 	    }
->>>>>>> main
 	}
 
 	/**

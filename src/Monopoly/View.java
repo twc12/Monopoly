@@ -18,10 +18,7 @@ import Messages.AiLogsEnabledMessage;
 import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
-<<<<<<< HEAD
-=======
 import Messages.GameOverMessage;
->>>>>>> main
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;

@@ -773,15 +773,15 @@ public class View extends Application implements Observer {
 		Image bottomFrameImage = new Image("/" + theme + "/uiBottom.png");
 		ImageView bottomFrameImageView = new ImageView(bottomFrameImage);
 	    bottomFrameImageView.setPreserveRatio(false);
-	    bottomFrameImageView.setFitHeight(500);
+	    bottomFrameImageView.setFitHeight(600);
 	    bottomFrameImageView.setFitWidth(1200);
-	    bottomFrameImageView.setTranslateY(470);
+	    bottomFrameImageView.setTranslateY(460);
 	    bottomFrameImageView.setTranslateX(-75);
 	    bottomFrameImageView.setMouseTransparent(true);
 	    bottomFrameImageView.setManaged(false);
 	    if(theme.equals("pirateTheme")) {
 	    	bottomFrameImageView.setFitWidth(1235);
-	    	bottomFrameImageView.setTranslateY(475);
+	    	bottomFrameImageView.setTranslateY(465);
 	    	bottomFrameImageView.setTranslateX(-100);
 	    }
 	    

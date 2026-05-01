@@ -42,6 +42,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -555,6 +556,11 @@ public class View extends Application implements Observer {
 			Scene gameScene = createMainGame();
 			stage.setScene(gameScene);
 			stage.setResizable(false);
+			
+			// if the first player is an ai, send message to model, to send back to us to start ai player
+			if (controller.getCurrentPlayer() instanceof AIPlayer) {
+				controller.model.notifyViewOfNextPlayersTurn(controller.getCurrentPlayer());
+			}
 		});
 		
 		// Create a load button that will prompt the user to select a save file that ends in .monopoly
@@ -1482,7 +1488,10 @@ public class View extends Application implements Observer {
 		Label rollDiceLabel = new Label("Roll Dice");
 		StackPane rollDiceStackPane = new StackPane();
 		rollDiceStackPane.getChildren().addAll(rollDiceButtonRect,rollDiceLabel);
-		rollDiceStackPane.setOnMouseClicked(event -> handleDiceRoll());
+		rollDiceStackPane.setOnMouseClicked(event -> {
+			rollDiceStackPane.setDisable(true);
+			handleDiceRoll();
+		});
 		this.rollDiceButton = rollDiceStackPane; // used for disabling the button later
 		
 		
@@ -1766,21 +1775,8 @@ public class View extends Application implements Observer {
 		}
 		
 		// if the player is done rolling dice then dont allow them to roll dice
-		if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-			// disable the roll dice button because they finished rolling
-			rollDiceButton.setDisable(true);
-			Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
-			if(curSpace instanceof Property) {
-				if (((Property) curSpace).getOwner() == null) {
-					endTurnButton.setDisable(true);
-				}
-				else 
-					endTurnButton.setDisable(false);
-			}
-			else 
-				endTurnButton.setDisable(false);
-		} else { //must have rolled doubles
-			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
+		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
+			 infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn. 
 		}
 		
 		populatePlayerCardWithNewInfo(currentPlayer);  //refresh player card after dice-roll phase resolves
@@ -2269,8 +2265,50 @@ public class View extends Application implements Observer {
 				
 				whichStackPanesPlayersAreOn.put(player, nextSpacePane);
 			});
-	
+			
+			moveTimeline.setOnFinished(e -> {
+				boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
+				System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is "+purchaseOverlayIsOn);
+				boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance || player.getCurrentSpace() instanceof CommunityChest; 
+				if (player.getIsDoneRollingDice() == false) {
+					// if there is currently a purchase prompt on the screen then done enable the roll dice button
+					if (! cardPromptIsBeingShown) {
+						System.out.println("Log: rollDiceButton.setDisable(false) 2281");
+						rollDiceButton.setDisable(false);						
+					}
+				}
+				// if the player is done rolling then enable the end turn button
+				else if (! purchaseOverlayIsOn && ! cardPromptIsBeingShown){
+					System.out.println("Log: endTurnButton.setDisable(false); 2296");
+					endTurnButton.setDisable(false);
+				}
+				// if the player is done rolling dice then dont allow them to roll dice
+				else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+					// disable the roll dice button because they finished rolling
+					rollDiceButton.setDisable(true);
+					Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
+					if(curSpace instanceof Property) {
+						if (((Property) curSpace).getOwner() == null) {
+							endTurnButton.setDisable(true);
+						}
+						else {
+							System.out.println("Log: endTurnButton.setDisable(false) 2310");
+							endTurnButton.setDisable(false);
+						}
+					}
+					else {
+						// only if the player wasnt given a card prompt should you allow the end turn button to be pressed
+						if (! (curSpace instanceof Chance) && ! (curSpace instanceof CommunityChest)) {
+							System.out.println("Log: endTurnButton.setDisable(false) 2317");
+							endTurnButton.setDisable(false);
+							
+						}
+					}
+				}
+			});
+			
 			moveTimeline.getKeyFrames().add(frame);
+			
 		}
 		
 		moveTimeline.play();
@@ -2348,6 +2386,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 				rollDiceButton.setDisable(true);
+				System.out.println("Log: endTurnButton.setDisable(false) 2360");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(payCashStackPane);
@@ -2368,6 +2407,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back 
 				rollDiceButton.setDisable(true);
+				System.out.println("Log: endTurnButton.setDisable(false) 2381");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(useGOOJStackPane);
@@ -2406,18 +2446,17 @@ public class View extends Application implements Observer {
 					})
 				);
 				moveDelay.play();
+				System.out.println("player on" + movedMessage.getPlayer().getCurrentSpace().getName());
 		}
 		
 		// if the message is that its the next players turn, switch the bottom left player card to the new player
 		else if (message instanceof NextPlayerMessage) {
+			System.out.println("\n\n----NextPlayer----");
 			potentialTradeProperty = null; // there are no selected properties at this stage
 			tradeButton.setDisable(true);
 			buildButton.setDisable(true);
 			NextPlayerMessage nextPlayerMsg = (NextPlayerMessage) message;
 			populatePlayerCardWithNewInfo(nextPlayerMsg.getNextPlayer());
-			
-			// at the start of another player, clear the Ai logger of any potential messages
-//			aiLoggerVBox.getChildren();
 
 			currPlayerLabel.setText(("Player " + controller.getCurrentPlayer().getId() + "'s Turn")); 
 			
@@ -2430,6 +2469,7 @@ public class View extends Application implements Observer {
 				showOptionsForGettingOutOfJail(currentPlayer); // this will change the buttons in the bottom right 
 			}
 			else {
+				System.out.println("Log: rollDiceButton.setDisable(false) 2450");
 				rollDiceButton.setDisable(false);
 			}
 			
@@ -2437,7 +2477,7 @@ public class View extends Application implements Observer {
 				rollDiceButton.setDisable(true);
 
 				Timeline aiDelay = new Timeline(
-					new KeyFrame(Duration.seconds(2), e -> {
+					new KeyFrame(Duration.seconds(4), e -> {
 						((AIPlayer) currentPlayer).playAITurn(controller);
 					})
 				);
@@ -2486,7 +2526,7 @@ public class View extends Application implements Observer {
 //			newAiActionLabel.setStyle(aiLoggerLabelSetStyle); // make it have a specific theme for ai text
 //			aiLoggerVBox.getChildren().add(newAiActionLabel);		
 			Timeline delay = new Timeline(
-			        new KeyFrame(Duration.seconds(2), e -> {
+			        new KeyFrame(Duration.seconds(6), e -> {
 			            Label newAiActionLabel = new Label(aiActionMsg.getAiAction());
 			            newAiActionLabel.setStyle(aiLoggerLabelSetStyle);
 			            aiLoggerVBox.getChildren().add(newAiActionLabel);
@@ -2516,6 +2556,7 @@ public class View extends Application implements Observer {
 		
 		//generic string can be used to update player info label in the center
 		else if (message instanceof String) {
+			System.out.println("Log: view::update::String message received of: "+(String)message);
 	        String sentence = (String) message;
 	        infoToTellPlayer.setText(sentence);
 	    }
@@ -2618,40 +2659,80 @@ public class View extends Application implements Observer {
 			    getClass().getResource("/"+theme+"/cardSound.mp3").toExternalForm()
 			);
 
-			sound.play();
+		// Special sounds for the Go To Jail Space 
+		AudioClip jailSound = new AudioClip(
+				getClass().getResource("/"+theme+"/goToJail.mp3").toExternalForm()
+			);
+		if	(controller.getCurrentPlayer().getCurrentSpace() instanceof GoToJailSpace) {
+			cardTitle.setText("Go To Jail!");
+			jailSound.play();
+		}
 		
-		if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) 
-			cardTitle.setText("Chance");		
-		else 
+		else if (controller.getCurrentPlayer().getCurrentSpace() instanceof Chance) {
+			cardTitle.setText("Chance");	
+			sound.play();
+		}
+		else {
 			cardTitle.setText("Community Chest");
+			sound.play();
+		}
 		System.out.println("Logs: showcard attempting to load image: "+"/"+theme + "/" +card.getImage());
 		cardImage = new Image("/"+theme + "/" +card.getImage());
 		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());
 		cardOverlay.setVisible(true);
 		
+		Space currentSpace = controller.getCurrentPlayer().getCurrentSpace();
+		
+		// determine if we should disable the roll dice and enable the end turn 
 	    if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 			// disable the roll dice button because they finished rolling
 			rollDiceButton.setDisable(true);
-			endTurnButton.setDisable(false);
+			// if the current space isnt a card popup space then dont enable the end turn yet 
+			if (! (currentSpace instanceof Chance) && ! (currentSpace instanceof CommunityChest)) {
+				System.out.println("Log: endTurnButton.setDisable(false) 2658");
+				endTurnButton.setDisable(false);
+			}
 	    }
 
 	    cardOverlay.setOnMouseClicked(e -> {
 	        cardOverlay.setVisible(false);
 	        cardOverlay.setOnMouseClicked(null);
+	        
+	        Space currentPlayersSpace = controller.getCurrentPlayer().getCurrentSpace();
+	        
 	        controller.resolveCard(card, controller.getCurrentPlayer());
 	        populatePlayerCardWithNewInfo(controller.getCurrentPlayer()); // incase they get a get out of jail free card
 			if (controller.getCurrentPlayer().isInJail()) {
+				System.out.println("Log: rollDiceButton.setDisable(true) 2699");
 				rollDiceButton.setDisable(true);
+				System.out.println("Log: endTurnButton.setDisable(false) 2701");
 				endTurnButton.setDisable(false);
 			}
+			// if the player is on a property that is already owned then show the end turn button
+			Space possibleNewPlayersSpace = controller.getCurrentPlayer().getCurrentSpace();
+			if (possibleNewPlayersSpace instanceof Property) {
+				Property possibleNewPlayersProperty = (Property) possibleNewPlayersSpace;
+				if (possibleNewPlayersProperty.getOwner() != null) {
+					System.out.println("Log: endTurnButton.setDisable(false) 2709");
+					endTurnButton.setDisable(false);
+				}
+			}
+			
+			// if the player wasnt moved from the chance/community chest card, then enable the end turn button
+			if (currentPlayersSpace == possibleNewPlayersSpace) {
+				System.out.println("Log: endTurnButton.setDisable(false) 2716");
+				endTurnButton.setDisable(false);
+			}
+			
 	        e.consume();
 	    });
 	}
 
 	//purchaseprompt hbox with property infocard on left, buttons on right
 	public void showPurchasePrompt(Player player, Property property) {
-		
+		rollDiceButton.setDisable(true);
+		System.out.println("Log: rollDiceButton.setDisable(true) 2731");
 	    this.purchaseOverlay.getChildren().clear();//clear old version
 	    
 	    //copying style from cardprompt
@@ -2697,11 +2778,20 @@ public class View extends Application implements Observer {
 			buyButton.setFill(Color.TRANSPARENT);
 		} else {
 			buyStackPane.setOnMouseClicked(e -> { //On click, buy property, update playerinfo, hide overlay
-	        controller.purchaseProperty(player, property);
-	        populatePlayerCardWithNewInfo(player);
-	        this.purchaseOverlay.setVisible(false);
-	        endTurnButton.setDisable(false);
-
+		        controller.purchaseProperty(player, property);
+		        populatePlayerCardWithNewInfo(player);
+		        this.purchaseOverlay.setVisible(false);
+		        // only if the player is done, allow the end turn button
+		        if (player.getIsDoneRollingDice() == true) {
+			        System.out.println("Log: endTurnButton.setDisable(false) 2727");
+			        endTurnButton.setDisable(false);
+		        }
+		        // if the player rolled doubles then allow another roll dice
+		        else {
+		        	System.out.println("Log: rollDiceButton.setDisable(false); 2754");
+			        rollDiceButton.setDisable(false);
+		        }
+		        
 			});
 		}
 	    	    
@@ -2724,6 +2814,7 @@ public class View extends Application implements Observer {
 		skipStackPane.setOnMouseClicked(event -> { //On click, buy property, update playerinfo, hide overlay
 	    	this.purchaseOverlay.setVisible(false);
 	    	this.infoToTellPlayer.setText("Passed on purchasing!");
+	    	System.out.println("Log: endTurnButton.setDisable(false) 2752");
 	    	endTurnButton.setDisable(false);
 		});
 

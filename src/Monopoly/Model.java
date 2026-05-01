@@ -10,6 +10,7 @@ import java.util.Stack;
 import Spaces.AIPlayer;
 import Spaces.GoSpace;
 import Cards.Card;
+import Cards.CardEffect;
 import Cards.Deck;
 import Messages.AiActionMessage;
 import Messages.AiLogsEnabledMessage;
@@ -51,6 +52,7 @@ public class Model extends Observable implements Serializable{
 	
 	private Stack<Card> chanceCards;
 	private Stack<Card> communityChestCards;
+	private Card jailCard;
 	
 	private int lastDiceRollAmmt;
 
@@ -74,7 +76,7 @@ public class Model extends Observable implements Serializable{
 		if (viewClassObj != null) {
 			this.addObserver(viewClassObj);
 		}
-		
+		makeJailCard();
 		// THE POST INIT WILL BE CALLED ONCE GAME SETTINGS ARE RECIVED
 	}
 	
@@ -398,5 +400,21 @@ public class Model extends Observable implements Serializable{
 	public void setGameFinished(boolean val) {
 		this.gameFinished = val;
 	}
-
+	/**
+	 * For moving player to jail, using a Card to display and delay
+	 * the view to fix a bug. 
+	 */
+	public void makeJailCard() {
+		CardEffect r = (CardEffect & Serializable)(player, model) -> {
+			player.putInJail();
+		};
+			jailCard = new Card("Go Directly\nTo Jail Do Not Pass Go\nDo Not Collect $200","chanceCard4.png" , r);
+	}
+	
+	/**
+	 * 
+	 */
+	public Card getGoToJail() {
+		return jailCard;
+	}
 }

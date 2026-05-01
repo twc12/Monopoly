@@ -1,5 +1,6 @@
 package Spaces;
 
+import Cards.Card;
 import Monopoly.Model;
 
 public class GoToJailSpace extends Space {
@@ -19,7 +20,8 @@ public class GoToJailSpace extends Space {
 	
 	@Override
 	protected void processSpace(Player player, Model model) {
-		player.putInJail();
+		Card card = model.getGoToJail();
+		if (!player.isAI()) model.notifyViewCardDrawn(player, card);
 	}
 	
 

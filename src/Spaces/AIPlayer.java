@@ -153,6 +153,7 @@ public class AIPlayer extends Player {
      * @param controller the game controller
      */
     public void playAITurn(Controller controller) {
+    	
         weakestPlayer = determineWeakest();
 
         if (this.isInJail()) {

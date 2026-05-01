@@ -263,7 +263,7 @@ public class Player implements Serializable{
     public void putInJail() {
     	int ammtMoved = 0;
     	currentSpace.getPlayersOnSpace().remove(this);
-    	while (!(currentSpace instanceof Jail)) {
+    	while (!(currentSpace instanceof Jail) && currentSpace.getName() != "Jail") {
     		ammtMoved++;
     		currentSpace = currentSpace.getNextSpace();
     	}

@@ -16,7 +16,6 @@ import Messages.AiActionMessage;
 import Messages.AiLogsEnabledMessage;
 import Messages.CardDrawnMessage;
 import Messages.DiceRollResultMessage;
-import Messages.GoToJailMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;

@@ -2,6 +2,7 @@ package MonopolyTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -339,6 +340,13 @@ class MonopolyTests {
 	    controller.initializeGameSettings(customSettings2);
 	    
 	    controller.executeTrade(player, player, baltic, null, 0, 0);
+	    
+	    File mf = new File("MonopolyThemePicker.png");
+	    Controller myC = new Controller(null, mf);
+	    
+	    Controller mfC = new Controller(null);
+	    
+	    
 	    
 	}
 

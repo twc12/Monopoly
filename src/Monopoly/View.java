@@ -258,7 +258,8 @@ public class View extends Application implements Observer {
 	private String uiColorString = "rgb(70, 70, 70)";
 	private Color boardColor;
 	private String uiDividerColor;
-
+	private String cardOverlayColor;
+	
 	/*
 	 * These are used for displaying a card when the player lands on a chance card
 	 */
@@ -709,22 +710,25 @@ public class View extends Application implements Observer {
 			boardColor = Color.BISQUE;
 			uiDividerColor = "white";
 			generalFont = "Arial Black";
+			cardOverlayColor = "white";
 		}
 		if (theme.equals("pirateTheme")) {
 			uiColor = Color.rgb(70, 70, 70);
 			uiColorString = "rgb(70,70,70)";
 			this.textThemeColor = "-fx-text-fill: gold;";
-			boardColor = Color.BISQUE;
+			boardColor = Color.rgb(242, 232, 181, .7);
 			uiDividerColor = "rgb(140, 99, 52)";
 			generalFont = "Serif";
+			cardOverlayColor = "rgb(242, 232, 181)";
 		}
 		if (theme.equals("tucsonTheme")) {
 			uiColor = Color.rgb(60, 25, 30);
 			uiColorString = "rgb(60, 25, 30)";
 			this.textThemeColor = "-fx-text-fill: maroon;";
-			boardColor = Color.BISQUE;
+			boardColor = Color.rgb(242, 232, 181, .6);
 			uiDividerColor = "rgb(212, 170, 82)";
 			generalFont = "Serif";
+			cardOverlayColor = "rgb(242, 232, 181)";
 		}
 
 		whichStackPanesPlayersAreOn = new HashMap<Player, StackPane>();
@@ -2766,7 +2770,7 @@ public class View extends Application implements Observer {
 		cardBox.setMaxHeight(height);
 
 		// Change style here
-		cardBox.setStyle("-fx-background-color: white;" + "-fx-border-color: black;" + "-fx-border-width: 3;"
+		cardBox.setStyle("-fx-background-color: "+ cardOverlayColor + ";" + "-fx-border-color: black;" + "-fx-border-width: 3;"
 				+ "-fx-border-insets: 5;" + "-fx-padding: 20;");
 
 		// Title label
@@ -2802,7 +2806,7 @@ public class View extends Application implements Observer {
 	 */
 	public void showCard(Card card) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/cardSound.mp3").toExternalForm());
-
+		System.out.println(card.getImage());
 		// Special sounds for the Go To Jail Space
 		AudioClip jailSound = new AudioClip(getClass().getResource("/" + theme + "/goToJail.mp3").toExternalForm());
 		if (controller.getCurrentPlayer().getCurrentSpace() instanceof GoToJailSpace) {

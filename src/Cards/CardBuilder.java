@@ -43,7 +43,7 @@ public class CardBuilder implements Serializable{
 	private void buildDescription(){
 		
 		// Standard Theme
-		if (theme.equals("standardTheme") || theme.equals("tucsonTheme")) {
+		if (theme.equals("standardTheme")) {
 			// Chance
 			cardDescription.add("Bank Pays You $50");
 			cardDescription.add("Your Building Loan Matures, Collect $150");
@@ -86,46 +86,92 @@ public class CardBuilder implements Serializable{
 				
 			}
 		}
-		if(theme.equals("pirateTheme"))
-			cardDescription.add("Bank Pays You $50");
-			cardDescription.add("Your Building Loan Matures, Collect $150");
-			cardDescription.add("Speeding Fine, Pay $15");
-			cardDescription.add("Pay Poor Tax Of $15");
-			cardDescription.add("Go Directly\n To Jail\n Do Not Pass Go\nDo Not Collect $200");
+		if(theme.equals("pirateTheme")) {
+			// Chance cards
+			cardDescription.add("Ship's Bank Pays Ye $50");
+			cardDescription.add("Yer Ship Loan Matures, Collect $150");
+			cardDescription.add("Sailin' Too Fast, Pay $15");
+			cardDescription.add("Pay Poor Pirate Tax Of $15");
+			cardDescription.add("Go Directly\nTo Brig\nDo Not Pass Go\nDo Not Collect $200");
 			cardDescription.add("Advance To Go");
 			cardDescription.add("Advance To Railroad");
 			cardDescription.add("Advance To Utility");
-			cardDescription.add("Advance To Illinois Ave.");
-			cardDescription.add("Take A Walk On The\nBoard Walk\nAdvance To Board Walk");
-			cardDescription.add("Advance To St. Charles Place");
-			cardDescription.add("Take A Ride On The Reading");
-			cardDescription.add("You Have Been Elected\nChairman Of The Board\nPay Each Player $50");
-			cardDescription.add("Get Out Of Jail Free!\nThis Card Made Be Kept");
-			cardDescription.add("Go Forward 3 Spaces");
-			cardDescription.add("Make General Repairs on\nall your properties\nFor each house pay $25\nFor each hotel pay $100");
-			
+			cardDescription.add("Advance To Pirate Cove");
+			cardDescription.add("Take A Stroll On The\nPlank Walk\nAdvance To Plank Walk");
+			cardDescription.add("Advance To St. Charles Port");
+			cardDescription.add("Take A Ride On The Reading Ship");
+			cardDescription.add("Ye Have Been Elected\nCaptain Of The Crew\nPay Each Player $50");
+			cardDescription.add("Get Out Of Brig Free!\nThis Card May Be Kept");
+			cardDescription.add("Sail Forward 3 Spaces");
+			cardDescription.add("Make General Repairs on\nall yer properties\nFor each hut pay $25\nFor each inn pay $100");
+
 			// Community Chest
-			cardDescription.add("Life Insurance Matures\nCollect $100");
-			cardDescription.add("Bank Error In Your Favor\nCollect $200");
-			cardDescription.add("From Sale Of Stock, You get $45");
-			cardDescription.add("You Have Won\nSecond Prize\nIn A Beauty Contest\n Collect $10");
-			cardDescription.add("Get Out Of Jail\nFree!");
-			cardDescription.add("You Innherit $100");
-			cardDescription.add("Doctor's Fee\nPay $50");
+			cardDescription.add("Pirate Insurance Matures\nCollect $100");
+			cardDescription.add("Bank Error In Yer Favor\nCollect $200");
+			cardDescription.add("From Sale Of Treasure\nYe get $45");
+			cardDescription.add("Ye Have Won\nSecond Prize\nIn A Pirate Contest\n Collect $10");
+			cardDescription.add("Get Out Of Brig\nFree!");
+			cardDescription.add("Ye Inherit $100");
+			cardDescription.add("Ship Doctor's Fee\nPay $50");
 			cardDescription.add("Advance To Go");
-			cardDescription.add("Xmas Fund Matures\nCollect $100");
-			cardDescription.add("Recieve For Services $25");
-			cardDescription.add("Go Directly\nTo Jail Do Not Pass Go\nDo Not Collect $200");
-			cardDescription.add("Pay School Tax\nOf $150");
-			cardDescription.add("Income Tax Refund\nCollect $20");
-			cardDescription.add("You Are Assessed For\nStreet Repairs\n Pay $40 For Each House\n");
-			cardDescription.add("Grand Opera Opening\nCollect $50 from\nEvery Player");
-			cardDescription.add("Pay\nHospital\n$100");			
+			cardDescription.add("Treasure Fund Matures\nCollect $100");
+			cardDescription.add("Receive For Services $25");
+			cardDescription.add("Go Directly\nTo Brig Do Not Pass Go\nDo Not Collect $200");
+			cardDescription.add("Pay Dock Tax\nOf $150");
+			cardDescription.add("Booty Tax Refund\nCollect $20");
+			cardDescription.add("Ye Are Assessed For\nDock Repairs\nPay $40 For Each Dock\n");
+			cardDescription.add("Grand Tavern Opening\nCollect $50 from\nEvery Player");
+			cardDescription.add("Pay\nShip Healer\n$100");
+		
 			for(int i = 0; i < 16; i++) {
 				imageFilesChance.add("chanceCard0.png");
 				imageFilesChest.add("chestCard0.png");
 				
 			}
+		}
+		if(theme.equals("tucsonTheme")) {
+			// Chance cards
+			cardDescription.add("Bank Pays You $50");
+			cardDescription.add("Yer Ranch Loan Matures, Collect $150");
+			cardDescription.add("Speedin' Through Town\nPay $15");
+			cardDescription.add("Pay Poor Tax Of $15");
+			cardDescription.add("Go Directly\n To Jail\nDo Not Pass Go\nDo Not Collect $200");
+			cardDescription.add("Advance To Go");
+			cardDescription.add("Advance To Railroad");
+			cardDescription.add("Advance To Utility");
+			cardDescription.add("Advance To Illinois Territory");
+			cardDescription.add("Take A Walk Down The\nBoardwalk\nAdvance To Boardwalk");
+			cardDescription.add("Advance To St. Charles Place");
+			cardDescription.add("Take A Ride On The Reading Rail");
+			cardDescription.add("You Have Been Elected\nSheriff Of The Town\nPay Each Player $50");
+			cardDescription.add("Get Out Of Jail Free!\nThis Card May Be Kept");
+			cardDescription.add("Move Forward 3 Spaces");
+			cardDescription.add("Make General Repairs on\nall yer properties\nFor each house pay $25\nFor each hotel pay $100");
+
+			// Community Chest
+			cardDescription.add("Life Insurance Matures\nCollect $100");
+			cardDescription.add("Bank Error In Yer Favor\nCollect $200");
+			cardDescription.add("From Sale Of Cattle\nYou get $45");
+			cardDescription.add("You Have Won\nSecond Prize\nIn A Rodeo Contest\n Collect $10");
+			cardDescription.add("Get Out Of Jail\nFree!");
+			cardDescription.add("You Inherit $100");
+			cardDescription.add("Doctor's Fee\nPay $50");
+			cardDescription.add("Advance To Go");
+			cardDescription.add("Xmas Fund Matures\nCollect $100");
+			cardDescription.add("Receive For Work Done $25");
+			cardDescription.add("Go Directly\nTo Jail Do Not Pass Go\nDo Not Collect $200");
+			cardDescription.add("Pay School Tax\nOf $150");
+			cardDescription.add("Income Tax Refund\nCollect $20");
+			cardDescription.add("You Are Assessed For\nTown Repairs\n Pay $40 For Each House\n");
+			cardDescription.add("Grand Saloon Opening\nCollect $50 from\nEvery Player");
+			cardDescription.add("Pay\nHospital\n$100");
+		
+			for(int i = 0; i < 16; i++) {
+				imageFilesChance.add("chanceCard0.png");
+				imageFilesChest.add("chestCard0.png");
+				
+			}
+		}
 	}
 	
 	

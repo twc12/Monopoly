@@ -12,7 +12,7 @@ public class CommunityChest extends Space {
 
 	@Override
 	protected void processSpace(Player player, Model model) {
-		Card card = model.getChanceCards().pop();
+		Card card = model.getCommunityChestCards().pop();
 		if (!player.isAI()) model.notifyViewCardDrawn(player, card);		
 	}
 }

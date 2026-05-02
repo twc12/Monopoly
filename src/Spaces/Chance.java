@@ -13,6 +13,8 @@ public class Chance extends Space {
 	@Override
 	protected void processSpace(Player player, Model model) {
 		Card card = model.getChanceCards().pop();
+		if(model.getChanceCards().isEmpty())
+			model.regenerateDeck();
 		if (!player.isAI()) model.notifyViewCardDrawn(player, card);
 	}
 	

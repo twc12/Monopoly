@@ -173,6 +173,15 @@ public class Model extends Observable implements Serializable{
 		board.getFreeParking().addCashToFreeParkingReward(moneyToAdd);
 	}
 	
+	
+	
+	/**
+	 * re-makes the deck
+	 */
+	public void regenerateDeck() {
+		cardDeck = new Deck(theme);
+	}
+	
 	/**
 	 * Returns the game settings object
 	 * @return the game settings object

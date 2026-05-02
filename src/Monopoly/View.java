@@ -1614,6 +1614,10 @@ public class View extends Application implements Observer {
 		tradeButtonRect.setArcHeight(30);
 
 		Label tradeLabel = new Label("Trade");
+		// if trading is disabled, then switch the text to show disabled
+		if (controller.model.getGameSettings().getTradingEnabled() == false) {
+			tradeLabel.setText("Trading <Disabled>");
+		}
 		StackPane tradeButtonStackPane = new StackPane();
 		this.tradeButton = tradeButtonStackPane;
 		tradeButtonStackPane.getChildren().addAll(tradeButtonRect, tradeLabel);
@@ -1844,7 +1848,10 @@ public class View extends Application implements Observer {
 						if (currentTurnsPlayer.getIsDoneRollingDice() == true) {
 							potentialTradeProperty = thisSpacesProperty;
 							System.out.println("Setting potentialTradeProperty to " + thisSpacesProperty.getName());
-							tradeButton.setDisable(false); // enable the trade button
+							// if trading is enabled, then turn on the trade button
+							if (controller.model.getGameSettings().getTradingEnabled() == true) {
+								tradeButton.setDisable(false); // enable the trade button
+							}
 						}
 					}
 
@@ -1861,7 +1868,10 @@ public class View extends Application implements Observer {
 					if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 						potentialTradeProperty = (Property) visualPropertyInfoCard.getUserData();
 						System.out.println("Setting potentialTradeProperty to " + potentialTradeProperty.getName());
-						tradeButton.setDisable(false); // enable the trade button
+						// if trading is enabled, then turn on the trade button
+						if (controller.model.getGameSettings().getTradingEnabled() == true) {
+							tradeButton.setDisable(false); // enable the trade button
+						}
 					}
 				});
 			}

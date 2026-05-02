@@ -2,9 +2,25 @@ package Monopoly;
 
 import java.io.Serializable;
 
+/**
+ * GameSettings:
+ * This classes purpose is to hold the specific games settings
+ * for every instance of a monopoly game. It provides
+ * saving all the customizable fields of a monopoly game
+ * 
+ * Fields like amount of players, property price adjust, 
+ * optional buying, trading enabled, etc
+ * 
+ * @author Jake
+ * @author Jarrod
+ * @author Alex
+ */
 public class GameSettings implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * All these fields store the customizable fields of the game
+	 */
 	private int amountOfPlayers;
 	private int amountOfAIPlayers;
 	private int startingMoney;
@@ -122,7 +138,7 @@ public class GameSettings implements Serializable{
 	}
 	
 	/**
-	 * Grabs hte current starting money
+	 * Grabs the current starting money
 	 * @return the money players have at the start of the game
 	 */
 	public int getStartingMoney() {

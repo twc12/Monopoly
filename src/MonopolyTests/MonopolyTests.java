@@ -6,10 +6,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+
+import Messages.AiActionMessage;
+import Messages.DiceRollResultMessage;
+import Messages.NextPlayerMessage;
+import Messages.PlayerMovedMessage;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
+import Monopoly.GameSettings.Theme;
 import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
+import Spaces.GoToJailSpace;
+import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
@@ -278,6 +286,10 @@ class MonopolyTests {
 	    model.setCurrentPlayerToNext();
 	    model.setCurrentPlayerToNext();
 	    
+	    Jail jail = new Jail(null);
+	    jail.getCurrentPlayersInJail();
+	    jail.processSpace(player, model);
+	    
 	    model.addToFreeParkingFunds(100);
 	    
 	    model.getSpaces();
@@ -302,7 +314,7 @@ class MonopolyTests {
 	    
 	    model.makeJailCard();
 	    
-	    model.getGoToJail().apply(player, model);
+	    model.getGoToJailCard().apply(player, model);
 	    
 	    model.board.getTotalSpaces();
 	    
@@ -331,6 +343,19 @@ class MonopolyTests {
 	    controller.getThemeString();
 
 	    GameSettings customSettings2 = new GameSettings();
+	    customSettings2.setTheme(Theme.PIRATE);
+	    customSettings2.getActiveThemeString();
+	    customSettings2.setTheme(Theme.TUCSON);
+	    customSettings2.getActiveThemeString();
+	    customSettings2.setCustomGoValue(0);
+	    customSettings2.setOptionalBuying(false);
+	    customSettings2.setPropertyPriceAdjust(0);
+	    customSettings2.setStartingMoney(0);
+	    customSettings2.setStartingMoney(-1);
+	    customSettings2.setAmountOfAIPlayers(2);
+	    customSettings2.setAmountOfAIPlayers(2);
+	    customSettings2.setAmountOfPlayers(0);
+	    customSettings2.setAmountOfPlayers(0);
 	    customSettings2.setTradingEnabled(false);
 	    controller.initializeGameSettings(customSettings2);
 	    
@@ -341,11 +366,25 @@ class MonopolyTests {
 	    
 	    Controller mfC = new Controller(null);
 	    
+	    AiActionMessage newAiMsg = new AiActionMessage(null);
+	    newAiMsg.getAiAction();
 	    
+	    DiceRollResultMessage msg = new DiceRollResultMessage(1, 1);
+	    msg.getDice1Result();
+	    msg.getDice2Result();
+	    
+	    NextPlayerMessage asdf = new NextPlayerMessage(null);
+	    asdf.getNextPlayer();
+	    
+	    PlayerMovedMessage msg2 = new PlayerMovedMessage(null, 2);
+	    msg2.getPlayer();
+	    assertEquals(msg2.getAmmtMoved(), 2);
+	    
+	    GoToJailSpace goToJailSpace = new GoToJailSpace(null, null);
+	    goToJailSpace.getJailSpace();
+	    goToJailSpace.processSpace(player, model);
 	    
 	}
-
-	
 	
 	
 

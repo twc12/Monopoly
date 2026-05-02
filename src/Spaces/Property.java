@@ -10,12 +10,12 @@ import Monopoly.Model;
 public abstract class Property extends CostSpace {
 	private int purchaseAmount;
 	private Player owner;
-//	private boolean isMortgaged = false;
 	protected ArrayList<Integer> rentStages;
-	protected int rentStageIndex = 0;
+	protected int rentStageIndex;
 	
 	public Property(String name, int purchaseAmount, int[] rentStages) {
 		super(name);
+		rentStageIndex = 0;
 		this.purchaseAmount = purchaseAmount;
 		
 		//converting the primitive arraylist to arraylist obj. using the primitive since its easier to copy/paste in builder for now
@@ -105,6 +105,15 @@ public abstract class Property extends CostSpace {
 	 */
 	public Player getOwner() {
 		return owner;
+	}
+	
+	/**
+	 * Getter: Returns the current index in 
+	 * the rent stages this property is at
+	 * @return int: the index in the rent stages
+	 */
+	public int getRentStageIndex() {
+		return rentStageIndex;
 	}
 	
 	/**

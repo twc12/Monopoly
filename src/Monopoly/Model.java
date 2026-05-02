@@ -105,7 +105,6 @@ public class Model extends Observable implements Serializable{
 		playerIconsToPickFrom.add("boat");    playerIconsToPickFrom.add("car");   playerIconsToPickFrom.add("cop"); playerIconsToPickFrom.add("dog"); playerIconsToPickFrom.add("evil");
 		playerIconsToPickFrom.add("thimble"); playerIconsToPickFrom.add("train"); playerIconsToPickFrom.add("wheeler");
 		
-		
 		//instantiate the board of spaces and apply gamesettings
 		board = new Board();
 		GoSpace goSpace = (GoSpace) board.firstSpace;

@@ -377,4 +377,213 @@ public class AIPlayer extends Player {
             getModel().notifyViewOfAiAction(getPlayerName() + " cannot afford \n" + property.getName());
         }
     }
+    
+    
+    /**
+     * calculateTrade(): This function will determine if 
+     * the Ai player should attempt a trade and who to trade with.
+     *   Overall goal
+	 * 		- If the ai player does not have 2 monopolies yet & has atleast $700 cash, attempt a trade
+	 * 		- Find all properties that I can attempt to trade with others to get monoploly 
+	 *		- Rank these properties from "CLOSE TO MONOPOLY" -> "Far from monopoly"
+	 * 		- Pick the list of properties that are CLOSES TO MONOPOLY
+	 * 		- Find the WEAKEST OWNER out of all of those properties 
+	 *		- If I have already attempted to trade for this property, then no matter the current owner, based on the prev owner cash ammount
+	 *		-   if they lost   money since then, then offer $50 less than my previous offer
+	 *		-   .. .... gained money ..... ..... .... ..... $50 more .... .. ........ .....
+     */
+    public void calculateTrade() {
+    	int aiBudgetForTrading = 700; // the amount the ai must have to trade
+    	
+    	System.out.println("[+] Starting a Ai Player Calculate Trade");
+    	boolean aiShouldDoTrade = aiShouldContinueWithTrade(aiBudgetForTrading);
+    	if (aiShouldDoTrade == false) return;
+    	
+    	// find all properties that are not monopolies for the ai player to trade
+    	List<Property> opprotuneProperties = getOpprotuneProperties();
+    	// if there arent any opprotune properties then cancle the trade
+    	if (opprotuneProperties.isEmpty()) {
+    		System.out.println("	[x] there is no opprotuneProperties, cancling trade");
+    		return;
+    	}
+    	
+    	// now search out for players who have matching colors of our opportune properties
+    	
+    }
+    
+    /// ----- vvvv ----- helper functions ----- vvvv -----
+    
+    /**
+     * playersICanTradeWith(): This function will go over each opportune property
+     * take its color, then try to find other players that have that same color of properties.
+     * This function searches for players I can trade with for a specific property that will
+     * help me out. 
+     * @return Map<Property, Player>: A map of properties that would help me, the player I can buy them from 
+     */
+    private Map<Property, Player> playersICanTradeWith(List<Property> opportuneProperties){
+    	Map<Property, Player> propertiesThatHelpMe = new HashMap<>();
+    	
+    	Set<RealEstate.Color> setOfAlreadyAddedColors = new HashSet<>();
+    	boolean alreadyAddedRailroad = false;
+    	// remember there could be duplicate colors in the opportuneProperties
+    	for (Property property : opportuneProperties) {
+    		// if I have a railroad and I havent searched for others, then search
+    		if (property instanceof Railroad && alreadyAddedRailroad == false) {
+    			List<Player> playersWhoHaveRailroads = getListOfPlayersWhoHaveRailroads(this.getModel());
+    		}
+    	}
+    	return null;
+    }
+    
+    /**
+     * getListOfPlayersWhoHaveRailroads(): This function finds the players who 
+     * 
+     * @param model (Model): The model of the entire game, so we can get the list
+     * 						of all other players
+     * 
+     * @return
+     */
+    private List<Player> getListOfPlayersWhoHaveRailroads(Model model){
+    	List<Player> listOfPlayersWhoHaveRailroads = new ArrayList<>();
+    	for (Player player : model.getPlayers()) {
+    		// make sure player isnt us 
+    		if (player == this) continue;
+    		
+    		// search for if this player has a railroad
+    		for (Property property : player.getListOfProperties()) {
+    			// if this player has a railroad, andd then and move onto next player
+    			if (property instanceof Railroad) {
+    				listOfPlayersWhoHaveRailroads.add(player);
+    				break;
+    			}
+    		}
+    	}
+    	return listOfPlayersWhoHaveRailroads;
+    }
+    
+    
+    
+    /**
+     * getOpprotuneProperties(): This function will go over every 
+     * property that the ai player has, checking if its not a utility, 
+     * and if its not already apart of a monopoly 
+     * This could return two pink properties for example
+     * 
+     * @return List<Property>: List of all properites (including duplicates) that
+     * 							are not apart of a monopoly
+     */
+    public List<Property> getOpprotuneProperties(){
+    	List<Property> opprotuneProperties = new ArrayList<>();
+    	for (Property property: this.getListOfProperties()) {
+    		if (property instanceof Utility) {
+    			continue; // UTILITIES SUUUUCK
+    		}
+    		else if (property instanceof Railroad) {
+    			if (property.getRentStageIndex() < 3) opprotuneProperties.add(property);
+    		}
+    		else if (property instanceof RealEstate) {
+    			if (property.getRentStageIndex() == 0) opprotuneProperties.add(property);
+    		}
+    	}
+    	return opprotuneProperties;
+    }
+    
+    /**
+     * aiShouldContinueWithTrade(): This function will do the 
+     * initial checks for if the AI player should continue the trade.
+     * it will return false if the player already has >=2 monopolies,
+     * or doesnt have any properties to attempt to build up 
+     * or doesnt have atleast the budget given.
+     * 
+     * @param aiBudgetForTrading (int): the amount the ai must have for trading
+     * 
+     * @return boolean: true if the ai should trade, false if not 
+     */
+    public boolean aiShouldContinueWithTrade(int aiBudgetForTrading) {
+    	int numOfCurrentMonopolies = calculateNumOfCurrentMonopolies();
+    	if (numOfCurrentMonopolies >= 2) {
+    		System.out.printf("		[x] Ai has %d num of monpolies, cancling trade\n",numOfCurrentMonopolies);
+    		return false;
+    	}
+    	
+    	// if the ai player has at least 1 property we can build then continue the trade
+    	boolean aiPlayerHasAtleast1Property = false;
+    	for (Property property: this.getListOfProperties()) {
+    		if (! (property instanceof Utility)) {
+    			aiPlayerHasAtleast1Property = true;
+    			break;
+    		}
+    	}
+    	if (aiPlayerHasAtleast1Property == false) {
+    		System.out.println("		[x] AI doesnt have atleast 1 property, cancling trade");
+    		return false;
+    	}
+    	
+    	// if the player doesnt have the budget to trade then it should cancle
+    	if (this.getCashAmmt() < aiBudgetForTrading) {
+    		System.out.println("		[x] AI doesnt have enough cash, cancling trade");
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    /**
+     * calculateNumOfCurrentMonopolies(): This function is called to 
+     * make sure the Ai does not already have a certain number of monopolies 
+     * before continuing the trade 
+     * @return int: the current number of monopolies the ai player has 
+     */
+    public int calculateNumOfCurrentMonopolies() {
+    	// Go over every property checking if its not already a color checked or at color stage or above
+    	int railRoadMonopoly = 0; //counts the number of rail roads 4=monopoly
+    	
+    	Map<RealEstate.Color, Integer> colorCounts = new HashMap<>();
+    	
+    	for (Property property : this.getListOfProperties()) {
+    		if (property instanceof Railroad) {
+    			railRoadMonopoly++;
+    		}
+    		else if (property instanceof Utility) {
+    			// WE DONT GIVE A CRAP BECAUSE UTILITIES SUUUUCK
+    			continue;
+    		}
+    		// count number of color properties 
+    		else if (property instanceof RealEstate) {
+    			RealEstate realEstate = (RealEstate) property;
+    			RealEstate.Color estateColor = realEstate.getColor();
+    			if (! colorCounts.containsKey(estateColor)) {
+    				colorCounts.put(estateColor, 0);
+    			}
+    			colorCounts.put(estateColor, colorCounts.get(estateColor) +1);
+    		}
+    	}
+    	
+    	int monopolyCount = 0;
+    	if (railRoadMonopoly == 4) monopolyCount ++;
+    	// go over all the colors, if there is a 3 (or 2 if blue or brown) then count as monopoly
+    	for (RealEstate.Color estateColor: colorCounts.keySet()) {
+    		// Blues have monopolies of 2 
+    		if (estateColor.equals(RealEstate.Color.BLUE) || estateColor.equals(RealEstate.Color.BROWN)) {
+    			if (colorCounts.get(estateColor) == 2) monopolyCount++;
+    		}
+    		else {
+    			if (colorCounts.get(estateColor) == 3) monopolyCount++;
+    		}
+    	}
+    	
+    	return monopolyCount;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

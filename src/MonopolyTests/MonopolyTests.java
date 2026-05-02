@@ -10,6 +10,9 @@ import Monopoly.Controller;
 import Monopoly.GameSettings;
 import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
+import Spaces.AIPlayer;
+import Spaces.GoToJailSpace;
+import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
@@ -346,6 +349,39 @@ class MonopolyTests {
 	}
 
 	
+	
+	@Test
+	void aiTradeTests() {
+		Controller controller = new Controller();
+		GameSettings customSettings = new GameSettings();
+		customSettings.setAmountOfPlayers(0);
+	    customSettings.setAmountOfAIPlayers(2);
+		controller.initializeGameSettings(customSettings);
+	    Model model = controller.model;
+	    
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    player.addProperty(baltic); player.addProperty(mediterranean);
+	    player.addProperty((Property)spaces.get(6)); player.addProperty((Property)spaces.get(8)); player.addProperty((Property)spaces.get(9));
+	    
+	    if (player instanceof AIPlayer) {
+	    	AIPlayer aiPlayer = (AIPlayer) player;
+	    	assertEquals(2,aiPlayer.calculateNumOfCurrentMonopolies());
+	    	assertEquals(false, aiPlayer.aiShouldContinueWithTrade(700));
+	    	assertTrue(aiPlayer.getOpprotuneProperties().isEmpty()); // player only has monopolies
+	    	
+	    	aiPlayer.addProperty((Property) spaces.get(18));
+	    	assertTrue(!aiPlayer.getOpprotuneProperties().isEmpty());
+	    	assertEquals(aiPlayer.getOpprotuneProperties().get(0), spaces.get(18));
+	    	
+	    	
+	    }
+	    else {
+	    	fail();
+	    }
+	}
 	
 	
 

@@ -56,13 +56,13 @@ public class Controller {
 			myModel.deleteObservers();
 			myModel.addObserver(viewClassObj);
 			model = myModel;
-			System.out.println("Log: Hopefullly the model is loaded now");
+			System.out.println("[+]  Hopefullly the model is loaded now");
 			objInputStream.close();
 			if (model.getGameSettings().getAmountOfAIPlayers()> 0) {
 				model.notifyViewAILogsEnabled();
 			}
 		} catch (Exception e){
-			System.out.println("Log: File not found/io exception when loading model from file. Will create default game");
+			System.out.println("[+]  File not found/io exception when loading model from file. Will create default game");
 			model = new Model(viewClassObj);
 			return;
 		}
@@ -81,7 +81,7 @@ public class Controller {
 		int dice1 = rand.nextInt(6) + 1;
 		int dice2 = rand.nextInt(6) + 1;
 		model.notifyViewOfDiceResult(dice1, dice2);
-		System.out.println("Log: Dice roll computed: " + dice1 +", " + dice2); // debugging
+		System.out.println("[+]  Dice roll computed: " + dice1 +", " + dice2); // debugging
 		return new int[] {dice1, dice2};
 	}
 	
@@ -118,7 +118,7 @@ public class Controller {
 	public void processJailLogic(Player playerInjail, JAIL_CHOICE choice) {
 		// When the player chooses to try and roll doubles to get out of jail
 		if (choice == choice.ROLL_DUBLES) {
-			System.out.println("Log: Player chose to attempt rolling doubles to get out of jail."); // debugging
+			System.out.println("[+]  Player chose to attempt rolling doubles to get out of jail."); // debugging
 			int[] diceRoll = diceRollGeneration();
 			int dice1 = diceRoll[0];
 			int dice2 = diceRoll[1];
@@ -132,21 +132,21 @@ public class Controller {
 
 			// If the attempt did not succeed
 			else {
-				System.out.println("Log: The attempt to get out of jail failed."); // debugging
+				System.out.println("[+]  The attempt to get out of jail failed."); // debugging
 				// Increments attempts to get out for this player
 				int currentAttempts = getAmmtOfJailAttempts(playerInjail) + 1;
 				model.board.getJailSpace().playerAttemptsToGetOutMapping.put(playerInjail, currentAttempts);
 
 				// Forces the $50 payment if it didn't succeed
 				if (currentAttempts >= 3) {
-					System.out.println("Log: Player has failed 3 get out of jail attempts and was charged $50 to get out"); // debugging
+					System.out.println("	[+]  Player has failed 3 get out of jail attempts and was charged $50 to get out"); // debugging
 					pay50(playerInjail);
 					playerInjail.getOutOfJail();
 					model.setCurrentPlayerToNext();
 				}
 				
 				else {
-					System.out.println("Log: Player has " + currentAttempts + "to get out of jail."); // debugging
+					System.out.println("	[+]  Player has " + currentAttempts + "to get out of jail."); // debugging
 					model.setCurrentPlayerToNext();
 				}
 			}
@@ -154,7 +154,7 @@ public class Controller {
 
 		// Player uses a get out of jail free card, removes it
 		else if (choice == choice.OUT_OF_JAIL_CARD) {
-			System.out.println("Log: Player has chosen to use a get out of jail free card"); // debugging
+			System.out.println("[+]  Player has chosen to use a get out of jail free card"); // debugging
 			playerInjail.removeJailCard();
 			playerInjail.getOutOfJail();
 			rollDice(playerInjail);
@@ -162,7 +162,7 @@ public class Controller {
 
 		// Player pays $50, gets out of jail
 		else if (choice == choice.PAY_FIFTY) {
-			System.out.println("Log: Player has chosen to pay $50");
+			System.out.println("[+] Player has chosen to pay $50");
 			pay50(playerInjail);
 			playerInjail.getOutOfJail();
 			if (model.getGameSettings().getFreeParkingRule() == true) {
@@ -353,11 +353,13 @@ public class Controller {
 			return;
 		}
 		
-		//moving ownership of trader's properties to target
-		for (Property myProperty : traderPropertiesOffer) {
-			myProperty.setOwner(targetPlayer);
-			targetPlayer.addProperty(myProperty);
-			traderPlayer.removeProperty(myProperty);
+		if (traderPropertiesOffer != null) {
+			//moving ownership of trader's properties to target
+			for (Property myProperty : traderPropertiesOffer) {
+				myProperty.setOwner(targetPlayer);
+				targetPlayer.addProperty(myProperty);
+				traderPlayer.removeProperty(myProperty);
+			}
 		}
 		
 		//transfer cash if valid amount from trader to target, avoid potential bankruptcy trigger
@@ -381,5 +383,6 @@ public class Controller {
 		if (traderPlayer instanceof AIPlayer) {
 			((AIPlayer) traderPlayer).removeTradeLog(targetProperty, traderCashOffer);
 		}
-	}	
+	}
+
 }

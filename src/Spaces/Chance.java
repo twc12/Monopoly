@@ -13,6 +13,7 @@ public class Chance extends Space {
 	@Override
 	protected void processSpace(Player player, Model model) {
 		Card card = model.getChanceCards().pop();
+		System.out.println("[+] <Chance>processSpace: "+player.getPlayerName()+" landed on chance card -> "+card.getDescription());
 		if(model.getChanceCards().isEmpty())
 			model.regenerateDeck();
 		if (!player.isAI()) model.notifyViewCardDrawn(player, card);

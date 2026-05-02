@@ -160,7 +160,7 @@ public class GameSettings implements Serializable{
 		if (amountOfAIPlayers == this.amountOfAIPlayers) {
 			return;
 		}
-		System.out.println("GameSettings: AI Players = "+amountOfAIPlayers);
+		System.out.println("[+] GameSettings: AI Players = "+amountOfAIPlayers);
 		this.amountOfAIPlayers = amountOfAIPlayers;
 		
 	}

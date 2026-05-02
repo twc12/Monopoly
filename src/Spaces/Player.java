@@ -156,7 +156,7 @@ public class Player implements Serializable{
     	currentSpace.getPlayersOnSpace().add(this);
     	
     	model.notifyViewOfPlayerMoved(this, ammt);
-    	System.out.println("Processing Space: " + currentSpace.getName());
+    	System.out.println("[!] <Player>move: "+this.getPlayerName()+" is on space: " + currentSpace.getName());
     	currentSpace.processSpace(this, model);	
     }
     

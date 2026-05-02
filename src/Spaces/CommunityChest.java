@@ -12,6 +12,7 @@ public class CommunityChest extends Space {
 
 	@Override
 	protected void processSpace(Player player, Model model) {
+		System.out.println("[+] ChanceCard: "+player.getPlayerName()+" landed on community chest card");
 		Card card = model.getCommunityChestCards().pop();
 		if(model.getCommunityChestCards().isEmpty())
 			model.regenerateDeck();

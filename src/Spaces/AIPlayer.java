@@ -166,6 +166,7 @@ public class AIPlayer extends Player {
      * @param controller the game controller
      */
     public void playAITurn(Controller controller) {
+    	System.out.println("[-] <AiPlayer>playAiTurn: currPlayer ("+this.getPlayerName()+")");
     	
         weakestPlayer = determineWeakest();
 
@@ -186,7 +187,10 @@ public class AIPlayer extends Player {
             safetyCap++;
             if (this.isInJail()) break;
         }
+           
+        
 
+        calculateTrade();
         build(controller);
         controller.processEndTurn();
     }

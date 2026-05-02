@@ -53,6 +53,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -287,6 +288,7 @@ public class View extends Application implements Observer {
 	 */
 	private StackPane detailedCardInfoOverlay;
 	private StackPane tradeViewStackPane;
+	private StackPane aiTradeViewStackPane;
 
 	private StackPane root;
 	private Stage stage;
@@ -569,6 +571,7 @@ public class View extends Application implements Observer {
 		startGameButton.setBorder(Border.stroke(Color.GOLD));
 		startGameButton.setMinSize(150, 60);
 		startGameButton.setOnAction(event -> {
+			System.out.println("[+] Starting game!");
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
 
@@ -579,6 +582,7 @@ public class View extends Application implements Observer {
 			// if the first player is an ai, send message to model, to send back to us to
 			// start ai player
 			if (controller.getCurrentPlayer() instanceof AIPlayer) {
+				System.out.println("[-] First player was found to be a ai.. Calling NotifyViewOfNextPlayersTurn("+controller.getCurrentPlayer().getPlayerName()+")");
 				controller.model.notifyViewOfNextPlayersTurn(controller.getCurrentPlayer());
 			}
 		});
@@ -606,7 +610,7 @@ public class View extends Application implements Observer {
 				stage.setScene(gameScene);
 				stage.setResizable(false);
 			} else {
-				System.out.println("Log: File section cancled");
+				//System.out.println("[+] <View>start: File section cancled");
 
 			}
 		});
@@ -769,8 +773,8 @@ public class View extends Application implements Observer {
 				if (currStackPane.getUserData().equals(playersCurrentSpaceObj)) {
 					// Create a new circle for each player
 					Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
-					System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-							+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
+					////System.out.println("[+] : Attempting to load playerIcon at addr: " + "/" + theme + "/"
+					//		+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 					Image playersIconImage = new Image(
 							"/" + theme + "/" + currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 					playersIconCircle.setFill(new ImagePattern(playersIconImage));
@@ -982,9 +986,9 @@ public class View extends Application implements Observer {
 			fileChooser.setInitialFileName("monopolySave.monopoly");
 			File selectedFile = fileChooser.showSaveDialog(stage);
 			if (selectedFile != null) {
-				System.out.println("Logs: Save file selected: " + selectedFile.getAbsolutePath());
+				////System.out.println("[+] : Save file selected: " + selectedFile.getAbsolutePath());
 			} else {
-				System.out.println("Logs: No save folder selected, canclled");
+				////System.out.println("[+] : No save folder selected, canclled");
 			}
 
 			// double check that the name ends with ".monopoly", add it if it doesnt
@@ -1000,7 +1004,7 @@ public class View extends Application implements Observer {
 				objOutStream.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("Logs: Failed to save a game state!");
+				////System.out.println("[+] : Failed to save a game state!");
 				infoToTellPlayer.setText("Error: Failed to save game state!");
 			}
 		});
@@ -1044,16 +1048,16 @@ public class View extends Application implements Observer {
 		if (rightSideIconsMap == null) {
 			rightSideIconsMap = new HashMap<>();
 			for (Player player : allPlayers) {
-				System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-						+ player.getPlayerIconStr() + "PlayerIcon.png");
+				// ////System.out.println("[+] <view>buildRightPlayerPicker: Attempting to load playerIcon at addr: " + "/" + theme + "/"
+				//		+ player.getPlayerIconStr() + "PlayerIcon.png");
 				Image playerIconImage = new Image("/" + theme + "/" + player.getPlayerIconStr() + "PlayerIcon.png");
 				Circle playersIconCircle = new Circle(12, new ImagePattern(playerIconImage));
 				rightSideIconsMap.put(player, playersIconCircle);
-				System.out.println("Log: rightPicker: maping=" + rightSideIconsMap.get(currPlayer));
+				////System.out.println("[+] <view>buildRightPlayerPicker: rightPicker: maping=" + rightSideIconsMap.get(currPlayer));
 			}
 		}
 
-		System.out.println("Log: rightPicker: the entire map: " + rightSideIconsMap);
+		//////System.out.println("[+] <view>buildRightPlayerPicker: rightPicker: the entire map: " + rightSideIconsMap);
 
 		// loop over all the players, adding their rectangle to the right size with
 		// their color and Id
@@ -1063,7 +1067,7 @@ public class View extends Application implements Observer {
 			StackPane currPlayerStackPane;
 
 			Circle playersIconCircle = rightSideIconsMap.get(player);
-			System.out.println("Logs: buildRightSidePicker: playersIconCirlce=" + playersIconCircle);
+			//////System.out.println("[+] <view>buildRightPlayerPicker: buildRightSidePicker: playersIconCirlce=" + playersIconCircle);
 
 			// for the current player, create a empty white box for them
 			if (player.equals(currPlayer)) {
@@ -1249,7 +1253,7 @@ public class View extends Application implements Observer {
 
 		for (int spaceIdx = 0; spaceIdx < allSpaces.size(); spaceIdx++) {
 			// TESTING
-			System.out.println("SpaceIdx=" + spaceIdx);
+			//////System.out.println("[+] <View>placeAllPropertySpaces: SpaceIdx=" + spaceIdx);
 
 			Space currSpace = allSpaces.get(spaceIdx);
 
@@ -1421,11 +1425,10 @@ public class View extends Application implements Observer {
 	 * @param rotateAmmt        (int): Some spaces are rotated so this will be
 	 *                          inputed based on the side of the board
 	 */
-	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt,
-			int spaceIdx) {
+	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
 		int nameFont = 8;
 		// TESTING
-		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
+		////System.out.println("[+] <view>addPropertySpaceObjToBoard: Putting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
 
 		// IN THE FUTURE WE WILL CALL A FUNCTION THAT RETURNS A STACK FRAME WHICH
@@ -1691,8 +1694,8 @@ public class View extends Application implements Observer {
 		playerName.setTextFill(Color.BISQUE);
 		playerName.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 
-		System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-				+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
+		//////System.out.println("[+] <View>createVisualPlayerInfoCard: Attempting to load playerIcon at addr: " + "/" + theme + "/"
+				//+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 		Image playerIconImage = new Image("/" + theme + "/" + currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 
@@ -1847,7 +1850,7 @@ public class View extends Application implements Observer {
 						// onlyl if the current player is done rolling are they allowed to trade
 						if (currentTurnsPlayer.getIsDoneRollingDice() == true) {
 							potentialTradeProperty = thisSpacesProperty;
-							System.out.println("Setting potentialTradeProperty to " + thisSpacesProperty.getName());
+							////System.out.println("[+] <View>createScrollPaneOfPlayersProperties: Setting potentialTradeProperty to " + thisSpacesProperty.getName());
 							tradeButton.setDisable(false); // enable the trade button
 						}
 					}
@@ -1864,7 +1867,7 @@ public class View extends Application implements Observer {
 					// onlyl if the current player is done rolling are they allowed to trade
 					if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 						potentialTradeProperty = (Property) visualPropertyInfoCard.getUserData();
-						System.out.println("Setting potentialTradeProperty to " + potentialTradeProperty.getName());
+						////System.out.println("[+] <View>createScrollPaneOfPlayersProperties: Setting potentialTradeProperty to " + potentialTradeProperty.getName());
 						tradeButton.setDisable(false); // enable the trade button
 					}
 				});
@@ -1904,7 +1907,7 @@ public class View extends Application implements Observer {
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn.
 
 		// TESTING
-		System.out.println("handleDiceRol: called");
+		////System.out.println("[+] <View>handleDiceRoll: called");
 
 		Player currentPlayer = controller.getCurrentPlayer();
 
@@ -1914,7 +1917,7 @@ public class View extends Application implements Observer {
 			return;
 		} else {
 			// TESTING
-			System.out.println("handleDiceRol: calling controller.rollDice(currPlayer)");
+			////System.out.println("[+] <view>handleDiceRol: calling controller.rollDice(currPlayer)");
 
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
@@ -2354,16 +2357,14 @@ public class View extends Application implements Observer {
 	 * @param ammtToMove (int): The amount they moved and should be moved
 	 */
 	public void animatePlayerMoving(Player player, int ammtToMove) {
-		System.out.println("animatePlayerMoving: player=" + player.getPlayerName() + " startIndex="
+		System.out.println("[+] <View>animatePlayerMoving: player=" + player.getPlayerName() + " startIndex="
 				+ listOfSpacesPanes.indexOf(whichStackPanesPlayersAreOn.get(player)) + " ammtToMove=" + ammtToMove);
-
-		System.out.println("view: animatePlayerMoving");
 
 		Timeline moveTimeline = new Timeline();
 
 		StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
 		if (currentSpacesPane == null) {
-			System.out.println("ERROR: Player object is not in hash map somehow");
+			System.out.println("[+] <View>animatePlayerMoving: ERROR: Player object is not in hash map somehow    ERROR    ERROR    ERROR");
 			return;
 		}
 
@@ -2402,56 +2403,51 @@ public class View extends Application implements Observer {
 						circleCount++;
 					}
 				}
-
+				
 				whichStackPanesPlayersAreOn.put(player, nextSpacePane);
 			});
-
-			moveTimeline.setOnFinished(e -> {
-				boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
-				System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is " + purchaseOverlayIsOn);
-				boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance
-						|| player.getCurrentSpace() instanceof CommunityChest;
-				if (player.getIsDoneRollingDice() == false) {
-					// if there is currently a purchase prompt on the screen then done enable the
-					// roll dice button
-					if (!cardPromptIsBeingShown) {
-						System.out.println("Log: rollDiceButton.setDisable(false) 2281");
-						rollDiceButton.setDisable(false);
-					}
-				}
-				// if the player is done rolling then enable the end turn button
-				else if (!purchaseOverlayIsOn && !cardPromptIsBeingShown) {
-					System.out.println("Log: endTurnButton.setDisable(false); 2296");
-					endTurnButton.setDisable(false);
-				}
-				// if the player is done rolling dice then dont allow them to roll dice
-				else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-					// disable the roll dice button because they finished rolling
-					rollDiceButton.setDisable(true);
-					Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
-					if (curSpace instanceof Property) {
-						if (((Property) curSpace).getOwner() == null) {
-							endTurnButton.setDisable(true);
-						} else {
-							System.out.println("Log: endTurnButton.setDisable(false) 2310");
-							endTurnButton.setDisable(false);
-						}
-					} else {
-						// only if the player wasnt given a card prompt should you allow the end turn
-						// button to be pressed
-						if (!(curSpace instanceof Chance) && !(curSpace instanceof CommunityChest)) {
-							System.out.println("Log: endTurnButton.setDisable(false) 2317");
-							endTurnButton.setDisable(false);
-
-						}
-					}
-				}
-			});
-
 			moveTimeline.getKeyFrames().add(frame);
-
 		}
-
+		moveTimeline.setOnFinished(e -> {
+			boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
+			System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is " + purchaseOverlayIsOn);
+			boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance
+					|| player.getCurrentSpace() instanceof CommunityChest;
+			if (player.getIsDoneRollingDice() == false) {
+				// if there is currently a purchase prompt on the screen then done enable the
+				// roll dice button
+				if (!cardPromptIsBeingShown) {
+					System.out.println("Log: rollDiceButton.setDisable(false) 2281");
+					rollDiceButton.setDisable(false);
+				}
+			}
+			// if the player is done rolling then enable the end turn button
+			else if (!purchaseOverlayIsOn && !cardPromptIsBeingShown) {
+				System.out.println("Log: endTurnButton.setDisable(false); 2296");
+				endTurnButton.setDisable(false);
+			}
+			// if the player is done rolling dice then dont allow them to roll dice
+			else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+				// disable the roll dice button because they finished rolling
+				rollDiceButton.setDisable(true);
+				Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
+				if (curSpace instanceof Property) {
+					if (((Property) curSpace).getOwner() == null) {
+						endTurnButton.setDisable(true);
+					} else {
+						System.out.println("Log: endTurnButton.setDisable(false) 2310");
+						endTurnButton.setDisable(false);
+					}
+				} else {
+					// only if the player wasnt given a card prompt should you allow the end turn
+					// button to be pressed
+					if (!(curSpace instanceof Chance) && !(curSpace instanceof CommunityChest)) {
+						System.out.println("Log: endTurnButton.setDisable(false) 2317");
+						endTurnButton.setDisable(false);
+					}
+				}
+			}
+		});
 		moveTimeline.play();
 
 	}
@@ -2481,7 +2477,7 @@ public class View extends Application implements Observer {
 	 */
 	private void showOptionsForGettingOutOfJail(Player currentPlayer) {
 		int doublesAttempts = controller.getAmmtOfJailAttempts(currentPlayer);
-		System.out.println("View: Showing options for getting out of jail: doublesAttempts = " + doublesAttempts);
+		//System.out.println("[+] <View>showOptionsForGettingOutOfJail: Showing options for getting out of jail: doublesAttempts = " + doublesAttempts);
 		mainButtonsGroup.getChildren().clear(); // remove core buttons
 
 		VBox jailButtonsVBox = new VBox(5);
@@ -2528,7 +2524,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2360");
+				//System.out.println("[+] <View>showOptionsForGettingOutOfJail: endTurnButton.setDisable(false) 2360");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(payCashStackPane);
@@ -2549,7 +2545,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2381");
+				//System.out.println("[+] <View>showOptionsForGettingOutOfJail: endTurnButton.setDisable(false) 2381");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(useGOOJStackPane);
@@ -2568,7 +2564,7 @@ public class View extends Application implements Observer {
 	@Override
 	public void update(Observable model, Object message) {
 		// TESTING
-		System.out.println("view: update: received '" + message + "' message");
+		//System.out.println("[+] <View>update: received '" + message + "' message");
 
 		// if the message is a dice roll result, show the dice rolled
 		if (message instanceof DiceRollResultMessage) {
@@ -2578,23 +2574,22 @@ public class View extends Application implements Observer {
 
 		// if the message is that a player moved, animate the player moving on the board
 		else if (message instanceof PlayerMovedMessage) {
-
 			PlayerMovedMessage movedMessage = (PlayerMovedMessage) message;
+			System.out.println("[*] <View>Update-PlayerMoved: currPlayer ("+movedMessage.getPlayer()+") is moving amt="+movedMessage.getAmmtMoved());
 
-			// For letting dice roll first
+			// For letting dice roll first, THIS DELAY IS TO LET THE DICE ROLL BEFORE MOVING
 			Timeline moveDelay = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
 				animatePlayerMoving(movedMessage.getPlayer(), movedMessage.getAmmtMoved());
-				;
-
+				System.out.println("[*] <View>Update-PlayerMoved: inside timeline currPlayer ("+movedMessage.getPlayer()+")");
 			}));
 			moveDelay.play();
-			System.out.println("player on" + movedMessage.getPlayer().getCurrentSpace().getName());
+			//System.out.println("[+] <View>update: player on" + movedMessage.getPlayer().getCurrentSpace().getName());
 		}
 
 		// if the message is that its the next players turn, switch the bottom left
 		// player card to the new player
 		else if (message instanceof NextPlayerMessage) {
-			System.out.println("\n\n----NextPlayer----");
+			//System.out.println("\n\n----NextPlayer----");
 			potentialTradeProperty = null; // there are no selected properties at this stage
 			tradeButton.setDisable(true);
 			buildButton.setDisable(true);
@@ -2608,23 +2603,27 @@ public class View extends Application implements Observer {
 			// if the next player is in jail, show their next options for getting out of
 			// jail
 			Player currentPlayer = nextPlayerMsg.getNextPlayer();
-			System.out
-					.println("NextPlayer: " + currentPlayer.getPlayerName() + " isInJail=" + currentPlayer.isInJail());
+			System.out.println("[-] <View>Update-NextPlayer: currPlayer = "+currentPlayer.getPlayerName());
+			//System.out.println("[+] <View>update:NextPlayerMessage Section: NextPlayer: " + currentPlayer.getPlayerName() + " isInJail=" + currentPlayer.isInJail());
 			if (currentPlayer.isInJail()) {
 				showOptionsForGettingOutOfJail(currentPlayer); // this will change the buttons in the bottom right
 			} else {
-				System.out.println("Log: rollDiceButton.setDisable(false) 2450");
+				//System.out.println("[+] <View>update: rollDiceButton.setDisable(false) 2450");
 				rollDiceButton.setDisable(false);
 			}
 
 			if (currentPlayer instanceof AIPlayer) {
+				System.out.println("	[-] <View>Update-NextPlayer: currPlayer ("+currentPlayer.getPlayerName()+") is an AI player");
 				rollDiceButton.setDisable(true);
 
 				Timeline aiDelay = new Timeline(new KeyFrame(Duration.seconds(4), e -> {
+					System.out.println("	[-] <View>Update-NextPlayer: right inside timeline currPlayer ("+currentPlayer.getPlayerName()+") dontRunFlag = True");
 					((AIPlayer) currentPlayer).playAITurn(controller);
+					System.out.println("	[-] <View>Update-NextPlayer: right after inside timeline currPlayer ("+currentPlayer.getPlayerName()+") DontRunFalg = Flase");
 				}));
 
 				aiDelay.play();
+				System.out.println("	[-] <View>Update-NextPlayer: after .play() timeline currPlayer ("+currentPlayer.getPlayerName()+") is an AI player");
 			}
 		}
 
@@ -2684,7 +2683,7 @@ public class View extends Application implements Observer {
 //			
 //			// get the current pane the player is one, then use it to find the index in the list of all panes
 //			StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
-//			if (currentSpacesPane == null) System.out.println("ERROR: Player object is not in hash map somehow");
+//			if (currentSpacesPane == null) //System.out.println("ERROR: Player object is not in hash map somehow");
 //			Circle playersPeiceToMove = playerObjToPlayerPiece.get(player);
 //			currentSpacesPane.getChildren().remove(playersPeiceToMove);
 //			
@@ -2694,7 +2693,7 @@ public class View extends Application implements Observer {
 
 		// generic string can be used to update player info label in the center
 		else if (message instanceof String) {
-			System.out.println("Log: view::update::String message received of: " + (String) message);
+			//System.out.println("[+] : <View>update:String message received of: " + (String) message);
 			String sentence = (String) message;
 			infoToTellPlayer.setText(sentence);
 		}
@@ -2748,6 +2747,145 @@ public class View extends Application implements Observer {
 			this.currPlayerLabel.setText(gameOverMsg.getPlayerName() + " wins!");
 			this.currPlayerLabel.setStyle(this.textThemeColor + "-fx-font-size: 50px; -fx-font-weight: bold;");
 		}
+		
+		// If the model sends us a messages saying an ai is attempting to trade, show a prompt to human users, but show the results of ai -> ai trades
+		else if (message instanceof AiAttemptingTradeMessage) {
+			// if the ai attempting to trade is up then dont let the animateMove end the turn, WE WILL END IT 
+			AiAttemptingTradeMessage aiAttemptTradeMsg = (AiAttemptingTradeMessage) message;
+			// If the seller is an ai, then show the trade, wait a bit, show the result, then move on 
+			if (aiAttemptTradeMsg.getSellerPlayer() instanceof AIPlayer) {
+					showTwoAisTrading(aiAttemptTradeMsg);
+				
+			}
+			// if the seller is a human, then prompt the corrisponding user player
+			else {
+				showAiTryingToTradeWithYouPrompt(aiAttemptTradeMsg);
+			}
+		}
+
+	}
+	
+	/**
+	 * showTwoAisTrading(aiAttemptTradeMsg): This function is called when 
+	 * An ai attempts to trade with another ai. This function will show a 2 frame
+	 * animation of the ai thinking and the ai Declining or accepting
+	 */
+	private void showTwoAisTrading(AiAttemptingTradeMessage aiAttemptTradeMsg) {
+		// create left side of offerer
+		VBox buyerAiVBox = new VBox(10);
+		Label aiBuyerLabel = new Label("Ai "+aiAttemptTradeMsg.getAiBuyer().getPlayerName());
+		aiBuyerLabel.setFont(new Font(25));
+		buyerAiVBox.getChildren().add(aiBuyerLabel);
+		Image aiBuyerImage = new Image("/" + theme + "/aiTrader.png");
+		ImageView aiBuyerView = new ImageView(aiBuyerImage);
+		aiBuyerView.setFitWidth(200); aiBuyerView.setPreserveRatio(true);
+		buyerAiVBox.getChildren().add(aiBuyerView);
+		
+		StackPane propertyStackPane = this.buildSpaceCard(aiAttemptTradeMsg.getDesiredProperty(), 200);
+		Label cashOfferLabel = new Label("$"+aiAttemptTradeMsg.getTradeOfferCash( ));
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+		VBox offeringVBox = new VBox(20);
+		offeringVBox.getChildren().addAll(propertyStackPane, cashOfferLabel);
+		
+		// create the right dynamic side 
+		VBox sellerAiVBox = new VBox(10);
+		Label aiSellerLabel = new Label("Ai "+aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		aiSellerLabel.setFont(new Font(25));
+		sellerAiVBox.getChildren().add(aiSellerLabel);
+		String aiSellerImagePath = "";
+		// if the seller accepts the trade it will use the happy image
+		if (aiAttemptTradeMsg.getOtherAiDecision() == true) {
+			aiSellerImagePath = "/aiSellerAcceptsTrade.png";
+		}
+		// else it will use the rejects decline image
+		else {
+			aiSellerImagePath = "/aiSellerRejectsTrade.png";
+		}
+		Image aiSellerImage = new Image("/" + theme + aiSellerImagePath);
+		ImageView aiSellerView = new ImageView(aiSellerImage);
+		aiSellerView.setFitWidth(200); aiSellerView.setPreserveRatio(true);
+		sellerAiVBox.getChildren().add(aiSellerView);
+		
+		int seperation = 10;
+		if (aiAttemptTradeMsg.getOtherAiDecision() == false) {
+			seperation = 30;
+		}
+		HBox tradeWindowHBox = new HBox(seperation);
+		tradeWindowHBox.getChildren().addAll(buyerAiVBox, offeringVBox, sellerAiVBox);
+		
+		
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		a.getDialogPane().setContent(tradeWindowHBox);
+		a.setTitle("Ai - Ai Attempting Trade!");
+		a.setContentText("Ai "+ aiAttemptTradeMsg.getAiBuyer().getPlayerName()+ " is trying to trade with Ai " + aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		a.setHeaderText("Ai - Ai Attempting Trade!");
+		a.setOnCloseRequest(event -> {
+			// clear the window to consider the trade is closed
+		});
+		a.show();
+	}
+	
+	/**
+	 * showAiTryingToTradeWithYouPrompt(aiAttemptTradeMsg): this function is called
+	 * when an ai tries to trade with a human. This function will display a show an wait to the human
+	 * if they want to accept or decline the trade from the ai. 
+	 * 
+	 * @param aiAttemptTradeMsg (AiAttemptingTradeMessage): holds all the trade information, buyer, property, offer.
+	 */
+	private void showAiTryingToTradeWithYouPrompt(AiAttemptingTradeMessage aiAttemptTradeMsg) {
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		((Button) a.getDialogPane().lookupButton(ButtonType.OK)).setText("Cancle");
+		// create the view of the offer 
+		HBox aiGuyAndOfferingHBox = new HBox(10);
+		Image aiGuyStandingImage = new Image("/" + theme + "/aiTrader.png");
+		ImageView aiGuyStandingView = new ImageView(aiGuyStandingImage);
+		aiGuyStandingView.setFitWidth(200); aiGuyStandingView.setPreserveRatio(true);
+		aiGuyAndOfferingHBox.getChildren().add(aiGuyStandingView);
+		
+		VBox offeringVBox = new VBox(10);
+		Label cashOfferLabel = new Label("$"+aiAttemptTradeMsg.getTradeOfferCash( ));
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+		offeringVBox.getChildren().add(cashOfferLabel);
+		
+		offeringVBox.getChildren().add(buildSpaceCard(aiAttemptTradeMsg.getDesiredProperty(), 120));
+		
+		aiGuyAndOfferingHBox.getChildren().add(offeringVBox);
+		
+		a.getDialogPane().setContent(aiGuyAndOfferingHBox);
+
+		Button acceptBtn = new Button("Accept Trade");
+		acceptBtn.setOnAction(event -> {
+			// if the trade is accepted then we send to the controller the finalized trade
+			controller.executeTrade(aiAttemptTradeMsg.getAiBuyer(), aiAttemptTradeMsg.getSellerPlayer(), aiAttemptTradeMsg.getDesiredProperty(), null,
+					aiAttemptTradeMsg.getTradeOfferCash(), 0);
+			a.close();
+
+			// redraw current players' visual inventory
+			populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+
+			// redraw other players' inventory
+			showOtherPlayersInfoInBottomRight(aiAttemptTradeMsg.getAiBuyer()); 
+			if (otherPlayerInfoCardStackPane.getChildren().size() == 1) {// if it refreshes to the ai console only, redraw on top
+				otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(aiAttemptTradeMsg.getAiBuyer())); 
+			}
+
+		});
+		Button declineBtn = new Button("Decline Trade");
+		declineBtn.setOnAction(event -> {
+			// clear the window
+			a.close();
+		});
+		
+		offeringVBox.getChildren().addAll(acceptBtn,declineBtn);
+
+		a.setTitle("Attempting Trade!");
+		a.setContentText("Ai "+ aiAttemptTradeMsg.getAiBuyer().getPlayerName()+ " is trying to trade with " + aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		a.setHeaderText("Attempting Trade!");
+		a.setOnCloseRequest(event -> {
+		});
+		a.show();
 
 	}
 
@@ -2810,7 +2948,7 @@ public class View extends Application implements Observer {
 	 */
 	public void showCard(Card card) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/cardSound.mp3").toExternalForm());
-		System.out.println(card.getImage());
+		//System.out.println("[+] <View>showCard: "+card.getImage());
 		// Special sounds for the Go To Jail Space
 		AudioClip jailSound = new AudioClip(getClass().getResource("/" + theme + "/goToJail.mp3").toExternalForm());
 		if (controller.getCurrentPlayer().getCurrentSpace() instanceof GoToJailSpace) {
@@ -2825,7 +2963,7 @@ public class View extends Application implements Observer {
 			cardTitle.setText("Community Chest");
 			sound.play();
 		}
-		System.out.println("Logs: showcard attempting to load image: " + "/" + theme + "/" + card.getImage());
+		//System.out.println("[+] <View>showCard: showcard attempting to load image: " + "/" + theme + "/" + card.getImage());
 		cardImage = new Image("/" + theme + "/" + card.getImage());
 		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());
@@ -2840,7 +2978,7 @@ public class View extends Application implements Observer {
 			// if the current space isnt a card popup space then dont enable the end turn
 			// yet
 			if (!(currentSpace instanceof Chance) && !(currentSpace instanceof CommunityChest)) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2658");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2658");
 				endTurnButton.setDisable(false);
 			}
 		}
@@ -2854,9 +2992,9 @@ public class View extends Application implements Observer {
 			controller.resolveCard(card, controller.getCurrentPlayer());
 			populatePlayerCardWithNewInfo(controller.getCurrentPlayer()); // incase they get a get out of jail free card
 			if (controller.getCurrentPlayer().isInJail()) {
-				System.out.println("Log: rollDiceButton.setDisable(true) 2699");
+				//System.out.println("[+] <View>showCard: rollDiceButton.setDisable(true) 2699");
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2701");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2701");
 				endTurnButton.setDisable(false);
 			}
 			// if the player is on a property that is already owned then show the end turn
@@ -2865,7 +3003,7 @@ public class View extends Application implements Observer {
 			if (possibleNewPlayersSpace instanceof Property) {
 				Property possibleNewPlayersProperty = (Property) possibleNewPlayersSpace;
 				if (possibleNewPlayersProperty.getOwner() != null) {
-					System.out.println("Log: endTurnButton.setDisable(false) 2709");
+					//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2709");
 					endTurnButton.setDisable(false);
 				}
 			}
@@ -2873,7 +3011,7 @@ public class View extends Application implements Observer {
 			// if the player wasnt moved from the chance/community chest card, then enable
 			// the end turn button
 			if (currentPlayersSpace == possibleNewPlayersSpace) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2716");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2716");
 				endTurnButton.setDisable(false);
 			}
 
@@ -2884,7 +3022,7 @@ public class View extends Application implements Observer {
 	// purchaseprompt hbox with property infocard on left, buttons on right
 	public void showPurchasePrompt(Player player, Property property) {
 		rollDiceButton.setDisable(true);
-		System.out.println("Log: rollDiceButton.setDisable(true) 2731");
+		//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(true) 2731");
 		this.purchaseOverlay.getChildren().clear();// clear old version
 
 		// copying style from cardprompt
@@ -2932,12 +3070,12 @@ public class View extends Application implements Observer {
 				this.purchaseOverlay.setVisible(false);
 				// only if the player is done, allow the end turn button
 				if (player.getIsDoneRollingDice() == true) {
-					System.out.println("Log: endTurnButton.setDisable(false) 2727");
+					//System.out.println("[+] <View>showPurchasePrompt: endTurnButton.setDisable(false) 2727");
 					endTurnButton.setDisable(false);
 				}
 				// if the player rolled doubles then allow another roll dice
 				else {
-					System.out.println("Log: rollDiceButton.setDisable(false); 2754");
+					//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(false); 2754");
 					rollDiceButton.setDisable(false);
 				}
 
@@ -2965,10 +3103,10 @@ public class View extends Application implements Observer {
 			this.infoToTellPlayer.setText("Passed on purchasing!");
 			// only if the player is done rolling then enable the end turn button
 			if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2752");
+				//System.out.println("[+] <View>showPurchasePrompt: endTurnButton.setDisable(false) 2752");
 				endTurnButton.setDisable(false);
 			} else {
-				System.out.println("Log: rollDiceButton.setDisable(false); 2822");
+				//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(false); 2822");
 				rollDiceButton.setDisable(false);
 			}
 		});

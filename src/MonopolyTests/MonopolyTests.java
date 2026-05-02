@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
@@ -352,10 +354,11 @@ class MonopolyTests {
 	
 	@Test
 	void aiTradeTests() {
+		//
 		Controller controller = new Controller();
 		GameSettings customSettings = new GameSettings();
 		customSettings.setAmountOfPlayers(0);
-	    customSettings.setAmountOfAIPlayers(2);
+	    customSettings.setAmountOfAIPlayers(3);
 		controller.initializeGameSettings(customSettings);
 	    Model model = controller.model;
 	    
@@ -363,21 +366,133 @@ class MonopolyTests {
 	    List<Space> spaces = controller.getSpaces();
 	    RealEstate mediterranean = (RealEstate) spaces.get(1);
 	    RealEstate baltic = (RealEstate) spaces.get(3);
-	    player.addProperty(baltic); player.addProperty(mediterranean);
-	    player.addProperty((Property)spaces.get(6)); player.addProperty((Property)spaces.get(8)); player.addProperty((Property)spaces.get(9));
+	    
 	    
 	    if (player instanceof AIPlayer) {
 	    	AIPlayer aiPlayer = (AIPlayer) player;
-	    	assertEquals(2,aiPlayer.calculateNumOfCurrentMonopolies());
-	    	assertEquals(false, aiPlayer.aiShouldContinueWithTrade(700));
-	    	assertTrue(aiPlayer.getOpprotuneProperties().isEmpty()); // player only has monopolies
+	    	aiPlayer.calculateTrade();
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(18)); // ORANGE
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(24)); // RED
+	    	assertEquals(0,aiPlayer.calculateNumOfCurrentMonopolies());
+	    	assertEquals(true, aiPlayer.aiShouldContinueWithTrade(700));
+	    	assertTrue(!aiPlayer.getOpprotuneProperties().isEmpty()); // player only has monopolies
 	    	
-	    	aiPlayer.addProperty((Property) spaces.get(18));
+	    	
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(5)); // TRAIN
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(25)); // TRAIN
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(15)); // TRAIN
+	    	controller.purchaseProperty(aiPlayer, mediterranean);
+	    	controller.purchaseProperty(aiPlayer, baltic);
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(39));
+	    	aiPlayer.addCash(600);
+	    	assertEquals(1,aiPlayer.calculateNumOfCurrentMonopolies());
+	    	
 	    	assertTrue(!aiPlayer.getOpprotuneProperties().isEmpty());
 	    	assertEquals(aiPlayer.getOpprotuneProperties().get(0), spaces.get(18));
+	    	aiPlayer.calculateTrade();
 	    	
+	    	AIPlayer aiPlayer2 = (AIPlayer) model.getPlayers().get(1);
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(21)); //RED
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(37));
+	    	
+	    	AIPlayer aiPlayer3 = (AIPlayer) model.getPlayers().get(2);
+	    	controller.purchaseProperty(aiPlayer3, (Property) spaces.get(35)); // railroad
+	    	controller.purchaseProperty(aiPlayer3, (Property) spaces.get(19)); // ORANGE
+	    	
+	    	aiPlayer3.addCash(-50);
+	    	
+	    	
+	    	List<Property> propertiesThatCanHelpMe = aiPlayer.getTheOtherOwnedPropertiesThatCanHelpMe(aiPlayer.getOpprotuneProperties());
+	    	System.out.println(propertiesThatCanHelpMe);
+	    	
+	    	Map<Integer, List<Property>> numOfPurchasesToGetMonopoly = aiPlayer.generateRankingMap(propertiesThatCanHelpMe);
+	    	System.out.println(numOfPurchasesToGetMonopoly);
+	    	
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    	aiPlayer3.addCash(-100);
+	    	
+	    	aiPlayer.calculateTrade();
 	    	
 	    }
+	    // we are only testing ai player 
+	    else {
+	    	fail();
+	    }
+	}
+	
+	
+	
+	@Test
+	void testAi2(){
+		//
+		Controller controller = new Controller();
+		GameSettings customSettings = new GameSettings();
+		customSettings.setAmountOfPlayers(0);
+	    customSettings.setAmountOfAIPlayers(3);
+		controller.initializeGameSettings(customSettings);
+	    Model model = controller.model;
+	    
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    
+	    
+	    if (player instanceof AIPlayer) {
+	    	AIPlayer aiPlayer = (AIPlayer) player;
+	    	aiPlayer.calculateTrade();
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(18)); // ORANGE
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(24)); // RED
+	    	assertEquals(0,aiPlayer.calculateNumOfCurrentMonopolies());
+	    	assertEquals(true, aiPlayer.aiShouldContinueWithTrade(700));
+	    	assertTrue(!aiPlayer.getOpprotuneProperties().isEmpty()); // player only has monopolies
+	    	
+	    	
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(5)); // TRAIN
+	    	controller.purchaseProperty(aiPlayer, mediterranean);
+	    	controller.purchaseProperty(aiPlayer, baltic);
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(39));
+	    	aiPlayer.addCash(400);
+	    	assertEquals(1,aiPlayer.calculateNumOfCurrentMonopolies());
+	    	
+	    	assertTrue(!aiPlayer.getOpprotuneProperties().isEmpty());
+	    	assertEquals(aiPlayer.getOpprotuneProperties().get(0), spaces.get(18));
+	    	aiPlayer.calculateTrade();
+	    	
+	    	AIPlayer aiPlayer2 = (AIPlayer) model.getPlayers().get(1);
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(15)); // TRAIN
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(21)); //RED
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(37));
+	    	
+	    	AIPlayer aiPlayer3 = (AIPlayer) model.getPlayers().get(2);
+	    	controller.purchaseProperty(aiPlayer3, (Property) spaces.get(35)); // railroad
+	    	controller.purchaseProperty(aiPlayer3, (Property) spaces.get(19)); // ORANGE
+	    	aiPlayer3.addCash(-50);
+	    	
+	    	assertTrue(aiPlayer.getListOfAllOwnedRailroads(model).size() == 2);
+	    	assertTrue(aiPlayer.getListOfAllOwnedRailroads(model).contains(spaces.get(25))== false);
+	    	
+	    	List<Property> propertiesThatCanHelpMe = aiPlayer.getTheOtherOwnedPropertiesThatCanHelpMe(aiPlayer.getOpprotuneProperties());
+	    	System.out.println(propertiesThatCanHelpMe);
+	    	
+	    	Map<Integer, List<Property>> numOfPurchasesToGetMonopoly = aiPlayer.generateRankingMap(propertiesThatCanHelpMe);
+	    	System.out.println(numOfPurchasesToGetMonopoly);
+	    	
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    	aiPlayer3.addCash(-100);
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    }
+	    // we are only testing ai player 
 	    else {
 	    	fail();
 	    }

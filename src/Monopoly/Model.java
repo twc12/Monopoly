@@ -442,4 +442,36 @@ public class Model extends Observable implements Serializable{
 	public Card getGoToJail() {
 		return jailCard;
 	}
+
+	/**
+	 * notifyViewOfAiAttemptedTrade(aiBuyer, theProperty, newTradeOfferCash, sellerPlayer):
+	 * This function will be called after a Ai player determines they want to attempt a trade
+	 * This function will notify the view of the ai player and who they want to buy from and what 
+	 * property for how much they want to buy.
+	 * 
+	 * Just incase this is a trade between an Ai and Ai, we will check if the sellerPlayer is an ai 
+	 * and if they are, then we will pre compute the decision made by that other ai and send that along
+	 * with the other info to the view. In this case the view will notice the other sellerPlayer instanceof AIPlayer is true 
+	 * and it will delay before showing the result, then after it shows the result it will call on the controller
+	 * to process the completed trade 
+	 * 
+	 * In the case that the trade is from Ai to human, the view will check that the instanceof sellerPlayer is not
+	 * AiPlayer, so that means we need to prompt the human for an answer. If the human answers no then nothing happens.
+	 * But if the human answers yes then the view will send the finalized trade to the controller to process. Then the 
+	 * ais turns ends.  
+	 * @param aiBuyer (AIPlayer): The ai player that is initalizing the trade
+	 * @param thePropertyTheBuyerWants (Property): The property the ai player wants
+	 * @param newTradeOfferCash (int): The amount of cash the ai player is willing to pay for the property 
+	 * @param sellerPlayer (Player): the player who owns the property 
+	 */
+	public void notifyViewOfAiAttemptedTrade(AIPlayer aiBuyer, Property thePropertyTheBuyerWants, int newTradeOfferCash, Player sellerPlayer) {
+		Boolean otherAiDecision = null; // if its Ai -> Human this stays null
+		// if the other player is an ai player, determine its choice upfront now, then send its decision along with the message
+		if (sellerPlayer instanceof AIPlayer) {
+			otherAiDecision = ((AIPlayer) sellerPlayer).decideOnOfferedTrade(thePropertyTheBuyerWants, newTradeOfferCash);
+		}
+		
+		AiAttemptingTradeMessage AiAttemptingTradeMsg = new AiAttemptingTradeMessage(aiBuyer, thePropertyTheBuyerWants, newTradeOfferCash, sellerPlayer, otherAiDecision);
+		
+	}
 }

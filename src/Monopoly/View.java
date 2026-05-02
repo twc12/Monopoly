@@ -306,6 +306,10 @@ public class View extends Application implements Observer {
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 
+		//icon in windows along the taskbar
+		Image icon = new Image("/icon.png");
+        stage.getIcons().add(icon);
+		
 		// --------------- START SCREEEN ---------------
 		GameSettings gameSettings = new GameSettings();
 		BorderPane startScreenBorderPane = new BorderPane();

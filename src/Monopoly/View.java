@@ -306,6 +306,10 @@ public class View extends Application implements Observer {
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 
+		//icon in windows along the taskbar
+		Image icon = new Image("/icon.png");
+        stage.getIcons().add(icon);
+		
 		// --------------- START SCREEEN ---------------
 		GameSettings gameSettings = new GameSettings();
 		BorderPane startScreenBorderPane = new BorderPane();
@@ -3001,7 +3005,7 @@ public class View extends Application implements Observer {
 
 		root.setMaxSize(cardWidth, cardHeight);
 
-		card.setStyle("-fx-background-color: white;" + "-fx-border-color: black;" + "-fx-border-width: " + borderWidth
+		card.setStyle("-fx-background-color: " + cardOverlayColor+ ";" + "-fx-border-color: black;" + "-fx-border-width: " + borderWidth
 				+ ";" + "-fx-border-insets: " + borderInset + ";");
 		// For text lines for pricing
 		ArrayList<String> lines = new ArrayList<>();

@@ -39,7 +39,11 @@ public class CardBuilder implements Serializable{
 	}
 	
 	
-	
+	/**
+	 * This function is used to build the description for the games chance
+	 * and community chest cards. its also used to decide 
+	 * what image files are pulled for the cards.
+	 */
 	private void buildDescription(){
 		
 		// Standard Theme

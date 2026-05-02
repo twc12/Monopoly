@@ -18,6 +18,13 @@ public class Deck implements Serializable{
 	private Stack<Card> communityChestCards;
 	private String theme;
 	
+	
+	/**
+	 * Constructor for creating the cards using cardBuilder
+	 * Then shuffles and separates into two stacks of cards
+	 * 
+	 * @param theme
+	 */
 	public Deck(String theme){
 		this.theme = theme;
 		cards = new CardBuilder(theme);
@@ -44,7 +51,7 @@ public class Deck implements Serializable{
 	
 	/**
 	 * The cards would run out in testing so this was made
-	 * @return
+	 * @return The replenished stack of chance cards
 	 */
 	public Stack<Card> replenishChanceCards(){
 		ArrayList<Card> unShuffled = cards.getChanceCards();
@@ -64,13 +71,21 @@ public class Deck implements Serializable{
 	
 	/**
 	 * The cards would run out in testing so this was made
-	 * @return
+	 * 
+	 * @return the replenished stack of chestCards
 	 */
 	public Stack<Card> replenishCommunityChestCards(){
 		ArrayList<Card> unShuffled = cards.getCommunityChestCards();
 		chanceCards = shuffle(unShuffled);
 		return chanceCards;
 	}
+	
+	/**
+	 * Shuffles the array of cards and puts them into a stack
+	 * 
+	 * @param unShuffled The unshuffled array of cards
+	 * @return The shuffled Stack of cards
+	 */
 	private Stack<Card> shuffle(ArrayList<Card> unShuffled) {
 		Stack<Card> stack = new Stack<>();
 		Collections.shuffle(unShuffled);

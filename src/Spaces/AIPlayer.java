@@ -6,7 +6,6 @@ import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
 
 /**
- * @author Jarrod Heyer Martinez
  * This class represents the AI, the AI makes strategic decisions based largely on
  * who the determined weakest player in the game is, and makes an effort to target
  * them with build decisions to attempt to eliminate them from the game. Tries to
@@ -16,6 +15,8 @@ import Monopoly.Controller.JAIL_CHOICE;
  * The player's weakness is determined based on several factors the most important
  * of which being their total net worth, which is the best way to determine if 
  * someone can be eliminated with a good building placement, etc
+ * @author Jarrod Heyer Martinez
+ * @author Alex
  */
 public class AIPlayer extends Player {
 
@@ -441,7 +442,7 @@ public class AIPlayer extends Player {
 	public void removeTradeLog(Property property, int purchasePrice) {
 		// if the property was a successful trade keep track of the price 
 		successsFullTrades.put(property, purchasePrice);
-	
+		prevTradeAttempsPropertiesMap.remove(property);
 	}
     
     

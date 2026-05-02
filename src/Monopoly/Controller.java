@@ -379,7 +379,7 @@ public class Controller {
 		
 		// if the traderPlayer is an ai, that means it stored a log of this trade, go ahead and remove it now 
 		if (traderPlayer instanceof AIPlayer) {
-			((AIPlayer) traderPlayer).removeTradeLog(targetProperty);
+			((AIPlayer) traderPlayer).removeTradeLog(targetProperty, traderCashOffer);
 		}
 	}	
 }

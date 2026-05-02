@@ -2584,7 +2584,6 @@ public class View extends Application implements Observer {
 			// For letting dice roll first
 			Timeline moveDelay = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
 				animatePlayerMoving(movedMessage.getPlayer(), movedMessage.getAmmtMoved());
-				;
 
 			}));
 			moveDelay.play();
@@ -2672,25 +2671,6 @@ public class View extends Application implements Observer {
 
 			delay.play();
 		}
-
-		// if the view is notified that a player is going to jail, you can play sounds
-		// and animate
-//		else if (message instanceof GoToJailMessage) {
-//			GoToJailMessage goToJailMsg = (GoToJailMessage) message;
-//			Player player = goToJailMsg.getPlayerGoingToJail();
-//			// FUTURE NOTE: now you can play a sound of the player going to jail and animate them going there
-//			
-//			// Move the player to the jail space
-//			
-//			// get the current pane the player is one, then use it to find the index in the list of all panes
-//			StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
-//			if (currentSpacesPane == null) System.out.println("ERROR: Player object is not in hash map somehow");
-//			Circle playersPeiceToMove = playerObjToPlayerPiece.get(player);
-//			currentSpacesPane.getChildren().remove(playersPeiceToMove);
-//			
-//			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
-//			whichStackPanesPlayersAreOn.put(player, jailSpaceStackPane);
-//		}
 
 		// generic string can be used to update player info label in the center
 		else if (message instanceof String) {

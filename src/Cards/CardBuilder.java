@@ -19,14 +19,13 @@ public class CardBuilder implements Serializable{
 	private static final long serialVersionUID = 1L;
 	String theme;
 	ArrayList<String> cardDescription = new ArrayList<>();
-	ArrayList<String> imageFilesChance = new ArrayList<>();
-	ArrayList<String> imageFilesChest = new ArrayList<>();
+	ArrayList<String> imageFilesChance = new ArrayList<>(); // Chance fileNames
+	ArrayList<String> imageFilesChest = new ArrayList<>(); // Chest fileNames
 	ArrayList<Card> chanceCards;
 	ArrayList<Card> communityChestCards;
 	
 	/**
 	 * Constructor for CardBuilder
-	 * 
 	 * Assigns ArrayLists and then calls build cards
 	 * to add effects to cards and add them to lists.
 	 */

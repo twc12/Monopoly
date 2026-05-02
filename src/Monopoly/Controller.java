@@ -2,6 +2,7 @@ package Monopoly;
 
 import Cards.Card;
 import Cards.Deck;
+import Spaces.AIPlayer;
 import Spaces.Chance;
 import Spaces.CostSpace;
 import Spaces.FreeParking;
@@ -172,15 +173,9 @@ public class Controller {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * This function will have the player pay 50 dollars to the center pot if its enables
-	 * when they paid $50 to get out of jail 
-	 * @param player (Player): The player trying to get out of jail
-=======
 	 * Pays the player $50 and checks if it should add that amount to the 
 	 * free parking reward, if that rule is enabled
 	 * @param player The object of the player who is paying
->>>>>>> refs/remotes/origin/main
 	 */
 	private void pay50(Player player) {
 		player.addCash(-50);
@@ -381,5 +376,10 @@ public class Controller {
 		targetProperty.setOwner(traderPlayer);
 		traderPlayer.addProperty(targetProperty);
 		targetPlayer.removeProperty(targetProperty);
+		
+		// if the traderPlayer is an ai, that means it stored a log of this trade, go ahead and remove it now 
+		if (traderPlayer instanceof AIPlayer) {
+			((AIPlayer) traderPlayer).removeTradeLog(targetProperty);
+		}
 	}	
 }

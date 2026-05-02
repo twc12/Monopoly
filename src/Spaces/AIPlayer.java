@@ -25,6 +25,7 @@ public class AIPlayer extends Player {
      * This keeps a log of the trades this Ai player did for a specific property 
      */
     private Map<Property, TradeInfo> prevTradeAttempsPropertiesMap;
+    private Map<Property, Integer> successsFullTrades;
 
     private static final HashMap<RealEstate.Color, Integer> SET_SIZES = new HashMap<>();
     
@@ -55,6 +56,7 @@ public class AIPlayer extends Player {
         super(id, icon, theme, model);
         startingPlayerCount = model.getPlayers().size();
         prevTradeAttempsPropertiesMap = new HashMap<>();
+        successsFullTrades = new HashMap<>();
     }
 
     /**
@@ -395,6 +397,25 @@ public class AIPlayer extends Player {
     public boolean decideOnOfferedTrade(Property thePropertyIHaveTheyWant, int tradeOfferCash) {
     	System.out.println("[+] Ai player is asked to trade their "+thePropertyIHaveTheyWant.getName()+" for $"+tradeOfferCash);
     	int amtOfProfitDesired = 100;
+    	// if we have traded to gain this property I have they want then base my asking price off of that if its a higher price 
+    	if (successsFullTrades.containsKey(thePropertyIHaveTheyWant)) {
+    		System.out.println("	[+] The ai found that it traded to get this property in he past, if that trades price is higher than the default it will use that");
+    		int prevTradePrice = successsFullTrades.get(thePropertyIHaveTheyWant);
+    		int defaultAskingPrice = thePropertyIHaveTheyWant.getPurchaseAmount();
+    		
+    		// only if the prevTrading price is larger then use that for the base price 
+    		if (defaultAskingPrice < prevTradePrice) {
+    			if (tradeOfferCash >= prevTradePrice + amtOfProfitDesired) {
+    	    		System.out.println("	[+] The ai player accepts the trade! Its better than the prev trade price");
+    	    		return true;
+    			}
+    			else {
+    				System.out.println("	[+] The ai player declines the trade. Its not better than the prev trade price");
+    	    		return false;
+    			}
+    		}
+    	}
+    	
     	if (tradeOfferCash >= thePropertyIHaveTheyWant.getPurchaseAmount() + amtOfProfitDesired) {
     		System.out.println("	[+] The ai player accepts the trade!");
     		return true;
@@ -404,6 +425,24 @@ public class AIPlayer extends Player {
     		return false;
     	}
     }
+    
+    
+    /**
+     * removeTradeLog(property): This function is called when 
+     * a successful trade goes through, so we should remove the log of that 
+     * trade going through. 
+     * 
+     * That also means we should keep a log of how much we got it for 
+     * so another player cannot just trade for it back and make easy
+     * profit.
+     * @param property (Property): The property we successfully paid for and got during 
+     * 								a trade.
+     */
+	public void removeTradeLog(Property property, int purchasePrice) {
+		// if the property was a successful trade keep track of the price 
+		successsFullTrades.put(property, purchasePrice);
+	
+	}
     
     
     /**
@@ -827,6 +866,8 @@ public class AIPlayer extends Player {
     	
     	return monopolyCount;
     }
+
+    
     
     
     

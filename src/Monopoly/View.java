@@ -3039,7 +3039,7 @@ public class View extends Application implements Observer {
 
 		root.setMaxSize(cardWidth, cardHeight);
 
-		card.setStyle("-fx-background-color: white;" + "-fx-border-color: black;" + "-fx-border-width: " + borderWidth
+		card.setStyle("-fx-background-color: " + cardOverlayColor+ ";" + "-fx-border-color: black;" + "-fx-border-width: " + borderWidth
 				+ ";" + "-fx-border-insets: " + borderInset + ";");
 		// For text lines for pricing
 		ArrayList<String> lines = new ArrayList<>();

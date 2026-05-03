@@ -389,7 +389,8 @@ public class Player implements Serializable {
 	public void advanceToProperty(String name) {
 		int ammtMoved = 0;
 		currentSpace.getPlayersOnSpace().remove(this);
-		while (currentSpace.getName() != name) {
+		
+		while (!currentSpace.getName().equals(name)) {
 			if (currentSpace.getName().equals(name))
 				currentSpace.processSpace(this, model);
 			ammtMoved++;

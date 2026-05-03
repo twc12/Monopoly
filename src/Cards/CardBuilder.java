@@ -100,7 +100,7 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Advance To Ship");
 			cardDescription.add("Advance To Utility");
 			cardDescription.add("Advance To Isla Cruces");
-			cardDescription.add("Take A Stroll On The\nPlank Walk\nAdvance To Plank Walk");
+			cardDescription.add("Advance To Port Cornwall");
 			cardDescription.add("Advance To St. Charles Port");
 			cardDescription.add("Take A Ride On The Black Pearl");
 			cardDescription.add("Ye Have Been Elected\nCaptain Of The Crew\nPay Each Player $50");
@@ -256,25 +256,25 @@ public class CardBuilder implements Serializable{
 		
 		// #9
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Illinois Avenue");
+			player.advanceToProperty(model.getSpaces().get(24).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(8),imageFilesChance.get(8) , r));
 		
 		// #10
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Board Walk");
+			player.advanceToProperty(model.getSpaces().get(39).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(9),imageFilesChance.get(9) , r));
 		
 		// #11
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("St. Charles Place");
+			player.advanceToProperty(model.getSpaces().get(11).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(10),imageFilesChance.get(10) , r));
 		
 		// #12
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Reading Railroad");
+			player.advanceToProperty(model.getSpaces().get(5).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(11),imageFilesChance.get(11) , r));
 		

@@ -76,8 +76,8 @@ public class Deck implements Serializable{
 	 */
 	public Stack<Card> replenishCommunityChestCards(){
 		ArrayList<Card> unShuffled = cards.getCommunityChestCards();
-		chanceCards = shuffle(unShuffled);
-		return chanceCards;
+		communityChestCards = shuffle(unShuffled);
+		return communityChestCards;
 	}
 	
 	/**

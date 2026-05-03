@@ -526,6 +526,8 @@ class MonopolyTests {
 	    customSettings2.setTheme(Theme.PIRATE);
 	    customSettings2.setOptionalBuying(false);
 	    controller.initializeGameSettings(customSettings2);
+	    customSettings2.setTheme(Theme.TUCSON);
+	    controller.initializeGameSettings(customSettings2);
 	}
 	
 	

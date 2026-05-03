@@ -41,7 +41,7 @@ public class Board implements Serializable{
         
         //building full board
         Space[] spacesArray = {};
-        if(model.getTheme().equals("standard")) {
+        if(model.getTheme().equals("standardTheme")) {
 	        Space[] standardArray = {
 	            new GoSpace("go.png"),																								//1
 	            new RealEstate(Color.BROWN, "Mediterranean Avenue", 60, new int[]{2,4,10,30,90,160,250}),					//2

@@ -304,8 +304,6 @@ class MonopolyTests {
 	    
 	    model.getAmmtOfJailAttempts(player);
 	    
-	    model.getThemes();
-	    
 	    model.putPlayerInJail(player);
 	    
 	    assertEquals(model.getGameFinished(), false);

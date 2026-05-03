@@ -19,14 +19,13 @@ public class CardBuilder implements Serializable{
 	private static final long serialVersionUID = 1L;
 	String theme;
 	ArrayList<String> cardDescription = new ArrayList<>();
-	ArrayList<String> imageFilesChance = new ArrayList<>();
-	ArrayList<String> imageFilesChest = new ArrayList<>();
+	ArrayList<String> imageFilesChance = new ArrayList<>(); // Chance fileNames
+	ArrayList<String> imageFilesChest = new ArrayList<>(); // Chest fileNames
 	ArrayList<Card> chanceCards;
 	ArrayList<Card> communityChestCards;
 	
 	/**
 	 * Constructor for CardBuilder
-	 * 
 	 * Assigns ArrayLists and then calls build cards
 	 * to add effects to cards and add them to lists.
 	 */
@@ -39,7 +38,11 @@ public class CardBuilder implements Serializable{
 	}
 	
 	
-	
+	/**
+	 * This function is used to build the description for the games chance
+	 * and community chest cards. its also used to decide 
+	 * what image files are pulled for the cards.
+	 */
 	private void buildDescription(){
 		
 		// Standard Theme
@@ -94,12 +97,12 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Pay Poor Pirate Tax Of $15");
 			cardDescription.add("Go Directly\nTo Brig\nDo Not Pass Go\nDo Not Collect $200");
 			cardDescription.add("Advance To Go");
-			cardDescription.add("Advance To Railroad");
+			cardDescription.add("Advance To Ship");
 			cardDescription.add("Advance To Utility");
-			cardDescription.add("Advance To Pirate Cove");
+			cardDescription.add("Advance To Isla Cruces");
 			cardDescription.add("Take A Stroll On The\nPlank Walk\nAdvance To Plank Walk");
 			cardDescription.add("Advance To St. Charles Port");
-			cardDescription.add("Take A Ride On The Reading Ship");
+			cardDescription.add("Take A Ride On The Black Pearl");
 			cardDescription.add("Ye Have Been Elected\nCaptain Of The Crew\nPay Each Player $50");
 			cardDescription.add("Get Out Of Brig Free!\nThis Card May Be Kept");
 			cardDescription.add("Sail Forward 3 Spaces");

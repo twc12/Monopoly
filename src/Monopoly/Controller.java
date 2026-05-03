@@ -98,7 +98,7 @@ public class Controller {
 		int dice2 = roll[1];
 	
 		// if the player did not get doubles then they are DONE ROLLING DICE 
-		if (dice1 != dice2) {
+		if (dice1 != dice2 || player instanceof AIPlayer) {
 			player.setIsDoneRollingDice(true);
 		}
 		

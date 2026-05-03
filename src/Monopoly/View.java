@@ -1727,35 +1727,6 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This is a helper fucntion to `Node createVisualPlayerInfoCard(currPlyaer)`
-	 * because I needed the string of a color name and I didnt want the large switch
-	 * statement in that function
-	 * 
-	 * @param color (Color): Javafx color object
-	 * @return String, the lowercase name of the color object
-	 */
-	private String colorObjectToString(Color color) {
-		if (color.equals(Color.RED))
-			return "red";
-		if (color.equals(Color.BLUE))
-			return "blue";
-		if (color.equals(Color.GREEN))
-			return "green";
-		if (color.equals(Color.YELLOW))
-			return "yellow";
-		if (color.equals(Color.PURPLE))
-			return "purple";
-		if (color.equals(Color.PINK))
-			return "pink";
-		if (color.equals(Color.BLACK))
-			return "black";
-		if (color.equals(Color.ORANGE))
-			return "orange";
-		return "black"; // if no color here then black is fine
-
-	}
-
-	/**
 	 * createScrollPaneOfPlayersProperties(player): This function will create a
 	 * visual java fx scroll pane that will be horizontal. It will show the players
 	 * owned properties with details on how much they get per house they own how
@@ -1962,7 +1933,7 @@ public class View extends Application implements Observer {
 		amountOfMoneyToPayInput.setMaxWidth(150);
 		amountOfMoneyToPayInput.setOnKeyTyped(event -> {
 			String playersInput = amountOfMoneyToPayInput.getText();
-			if (playersInput.length() == 0 || playersInput.equals("200")) {
+			if (playersInput.length() == 0 || playersInput.equals("0")) {
 				ammountOfMoneyToPay = 0;
 				amtOfMoneyToPayLabel.setText("0$ (default)");
 			} else {
@@ -2030,14 +2001,16 @@ public class View extends Application implements Observer {
 
 				}
 			});
+			if (!(sellingPlayer instanceof AIPlayer)) {
+				playersTradeInputsVbox.getChildren().add(amountOfGOOJCardsInput);
+				playersTradeOutputsVbox.getChildren().add(amtOfGOOJCardsLabel);
+			}
 
-			playersTradeInputsVbox.getChildren().add(amountOfGOOJCardsInput);
-			playersTradeOutputsVbox.getChildren().add(amtOfGOOJCardsLabel);
 		}
 
 		// if the player has any properties to put into the trade then create a checkbox
 		// for each other them for them to select
-		if (buyingPlayer.getListOfProperties().size() != 0) {
+		if (buyingPlayer.getListOfProperties().size() != 0 && !(sellingPlayer instanceof AIPlayer)) {
 			listOfPropertiesToOffer.clear();
 			propertiesToLabels = new HashMap<>();
 			// add all the buyers properties as options
@@ -2108,7 +2081,12 @@ public class View extends Application implements Observer {
 
 		a.setTitle("Attempting Trade!");
 		a.setContentText(buyingPlayer.getPlayerName() + " is trying to trade with " + sellingPlayer.getPlayerName());
-		a.setHeaderText("Attempting Trade!");
+		if (sellingPlayer instanceof AIPlayer){
+			a.setHeaderText("Attempting Trade with Ai Player!");
+		}
+		else{
+			a.setHeaderText("Attempting Trade!");
+		}
 
 		a.setOnCloseRequest(event -> {
 			// clear the window to consider the trade is closed
@@ -2119,9 +2097,27 @@ public class View extends Application implements Observer {
 
 		// create a submit button
 		Button submitTradeButton = new Button("Attempt Trade");
+		if (sellingPlayer instanceof AIPlayer) {
+			submitTradeButton.setText("Attempt Trade with AI Player");
+		}
 		submitTradeButton.setOnAction(event -> {
-			offeringVBox.getChildren().addAll(playersTradeOutputsVbox, acceptBtn, declineBtn);
-			a.showAndWait();
+			if (sellingPlayer instanceof AIPlayer){
+				AIPlayer sellerAiPlayer = (AIPlayer) sellingPlayer;
+				boolean aiTradeDecision = sellerAiPlayer.decideOnOfferedTrade(potentialTradeProperty, ammountOfMoneyToPay);
+				
+				if (aiTradeDecision == true) {
+					// if the trade is accepted then we send to the controller
+					controller.executeTrade(buyingPlayer, sellingPlayer, potentialTradeProperty, null,
+							ammountOfMoneyToPay, 0);
+				}
+				showHumanToAiTradeResult(buyingPlayer, sellerAiPlayer, potentialTradeProperty, ammountOfMoneyToPay, aiTradeDecision);
+				
+			}
+			else {
+				offeringVBox.getChildren().addAll(playersTradeOutputsVbox, acceptBtn, declineBtn);
+				a.showAndWait();
+			}
+			
 		});
 
 		// create a cancle trade button
@@ -2137,6 +2133,66 @@ public class View extends Application implements Observer {
 		tradeViewBorderPane.setCenter(playersTradeOutputsVbox);
 
 	}
+	
+	/**
+	 * showHumanToAiTradeResult(): This function is called 
+	 * if a trade from a human to an ai happens, this will show the result to the player
+	 * who attempted the trade 
+	 */
+	private void showHumanToAiTradeResult(Player humanBuyer, AIPlayer aiSeller, Property desiredProperty, int tradeOfferCash, boolean sellerAiDecision) {
+		// create left side of offerer
+		VBox buyerHumanVBox = new VBox(10);
+		Label humanBuyerLabel = new Label("Human "+aiSeller.getPlayerName());
+		humanBuyerLabel.setFont(new Font(25));
+		buyerHumanVBox.getChildren().add(humanBuyerLabel);
+		Image humanBuyerImage = new Image("/" + theme + "/humanTrader.png");
+		ImageView humanBuyerView = new ImageView(humanBuyerImage);
+		humanBuyerView.setFitWidth(200); humanBuyerView.setPreserveRatio(true);
+		buyerHumanVBox.getChildren().add(humanBuyerView);
+		
+		StackPane propertyStackPane = this.buildSpaceCard(desiredProperty, 200);
+		Label cashOfferLabel = new Label("$"+tradeOfferCash);
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+		VBox offeringVBox = new VBox(20);
+		offeringVBox.getChildren().addAll(propertyStackPane, cashOfferLabel);
+		
+		// create the right dynamic side 
+		VBox sellerAiVBox = new VBox(10);
+		Label aiSellerLabel = new Label("Ai "+aiSeller.getPlayerName());
+		aiSellerLabel.setFont(new Font(25));
+		sellerAiVBox.getChildren().add(aiSellerLabel);
+		String aiSellerImagePath = "";
+		// if the seller accepts the trade it will use the happy image
+		if (sellerAiDecision == true) {
+			aiSellerImagePath = "/aiSellerAcceptsTrade.png";
+		}
+		// else it will use the rejects decline image
+		else {
+			aiSellerImagePath = "/aiSellerRejectsTrade.png";
+		}
+		Image aiSellerImage = new Image("/" + theme + aiSellerImagePath);
+		ImageView aiSellerView = new ImageView(aiSellerImage);
+		aiSellerView.setFitWidth(200); aiSellerView.setPreserveRatio(true);
+		sellerAiVBox.getChildren().add(aiSellerView);
+		
+		int seperation = 10;
+		if (sellerAiDecision == false) {
+			seperation = 30;
+		}
+		HBox tradeWindowHBox = new HBox(seperation);
+		tradeWindowHBox.getChildren().addAll(buyerHumanVBox, offeringVBox, sellerAiVBox);
+		
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		a.getDialogPane().setContent(tradeWindowHBox);
+		a.setTitle("Human - Ai Attempting Trade!");
+		a.setContentText("Human "+ humanBuyer.getPlayerName()+ " is trying to trade with Ai " + aiSeller.getPlayerName());
+		a.setHeaderText("Human - Ai Attempting Trade!");
+		a.show();
+	}
+	
+	
+	
 
 	/**
 	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) build
@@ -2416,7 +2472,7 @@ public class View extends Application implements Observer {
 			if (player.getIsDoneRollingDice() == false) {
 				// if there is currently a purchase prompt on the screen then done enable the
 				// roll dice button
-				if (!cardPromptIsBeingShown) {
+				if (!cardPromptIsBeingShown && !(player instanceof AIPlayer)) {
 					System.out.println("Log: rollDiceButton.setDisable(false) 2281");
 					rollDiceButton.setDisable(false);
 				}
@@ -2755,7 +2811,11 @@ public class View extends Application implements Observer {
 			// If the seller is an ai, then show the trade, wait a bit, show the result, then move on 
 			if (aiAttemptTradeMsg.getSellerPlayer() instanceof AIPlayer) {
 					showTwoAisTrading(aiAttemptTradeMsg);
-				
+					if (aiAttemptTradeMsg.getOtherAiDecision() == true) {
+						System.out.println("[$] Processing Trade between ai "+aiAttemptTradeMsg.getAiBuyer()+" and ai "+aiAttemptTradeMsg.getSellerPlayer() + " for "+ aiAttemptTradeMsg.getDesiredProperty().getName());
+						controller.executeTrade(aiAttemptTradeMsg.getAiBuyer(), aiAttemptTradeMsg.getSellerPlayer(), aiAttemptTradeMsg.getDesiredProperty(), null,
+								aiAttemptTradeMsg.getTradeOfferCash(), 0);
+					}
 			}
 			// if the seller is a human, then prompt the corrisponding user player
 			else {
@@ -2838,10 +2898,14 @@ public class View extends Application implements Observer {
 		((Button) a.getDialogPane().lookupButton(ButtonType.OK)).setText("Cancle");
 		// create the view of the offer 
 		HBox aiGuyAndOfferingHBox = new HBox(10);
+		Label aiGuyNameLabel = new Label(aiAttemptTradeMsg.getAiBuyer().getPlayerName());
+		aiGuyNameLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+		VBox aiPlayerVBox = new VBox(10);
 		Image aiGuyStandingImage = new Image("/" + theme + "/aiTrader.png");
 		ImageView aiGuyStandingView = new ImageView(aiGuyStandingImage);
+		aiPlayerVBox.getChildren().addAll(aiGuyNameLabel, aiGuyStandingView);
 		aiGuyStandingView.setFitWidth(200); aiGuyStandingView.setPreserveRatio(true);
-		aiGuyAndOfferingHBox.getChildren().add(aiGuyStandingView);
+		aiGuyAndOfferingHBox.getChildren().add(aiPlayerVBox);
 		
 		VBox offeringVBox = new VBox(10);
 		Label cashOfferLabel = new Label("$"+aiAttemptTradeMsg.getTradeOfferCash( ));
@@ -2883,8 +2947,6 @@ public class View extends Application implements Observer {
 		a.setTitle("Attempting Trade!");
 		a.setContentText("Ai "+ aiAttemptTradeMsg.getAiBuyer().getPlayerName()+ " is trying to trade with " + aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
 		a.setHeaderText("Attempting Trade!");
-		a.setOnCloseRequest(event -> {
-		});
 		a.show();
 
 	}

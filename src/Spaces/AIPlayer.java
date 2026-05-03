@@ -415,6 +415,11 @@ public class AIPlayer extends Player {
     	    		return true;
     			}
     			else {
+    				// BUT if the ai player is down on their luck (lower than $120) they will accept 
+    				if (this.getCashAmmt() < 120) {
+    					System.out.println("	[+] The Ai player is low on cash, so they will accept trade");
+    					return true;
+    				}
     				System.out.println("	[+] The ai player declines the trade. Its not better than the prev trade price");
     	    		return false;
     			}
@@ -426,6 +431,11 @@ public class AIPlayer extends Player {
     		return true;
     	}
     	else {
+    		// BUT if the ai player is down on their luck (lower than $120) they will accept 
+			if (this.getCashAmmt() < 120) {
+				System.out.println("	[+] The Ai player is low on cash, so they will accept trade");
+				return true;
+			}
     		System.out.println("	[+] The ai player declines the trade.");
     		return false;
     	}
@@ -454,7 +464,7 @@ public class AIPlayer extends Player {
      * calculateTrade(): This function will determine if 
      * the Ai player should attempt a trade and who to trade with.
      *   Overall goal
-	 * 		- If the ai player does not have 2 monopolies yet & has atleast $700 cash, attempt a trade
+	 * 		- If the ai player does not have 2 monopolies yet & has atleast $500 cash, attempt a trade
 	 * 		- Find all properties that I can attempt to trade with others to get monoploly 
 	 *		- Rank these properties from "CLOSE TO MONOPOLY" -> "Far from monopoly"
 	 * 		- Pick the list of properties that are CLOSES TO MONOPOLY
@@ -464,7 +474,7 @@ public class AIPlayer extends Player {
 	 *		-   .. .... gained money ..... ..... .... ..... $50 more .... .. ........ .....
      */
     public void calculateTrade() {
-    	int aiBudgetForTrading = 700; // the amount the ai must have to trade
+    	int aiBudgetForTrading = 500; // the amount the ai must have to trade
     	
     	System.out.println("[+] Starting a Ai Player Calculate Trade");
     	boolean aiShouldDoTrade = aiShouldContinueWithTrade(aiBudgetForTrading);
@@ -536,7 +546,12 @@ public class AIPlayer extends Player {
     			System.out.println("	[+] ive determined that we should increase the price from the previous trade");
     		}
     		else { // if they are poorer then we dont need to pay so much because they might really want the money
-    			newTradeOfferCash = prevTradeInfo.getPreviousTradeOfferAmt() - 50;
+    			newTradeOfferCash = prevTradeInfo.getPreviousTradeOfferAmt() - 20;
+    			if (newTradeOfferCash < 50) { // dont go below $10 at least
+    				newTradeOfferCash = 50;
+    			}
+    			// make sure the newTradeOfferCash isnt over our current budget
+    	    	if (newTradeOfferCash > aiBudgetForTrading) newTradeOfferCash = aiBudgetForTrading;
     			System.out.println("	[+] ive determined that we should decrease the price from the previous trade");
     		}
     		
@@ -548,13 +563,14 @@ public class AIPlayer extends Player {
     	// if there wasnt a previous time we've traded then store current trade info 
     	else {
     		newTradeOfferCash = thePropertyIWant.getPurchaseAmount() + 50; // offer $50 more than original price
+    		// make sure the newTradeOfferCash isnt over our current budget
+        	if (newTradeOfferCash > aiBudgetForTrading) newTradeOfferCash = aiBudgetForTrading;
     		int playersCurrCashAmt = weakestPlayer.getCashAmmt();
     		TradeInfo newTradeInfo = new TradeInfo(newTradeOfferCash, playersCurrCashAmt);
     		prevTradeAttempsPropertiesMap.put(thePropertyIWant, newTradeInfo);
     	}
     	
-    	// make sure the newTradeOfferCash isnt over our current budget
-    	if (newTradeOfferCash > aiBudgetForTrading) newTradeOfferCash = aiBudgetForTrading;
+    	
     	
     	return newTradeOfferCash;
     }

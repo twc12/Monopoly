@@ -4,6 +4,8 @@
  * 
  * 
  * @author Tyler Carpenter
+ * @author Jake
+ * @author Alex
  */
 package Spaces;
 
@@ -60,6 +62,11 @@ public class Player implements Serializable{
     public boolean isAI() {
         return false;
     }
+    
+    /**
+     * @return a str representation of the player, just the Id 
+     */
+    @Override
     public String toString() {return "Player " + this.getId();}
     
     /**
@@ -135,7 +142,7 @@ public class Player implements Serializable{
     
     
     /**
-     * @return the model object
+     * @return the model object this player is connected to 
      */
     public Model getModel() { return model; }
     
@@ -168,7 +175,6 @@ public class Player implements Serializable{
      */
     public void addCash(int ammt) {
     	
-    	
     	//if negative
     	if (ammt < 0) {
     		
@@ -184,6 +190,9 @@ public class Player implements Serializable{
     	cashAmmt += ammt;
     }
     
+    /**
+     * @return returns if for this player is done for the game
+     */
     public boolean getGameOver() {
     	return this.gameOver;
     }
@@ -265,7 +274,12 @@ public class Player implements Serializable{
     }
     
     /**
-     * putInJail()
+     * putInJail():
+     * This function will find the instance of the jail space on the board
+     * from the players current position on the board, then it will notify the view to move the player that amount
+     * 
+     * This function also updates the jail space mapping of players in jail, sets the 
+     * players `inJail` to True now 
      */
     public void putInJail() {
     	int ammtMoved = 0;

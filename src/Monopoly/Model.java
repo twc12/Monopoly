@@ -55,7 +55,6 @@ public class Model extends Observable implements Serializable{
 
 	private GameSettings gameSettings; // Placeholder for Jake
 	
-	private HashMap<String,Boolean> themes = new HashMap<>();
 	private int turnCounter = 1;
 	private boolean gameFinished = false;
 	
@@ -415,14 +414,6 @@ public class Model extends Observable implements Serializable{
 	public int getAmmtOfJailAttempts(Player playerInJail) {
 		int attemptsAmmount = board.jailSpace.getAmmtOfJailAttempts(playerInJail);
 		return attemptsAmmount;
-	}
-	
-	/**
-	 * Gets a hash map of all the themes for the game
-	 * @return A hash map of all game themes
-	 */
-	public HashMap<String, Boolean> getThemes() {
-		return themes;
 	}
 
 	/**

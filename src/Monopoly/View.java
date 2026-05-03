@@ -352,9 +352,9 @@ public class View extends Application implements Observer {
 		});
 		// PASSING GO MONEY
 		TextField moneyPassingGoInput = new TextField();
-		moneyPassingGoInput.setPromptText("$ for passing go (press ENTER to apply)");
+		moneyPassingGoInput.setPromptText("$ for passing go");
 		moneyPassingGoInput.setMaxWidth(250);
-		moneyPassingGoInput.setOnAction(event -> {
+		moneyPassingGoInput.setOnKeyTyped(event -> {
 			String playersInput = moneyPassingGoInput.getText();
 			if (playersInput.length() == 0 || playersInput.equals("200")) {
 				gameSettings.setCustomGoValue(200);
@@ -413,12 +413,12 @@ public class View extends Application implements Observer {
 
 		// AMOUNT OF STARTING MONEY
 		TextField startingMoneyInput = new TextField();
-		startingMoneyInput.setPromptText("$ you start with (press ENTER to apply)");
+		startingMoneyInput.setPromptText("$ you start with");
 		startingMoneyInput.setMaxWidth(250);
 		// commenting the below code for now, it doesn't apply the user's entered
 		// starting money,
 		// i added code when we hit the start button
-		startingMoneyInput.setOnAction(event -> {
+		startingMoneyInput.setOnKeyTyped(event -> {
 			String playersInput = startingMoneyInput.getText();
 			if (playersInput.length() == 0 || playersInput.equals("1500")) {
 				gameSettings.setStartingMoney(1500);
@@ -1603,12 +1603,25 @@ public class View extends Application implements Observer {
 		this.mainButtonsGroup = mainButtonsGroup; // This will be used to change the buttons to present the jail options
 
 		// CREATE ROLL DICE BUTTON
-		Rectangle rollDiceButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
-		rollDiceButtonRect.setArcWidth(30);
-		rollDiceButtonRect.setArcHeight(30);
-		Label rollDiceLabel = new Label("Roll Dice");
 		StackPane rollDiceStackPane = new StackPane();
-		rollDiceStackPane.getChildren().addAll(rollDiceButtonRect, rollDiceLabel);
+		if (theme.equals("pirateTheme")) {
+			Image priateRollDiceView = new Image(theme+"/PirateRollDiceButton.png");
+			ImageView pirateRollDiceBtnView = new ImageView(priateRollDiceView);
+			pirateRollDiceBtnView.setFitWidth(coreButtonWidth);
+			pirateRollDiceBtnView.setFitHeight(coreButtonHeight+30);
+			rollDiceStackPane.getChildren().addAll(pirateRollDiceBtnView);
+		}
+		else {
+			Rectangle rollDiceButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+			rollDiceButtonRect.setArcWidth(30);
+			rollDiceButtonRect.setArcHeight(30);
+			Label rollDiceLabel = new Label("Roll Dice");
+			rollDiceStackPane.getChildren().addAll(rollDiceButtonRect, rollDiceLabel);
+		}
+		
+		
+		
+		
 		rollDiceStackPane.setOnMouseClicked(event -> {
 			rollDiceStackPane.setDisable(true);
 			handleDiceRoll();
@@ -1616,7 +1629,13 @@ public class View extends Application implements Observer {
 		this.rollDiceButton = rollDiceStackPane; // used for disabling the button later
 
 		// CREATE TRADE HOUSES BUTTON
-		Rectangle tradeButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		Rectangle tradeButtonRect;
+		if (theme.equals("pirateTheme")) {
+			tradeButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight-10, Color.BURLYWOOD);
+		}
+		else {
+			tradeButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		}
 		tradeButtonRect.setArcWidth(30);
 		tradeButtonRect.setArcHeight(30);
 
@@ -1628,7 +1647,13 @@ public class View extends Application implements Observer {
 		tradeButtonStackPane.setOnMouseClicked(event -> handleTradeButton());
 
 		// CREATE BUILD HOUSES BUTTON
-		Rectangle buildButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		Rectangle buildButtonRect;
+		if (theme.equals("pirateTheme")) {
+			buildButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight-10, Color.BURLYWOOD);
+		}
+		else {
+			buildButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		}
 		buildButtonRect.setArcWidth(30);
 		buildButtonRect.setArcHeight(30);
 
@@ -1644,7 +1669,13 @@ public class View extends Application implements Observer {
 		this.buildButton = buildButtonStackPane;
 
 		// CREATE END TURN BUTTON
-		Rectangle endTurnButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		Rectangle endTurnButtonRect;
+		if (theme.equals("pirateTheme")) {
+			endTurnButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight-10, Color.BURLYWOOD);
+		}
+		else {
+			endTurnButtonRect = new Rectangle(coreButtonWidth, coreButtonHeight, Color.BURLYWOOD);
+		}
 		endTurnButtonRect.setArcWidth(30);
 		endTurnButtonRect.setArcHeight(30);
 

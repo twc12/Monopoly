@@ -424,7 +424,7 @@ class MonopolyTests {
 	}
 	
 	@Test
-<<<<<<< HEAD
+
 	void aiTradeTests() {
 		//
 		Controller controller = new Controller();
@@ -570,7 +570,7 @@ class MonopolyTests {
 	    }
 	}
 	
-=======
+	@Test
 	void testTax() {
 		Controller controller = new Controller();
 		Model model = controller.model;
@@ -590,7 +590,7 @@ class MonopolyTests {
 		player1.addCash(10000);
 		income.processSpace(player1, model);
 	}
->>>>>>> refs/heads/main
+
 	
 	@Test
 	void testUtility() {

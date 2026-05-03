@@ -167,18 +167,11 @@ public class Player implements Serializable{
      * @param ammt: amount of cash to add
      */
     public void addCash(int ammt) {
-    	
-    	
     	//if negative
     	if (ammt < 0) {
-    		
     		int cost = Math.abs(ammt);
     		if (cost > this.getCashAmmt()) {
     			this.bankruptcy(cost);
-    			//PLAYER GOING NEGATIVE
-    			//AUTOSELL PROPERTIES/HOMES
-    			//IF CAN'T SELL ENOUGH, PLAYER.LOSE
-
     		}
     	}
     	cashAmmt += ammt;
@@ -205,7 +198,7 @@ public class Player implements Serializable{
     	for (Property property: myProperties) {
     		if (property instanceof RealEstate re && re.getBuildingStage() > 0) {
     			for (int i=0; i<re.getBuildingStage(); i++) {
-        			ammtPayed += re.autoSellHouseHotel(this, model);
+        			ammtPayed += re.autoSellHouseHotel(this);
         			if (ammtPayed > ammtOwed) break;
         			buildingsSoldCount++;
     			}
@@ -215,7 +208,7 @@ public class Player implements Serializable{
     	//selling off properties
     	List<Property> propertiesToSell = new ArrayList<>(myProperties); //using a copy of myProperties list since autoSellProperty() will modify list and give weird error
     	for (Property property: propertiesToSell) {
-			ammtPayed += property.autoSellProperty(this, model);
+			ammtPayed += property.autoSellProperty(this);
 			if (ammtPayed > ammtOwed) break;
 			propertiesSold.add(property);
     	}

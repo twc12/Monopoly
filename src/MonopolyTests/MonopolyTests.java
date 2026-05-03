@@ -6,6 +6,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+
+import Messages.AiLogsEnabledMessage;
+import Messages.BankruptcyMessage;
+import Messages.PurchasePromptMessage;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
 import Monopoly.Model;
@@ -14,38 +18,32 @@ import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
 import Spaces.RealEstate;
+import Spaces.RealEstate.Color;
 import Spaces.Space;
+import Spaces.TaxSpace;
+import Spaces.Utility;
 
 class MonopolyTests {
 	
-	@Test
-	void test() {
-
-		
-		Controller controller = new Controller();
-		Model model = controller.model;
-		model.setGameSettingsObj(new GameSettings());
-
-		
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		controller.rollDice(controller.getCurrentPlayer());
-		assertTrue(true);
-	
-	}
-	
-	
+//	@Test
+//	void test() {
+//		Controller controller = new Controller();
+//		Model model = controller.model;
+//		model.setGameSettingsObj(new GameSettings());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//		controller.rollDice(controller.getCurrentPlayer());
+//	}
 	
 	@Test
 	void testRealEstateBuild() {
-
 		Controller controller = new Controller();
 		Model model = controller.model;
 		model.setGameSettingsObj(new GameSettings());
@@ -72,12 +70,11 @@ class MonopolyTests {
 		assertEquals(0, mediterranean.getBuildingStage());
 
 		//selling when have 1 building
-		baltic.autoSellHouseHotel(player1, model);
-//		controller.autoSellHouseHotel(player1, baltic);
+		baltic.autoSellHouseHotel(player1);
 		assertEquals(0, baltic.getBuildingStage());
 
 		//selling when have 0 buildings
-		baltic.autoSellHouseHotel(player1, model);
+		baltic.autoSellHouseHotel(player1);
 		assertEquals(0, baltic.getBuildingStage());
 
 		//buying back to 1 building
@@ -109,14 +106,38 @@ class MonopolyTests {
 		controller.buildHouseHotel(player1, baltic);//6?
 		assertEquals(5, baltic.getBuildingStage());
 		
-		baltic.autoSellHouseHotel(player1, model);
+		baltic.autoSellHouseHotel(player1);
 		assertEquals(4, baltic.getBuildingStage());
+	}
+	
+	@Test
+	void testRealEstateThreeSet() {
+		Controller controller = new Controller();
+		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+		model.getGameSettings().setOptionalBuying(false);
 		
-		//can only sell evenly
-//		baltic.autoSellHouseHotel(player1, model);
-//		assertEquals(4, baltic.getBuildingStage());
-
+		//get 3 red properties
+		List<Space> spaces = controller.getSpaces();
+		RealEstate james = (RealEstate) spaces.get(16);
+		RealEstate tennessee = (RealEstate) spaces.get(18);
+		RealEstate york = (RealEstate) spaces.get(19);
+		Player player1 = controller.getCurrentPlayer();
 		
+		//attempt to build after only buying 1 property of set
+		controller.purchaseProperty(player1, james);
+		controller.purchaseProperty(player1, tennessee);
+		controller.purchaseProperty(player1, york);
+		assertTrue(york.getIfCanBuild());
+		assertEquals(100, york.getBuildPrice());
+		
+		//misc methods
+		assertFalse(york.equals(james));
+		System.out.println(york.hashCode());
+		
+		//test purchasing when optional buying=false
+		york.autoSellProperty(player1);
+		york.processSpace(player1, model);
 	}
 	
 	@Test
@@ -164,7 +185,6 @@ class MonopolyTests {
 	@Test
     //player 1 wants to acquire a 2nd brown real estate
 	//offering a railroad to p2, 100 cash, and 1 jailfree card
-
 	void testExecuteTrade() {
 		
 		//setting up game state objects
@@ -345,8 +365,97 @@ class MonopolyTests {
 	    
 	}
 
+	@Test
+	void testMessages() {
+		//purchase prompt
+		Controller controller = new Controller();
+	    Model model = controller.model;		
+		model.setGameSettingsObj(new GameSettings());
+		List<Space> spaces = controller.getSpaces();
+		RealEstate baltic = (RealEstate) spaces.get(3);
+		Player player1 = controller.getCurrentPlayer();
+		PurchasePromptMessage msg = new PurchasePromptMessage(player1, baltic);
+		assertEquals(player1, msg.getCurrentPlayer());
+		assertEquals(baltic, msg.getProperty());
+	    
+		//ailogsenabled
+		AiLogsEnabledMessage msgAi = new AiLogsEnabledMessage(); 
+		assertTrue(msgAi.getMessage());	//if message exists, return true
+		
+		//bankruptcy
+		BankruptcyMessage msgBank = new BankruptcyMessage(player1, 0, 0, null, false); 
+		assertEquals(0, msgBank.getAmmtOwed());
+		assertEquals(0, msgBank.getBuildingsSoldCount());
+		assertEquals(null, msgBank.getPropertiesSold());
+		assertEquals(false, msgBank.getGameOver());
+		assertEquals(player1, msgBank.getPlayer());
+	}
 	
+	@Test
+	void testPropertyMisc() {
+		Controller controller = new Controller();
+		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+		model.getGameSettings().setOptionalBuying(false);
+		
+		//get 3 red properties
+		List<Space> spaces = controller.getSpaces();
+		RealEstate james = (RealEstate) spaces.get(16);
+		Utility electric = (Utility) spaces.get(12);
+		Player player1 = controller.getCurrentPlayer();
+		Player player5AI = controller.getAllPlayers().get(4);
+		
+		//attempt to build after only buying 1 property of set
+		controller.purchaseProperty(player1, james);
+		
+		//misc .equals property method
+		RealEstate james2 = new RealEstate(Color.ORANGE, "St. James Place", 1, new int[]{2,4,10,30,90,160,250});
+		assertTrue(james.equals(james2));
+		
+		//check utility price is expected when landed on
+		electric.processSpace(player5AI, model); //ai player5 buys
+		model.setLastDiceRollAmmt(2);
+		electric.processSpace(player1, model); //player 1 should get charged 4 x 2
+	}
 	
+	@Test
+	void testTax() {
+		Controller controller = new Controller();
+		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+		model.getGameSettings().setFreeParkingRule(true); //set freeparking
+		Player player1 = controller.getCurrentPlayer();
+		
+		//get 3 red properties
+		List<Space> spaces = controller.getSpaces();
+		TaxSpace income = (TaxSpace) spaces.get(4);
+		TaxSpace luxury = (TaxSpace) spaces.get(38);
+		
+		luxury.processSpace(player1, model);//charging flax luxury tax
+		income.processSpace(player1, model);//charging 10% income tax ($150)
+		
+		//flat $200 tax will be charged
+		player1.addCash(10000);
+		income.processSpace(player1, model);
+	}
 	
+	@Test
+	void testUtility() {
+		Controller controller = new Controller();
+		Model model = controller.model;
+		model.setGameSettingsObj(new GameSettings());
+		model.getGameSettings().setOptionalBuying(false);
+		Player player1 = controller.getCurrentPlayer();
+		Player player2 = controller.getAllPlayers().get(1);
+
+		List<Space> spaces = controller.getSpaces();
+		Utility waterworks = (Utility) spaces.get(28);
+		Utility electric = (Utility) spaces.get(12);
+		
+		
+		waterworks.processSpace(player1, model); 	//player 1 buys it
+		waterworks.processSpace(player2, model); 	//player 2 lands on it
+		electric.processSpace(player1, model); 		//player 1 completes the match
+	}
 
 }

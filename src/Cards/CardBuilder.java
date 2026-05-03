@@ -94,12 +94,12 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Pay Poor Pirate Tax Of $15");
 			cardDescription.add("Go Directly\nTo Brig\nDo Not Pass Go\nDo Not Collect $200");
 			cardDescription.add("Advance To Go");
-			cardDescription.add("Advance To Railroad");
+			cardDescription.add("Advance To Ship");
 			cardDescription.add("Advance To Utility");
-			cardDescription.add("Advance To Pirate Cove");
-			cardDescription.add("Take A Stroll On The\nPlank Walk\nAdvance To Plank Walk");
+			cardDescription.add("Advance To Isla de Cruces");
+			cardDescription.add("Advance To Port Cornwall");
 			cardDescription.add("Advance To St. Charles Port");
-			cardDescription.add("Take A Ride On The Reading Ship");
+			cardDescription.add("Take A Ride On The Black Pearl");
 			cardDescription.add("Ye Have Been Elected\nCaptain Of The Crew\nPay Each Player $50");
 			cardDescription.add("Get Out Of Brig Free!\nThis Card May Be Kept");
 			cardDescription.add("Sail Forward 3 Spaces");
@@ -139,10 +139,10 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Advance To Go");
 			cardDescription.add("Advance To Railroad");
 			cardDescription.add("Advance To Utility");
-			cardDescription.add("Advance To Illinois Territory");
-			cardDescription.add("Take A Walk Down The\nBoardwalk\nAdvance To Boardwalk");
-			cardDescription.add("Advance To St. Charles Place");
-			cardDescription.add("Take A Ride On The Reading Rail");
+			cardDescription.add("Advance To High Noon Street");
+			cardDescription.add("Advance To Old Tucson");
+			cardDescription.add("Advance To Old Mission Trail");
+			cardDescription.add("Take A Ride On\nDesert Iron Horse Line");
 			cardDescription.add("You Have Been Elected\nSheriff Of The Town\nPay Each Player $50");
 			cardDescription.add("Get Out Of Jail Free!\nThis Card May Be Kept");
 			cardDescription.add("Move Forward 3 Spaces");
@@ -253,25 +253,25 @@ public class CardBuilder implements Serializable{
 		
 		// #9
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Illinois Avenue");
+			player.advanceToProperty(model.getSpaces().get(24).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(8),imageFilesChance.get(8) , r));
 		
 		// #10
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Board Walk");
+			player.advanceToProperty(model.getSpaces().get(39).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(9),imageFilesChance.get(9) , r));
 		
 		// #11
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("St. Charles Place");
+			player.advanceToProperty(model.getSpaces().get(11).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(10),imageFilesChance.get(10) , r));
 		
 		// #12
 		r = (CardEffect & Serializable)(player, model) -> {
-			player.advanceToProperty("Reading Railroad");
+			player.advanceToProperty(model.getSpaces().get(5).getName());
 		};
 		chanceCards.add(new Card(cardDescription.get(11),imageFilesChance.get(11) , r));
 		

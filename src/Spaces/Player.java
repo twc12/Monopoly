@@ -287,137 +287,140 @@ public class Player implements Serializable{
     	inJail = true;	
     	currentSpace.getPlayersOnSpace().add(this);
     }
-    
-    /**
-     * Removes the player from jail
-     */
-    public void getOutOfJail() {
-        inJail = false;
-        setIsDoneRollingDice(false);
-        model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
-    }
-    
-    /**
-     * Removes property from players owned property list 
-     * 
-     * @param property: the property in the list to remove
-     */
-    public void removeProperty(Property property) {
-    	listOfProperties.remove(property);
-    	updatePropertiesMatches(property);
 
-    }
-    
-    /**
-     * Adds a Property to the players property list
-     * 
-     * @param property to add to the list
-     */
-    public void addProperty(Property property) {
-    	listOfProperties.add(property);
-    	updatePropertiesMatches(property);
-   	
-    }
-    
-    /**
-     * Advances the player to the Go/Start position, adds the start
-     * specified amount of cash to player.
-     */
-    public void advanceToGo() {
-    	int ammtMoved = 0;
-    	currentSpace.getPlayersOnSpace().remove(this);
-    	while (!(currentSpace instanceof GoSpace)) {
-    		ammtMoved++;
-    		currentSpace = currentSpace.getNextSpace();
-    	}
-    	model.notifyViewOfPlayerMoved(this, ammtMoved);
-    	currentSpace.processSpace(this, model);
-    }
-    
-    
-    /**
-     * Advances player to nearest Railroad
-     */
-    public void advanceToRailroad() {
-    	int ammtMoved = 0;
-    	currentSpace.getPlayersOnSpace().remove(this);
-    	while (!(currentSpace instanceof Railroad)) {
-    		if(currentSpace instanceof GoSpace)
-    			currentSpace.processSpace(this, model);
-    		ammtMoved++;
-    		currentSpace = currentSpace.getNextSpace();
-    	}
-    	model.notifyViewOfPlayerMoved(this, ammtMoved);
-    	currentSpace.processSpace(this, model);
-    }
-    
-    /**
-     * Advances player to a specific property
-     * 
-     * @param name property to move to
-     */
-    public void advanceToProperty(String name) {
-    	int ammtMoved = 0;
-    	currentSpace.getPlayersOnSpace().remove(this);
-    	while (currentSpace.getName() != name) {
-    		if(currentSpace.getName().equals(name))
-    			currentSpace.processSpace(this, model);
-    		ammtMoved++;
-    		currentSpace = currentSpace.getNextSpace();
-    	}
-    	model.notifyViewOfPlayerMoved(this, ammtMoved);
-    	currentSpace.processSpace(this, model);
-    }
-    
-    /**
-     * Advances player to nearest utility
-     */
-    public void advanceToUtility() {
-    	int ammtMoved = 0;
-    	currentSpace.getPlayersOnSpace().remove(this);
-    	while (!(currentSpace instanceof Utility)) {
-    		if(currentSpace instanceof GoSpace)
-    			currentSpace.processSpace(this, model);
-    		ammtMoved++;
-    		currentSpace = currentSpace.getNextSpace();
-    	}
-    	model.notifyViewOfPlayerMoved(this, ammtMoved);
-    	currentSpace.processSpace(this, model);
-    }
-    
-    /**
-     * Returns if the player is done rolling dice 
-     * @return Boolean: True if the player is done rolling dice 
-     */
-    public boolean getIsDoneRollingDice() {
-    	return isDoneRollingDice;
-    }
-    
-    /**
-     * Setter for saying if this player is done rolling dice
-     * @param playerIsDoneRollingDice (bool): True if the player is done rolling dice 
-     */
-    public void setIsDoneRollingDice(boolean playerIsDoneRollingDice) {
-    	isDoneRollingDice = playerIsDoneRollingDice;
-    }
-    
-    
-    /**
-     * Called when a player buys/trades for new property. Will apply matching effects to 
-     * properties
-     * @param property
-     */
-    public void updatePropertiesMatches(Property property) {
-       	
-    	//NON-REAL-ESTATE (Utility, Railroad)
-    	//updating other properties of the same type that i own to have increased rents
-    	if (!(property instanceof RealEstate)) {//only railroads+utility
-	   		
-    		//scanning for matching properties
-    		int matchedPropertiesCount = 0;
-			for (Property myProperty: this.getListOfProperties()) {
-				if (myProperty.getClass().equals(property.getClass())){
-					matchedPropertiesCount+=1;
+	/**
+	 * Removes the player from jail
+	 */
+	public void getOutOfJail() {
+		inJail = false;
+		setIsDoneRollingDice(false);
+		model.board.jailSpace.playerAttemptsToGetOutMapping.remove(this);
+	}
+
+	/**
+	 * Removes property from players owned property list
+	 * 
+	 * @param property: the property in the list to remove
+	 */
+	public void removeProperty(Property property) {
+		listOfProperties.remove(property);
+		updatePropertiesMatches(property);
+
+	}
+
+	/**
+	 * Adds a Property to the players property list
+	 * 
+	 * @param property to add to the list
+	 */
+	public void addProperty(Property property) {
+		listOfProperties.add(property);
+		updatePropertiesMatches(property);
+
+	}
+
+	/**
+	 * Advances the player to the Go/Start position, adds the start specified amount
+	 * of cash to player.
+	 */
+	public void advanceToGo() {
+		int ammtMoved = 0;
+		currentSpace.getPlayersOnSpace().remove(this);
+		while (!(currentSpace instanceof GoSpace)) {
+			ammtMoved++;
+			currentSpace = currentSpace.getNextSpace();
+		}
+		model.notifyViewOfPlayerMoved(this, ammtMoved);
+		currentSpace.processSpace(this, model);
+	}
+
+	/**
+	 * Advances player to nearest Railroad
+	 */
+	public void advanceToRailroad() {
+		int ammtMoved = 0;
+		currentSpace.getPlayersOnSpace().remove(this);
+		while (!(currentSpace instanceof Railroad)) {
+			if (currentSpace instanceof GoSpace)
+				currentSpace.processSpace(this, model);
+			ammtMoved++;
+			currentSpace = currentSpace.getNextSpace();
+		}
+		model.notifyViewOfPlayerMoved(this, ammtMoved);
+		currentSpace.processSpace(this, model);
+	}
+
+	/**
+	 * Advances player to a specific property
+	 * 
+	 * @param name property to move to
+	 */
+	public void advanceToProperty(String name) {
+		int ammtMoved = 0;
+		currentSpace.getPlayersOnSpace().remove(this);
+		
+		while (!currentSpace.getName().equals(name)) {
+			if (currentSpace.getName().equals(name))
+				currentSpace.processSpace(this, model);
+			ammtMoved++;
+			currentSpace = currentSpace.getNextSpace();
+		}
+		model.notifyViewOfPlayerMoved(this, ammtMoved);
+		currentSpace.processSpace(this, model);
+	}
+
+	/**
+	 * Advances player to nearest utility
+	 */
+	public void advanceToUtility() {
+		int ammtMoved = 0;
+		currentSpace.getPlayersOnSpace().remove(this);
+		while (!(currentSpace instanceof Utility)) {
+			if (currentSpace instanceof GoSpace)
+				currentSpace.processSpace(this, model);
+			ammtMoved++;
+			currentSpace = currentSpace.getNextSpace();
+		}
+		model.notifyViewOfPlayerMoved(this, ammtMoved);
+		currentSpace.processSpace(this, model);
+	}
+
+	/**
+	 * Returns if the player is done rolling dice
+	 * 
+	 * @return Boolean: True if the player is done rolling dice
+	 */
+	public boolean getIsDoneRollingDice() {
+		return isDoneRollingDice;
+	}
+
+	/**
+	 * Setter for saying if this player is done rolling dice
+	 * 
+	 * @param playerIsDoneRollingDice (bool): True if the player is done rolling
+	 *                                dice
+	 */
+	public void setIsDoneRollingDice(boolean playerIsDoneRollingDice) {
+		isDoneRollingDice = playerIsDoneRollingDice;
+	}
+
+	/**
+	 * Called when a player buys/trades for new property. Will apply matching
+	 * effects to properties
+	 * 
+	 * @param property
+	 */
+	public void updatePropertiesMatches(Property property) {
+
+		// NON-REAL-ESTATE (Utility, Railroad)
+		// updating other properties of the same type that i own to have increased rents
+		if (!(property instanceof RealEstate)) {// only railroads+utility
+
+			// scanning for matching properties
+			int matchedPropertiesCount = 0;
+			for (Property myProperty : this.getListOfProperties()) {
+				if (myProperty.getClass().equals(property.getClass())) {
+					matchedPropertiesCount += 1;
 				}
 			}
 			

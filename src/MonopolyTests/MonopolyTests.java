@@ -9,16 +9,16 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import Cards.Card;
 import Messages.AiLogsEnabledMessage;
 import Messages.BankruptcyMessage;
 import Messages.PurchasePromptMessage;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
+import Monopoly.GameSettings.Theme;
 import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
 import Spaces.AIPlayer;
-import Spaces.GoToJailSpace;
-import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
@@ -317,8 +317,6 @@ class MonopolyTests {
 	    
 	    model.getAmmtOfJailAttempts(player);
 	    
-	    model.getThemes();
-	    
 	    model.putPlayerInJail(player);
 	    
 	    assertEquals(model.getGameFinished(), false);
@@ -496,6 +494,41 @@ class MonopolyTests {
 	    }
 	}
 	
+	@Test
+	void testTyler() {
+	    Controller controller = new Controller();
+	    Model model = controller.model;
+	    GameSettings customSettings = new GameSettings();
+	    customSettings.setAmountOfPlayers(2);
+	    customSettings.setAmountOfAIPlayers(0);
+	    customSettings.setFreeParkingRule(true);
+	    model.setGameSettingsObj(new GameSettings());
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    
+	    //player tests
+	    assertEquals(player.isInJail(),false);
+	    player.getPlayerIconStr();
+	    player.getPlayerName();
+	    
+	    // Card tests
+	    Card card = model.getCommunityChestCards().pop();
+	    card.getDescription();
+	    card.getImage();
+	    
+	    for (int i = 0; i < 19; i++) {
+	    	model.getChanceCards().pop().apply(player, model);
+	    	model.getCommunityChestCards().pop().apply(player, model);
+	    	
+	    }
+	    player.getIsDoneRollingDice();
+	    GameSettings customSettings2 = new GameSettings();
+	    customSettings2.setTheme(Theme.PIRATE);
+	    customSettings2.setOptionalBuying(false);
+	    controller.initializeGameSettings(customSettings2);
+	    customSettings2.setTheme(Theme.TUCSON);
+	    controller.initializeGameSettings(customSettings2);
+	}
 	
 	
 	@Test

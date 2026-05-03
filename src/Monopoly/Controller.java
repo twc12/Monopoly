@@ -173,9 +173,10 @@ public class Controller {
 	}
 
 	/**
-	 * Pays the player $50 and checks if it should add that amount to the 
-	 * free parking reward, if that rule is enabled
-	 * @param player The object of the player who is paying
+	 * This function will have the player pay 50 dollars to the center pot if its enables
+	 * when they paid $50 to get out of jail.
+	 * 
+	 * @param player (Player): The player trying to get out of jail
 	 */
 	private void pay50(Player player) {
 		player.addCash(-50);
@@ -311,13 +312,7 @@ public class Controller {
 	public void buildHouseHotel(Player player, RealEstate property) {
 	        property.buildHouseHotel(player, model);
 	}
-	
-//	//called by view when player successfully chooses to sell on their property
-//	public void autoSellHouseHotel(Player player, RealEstate property) {
-//	        property.autoSellHouseHotel(player, model);
-//	}
-	
-	
+
 	//START-SCREEN METHODS, 
 	public String getThemeString() {
 		return model.getGameSettings().getActiveThemeString();

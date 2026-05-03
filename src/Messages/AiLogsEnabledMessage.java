@@ -1,9 +1,17 @@
 package Messages;
 
+/**
+ * Sent to the view to create the Ai Log box in the bottom right
+ * when its determined there are 1 or more AI players
+ * @author Jake
+ */
 public class AiLogsEnabledMessage {
 
+	/**
+	 * Constructor
+	 * No args required, the message existing is enough
+	 */
 	public AiLogsEnabledMessage() {	
-		// Purposefully empty, nothing else required
 	}
 	
 	/**

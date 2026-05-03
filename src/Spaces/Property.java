@@ -7,12 +7,24 @@ import org.apiguardian.api.API;
 
 import Monopoly.Model;
 
+/**
+ * Property, a subclass of CostSpace. Parent class of Utility, Real Estate, and Railroads.
+ * @author: Jake
+ */
 public abstract class Property extends CostSpace {
-	private int purchaseAmount;
-	private Player owner;
-	protected ArrayList<Integer> rentStages;
-	protected int rentStageIndex;
+	private int purchaseAmount;						//amount to purchase/own the property
+	private Player owner;							//current owner
+	protected ArrayList<Integer> rentStages;		//rent stages that will be used to determine what to charge players who land
+	protected int rentStageIndex = 0;				//current stage of rent
 	
+	/**
+	 * Constructor.
+	 * Will need a purchase amount, and the unique stages of rent that get charged to whoever
+	 * lands on the space.
+	 * @param name - String the name of the property
+	 * @param purchaseAmount - int how much to purchase
+	 * @param rentStages - ArrayList<Integer> used to determine what to charge players who land
+	 */
 	public Property(String name, int purchaseAmount, int[] rentStages) {
 		super(name);
 		rentStageIndex = 0;
@@ -26,8 +38,11 @@ public abstract class Property extends CostSpace {
 		this.rentStages = arrayListObj;
 	}
 	
+	/**
+	 * When a player lands on a property, will charge them rent, will prompt them to 
+	 * purchase it, or will do nothing if the owner landed on it.
+	 */
 	public void processSpace(Player player, Model model) {
-		
 		//do nothing if mortgaged, or the player is the owner
 		if (this.getOwner() == player) return;
 		
@@ -54,36 +69,22 @@ public abstract class Property extends CostSpace {
 			this.getOwner().addCash(cost);
 			model.notifyViewOfInfoMessage(player.toString() + " landed on " + this.getName() + "! Charged $" + cost + " by " + this.getOwner().toString());
 		}
-
 	}
 	
+	/**
+	 * Called when a player purchases a property. Will transact cash and ownership.
+	 * @param player - Player the player purchasing
+	 * @param model - Model used to notify view's text of a purchase
+	 */
 	public void purchaseProperty(Player player, Model model) {
-		if (player.getCashAmmt()<this.getPurchaseAmount())return;
+		//check can afford, if not exit
+		if (player.getCashAmmt()<this.getPurchaseAmount()) return;
+		
+		//exchange cash and ownership
 		player.addCash(-this.getPurchaseAmount());		
 		player.addProperty(this);
 		this.setOwner(player);		
 		model.notifyViewOfInfoMessage(player.toString() + " purchased " + this.getName() + " for $" + this.getPurchaseAmount() + "!");
-	}
-	
-		
-//	public void mortgageProperty(Player player, Model model) {
-//		
-//		// can only mortgage if all building sold
-//		if (((RealEstate)this).getBuildingStage() > 0){
-//			int mortgageAmount = this.getPurchaseAmount()/2;
-//			player.addCash(mortgageAmount);		
-//			this.setIsMortgaged(true);
-//			model.notifyViewOfInfoMessage(player.toString() + " mortgaged\n " + this.getName() + " for $" + mortgageAmount + "!");
-//
-//		} else {
-//			if (!player.isAI()) model.notifyViewOfInfoMessage("Must sell all buildings before mortgaging!");
-//		}
-//		
-//		
-//	}
-	
-	public void unmortgageProperty(Player player) {
-		
 	}
 	
 	/**
@@ -124,22 +125,6 @@ public abstract class Property extends CostSpace {
 		this.owner = player;
 	}
 	
-//	public boolean getIsMortgaged() {
-//		return isMortgaged;
-//	}
-//	
-//	public void setIsMortgaged(boolean val) {
-//		this.isMortgaged = val;
-//	}
-	
-	/**
-	 * Gets worth of property mortgage
-	 * @return amount mortgage is worth
-	 */
-	public int getMortgageAmount() {
-		return purchaseAmount/2;
-	}
-	
 	/**
 	 * Gets the amount this porperty is being purchased for
 	 * @return amount purchased for
@@ -158,22 +143,27 @@ public abstract class Property extends CostSpace {
 	 */
 	protected abstract void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount);
 
-	
-    public int autoSellProperty(Player player, Model model) {
+	/**
+	 * Used during bankruptcy. Will transact the selling of the property, and 
+	 * return how much money it was sold for, which is half of the original purchase price
+	 * @param player - Player the player selling the property
+	 * @return int - How much it was sold for, half the purchase price
+	 */
+    public int autoSellProperty(Player player) {
     	
-    	//if found no conflicts, sell
+    	//transfer cash
     	int sellPrice = purchaseAmount/2;
     	player.addCash(sellPrice);
-    	model.notifyViewOfInfoMessage(player.toString() + " sold property for $" + sellPrice + "!");
     	
+    	//transfer owner
     	this.setOwner(null);
     	player.removeProperty(this);
-    	
-    	
     	return sellPrice;
-    	
     }
     
+    /**
+     * Helper method overriding default .equals()
+     */
     @Override 
     public boolean equals(Object other) {
     	if (this == other) {
@@ -190,6 +180,9 @@ public abstract class Property extends CostSpace {
     	
     }
     
+    /**
+     * Helper method overriding default .hashCode()
+     */
     @Override 
     public int hashCode() {
     	return Objects.hash(this.getName());

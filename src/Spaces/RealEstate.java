@@ -4,13 +4,17 @@ import java.util.*;
 
 import Monopoly.Model;
 
+/**
+ * Real Estate properties, a subclass of Property. Allows buying/selling buildings, which update
+ * their rent prices. Each Real Estate has their own color grouping.
+ * @author Jake
+ */
 public class RealEstate extends Property {
-	
-	private int buildPrice;
-	protected Color color; //default to none
-	private boolean canBuild = false;
-	private int buildingStage = 0;
-	public enum Color{
+	private int buildPrice;					//cost to build on real estate
+	protected Color color; 					//default to none
+	private boolean canBuild = false;		//boolean flag for if a player can build
+	private int buildingStage = 0; 			//how many buildings are built on a real estate property
+	public enum Color { 					//different color sets of real estate
 		BROWN,
 		LIGHTBLUE,
 		PINK,
@@ -19,17 +23,22 @@ public class RealEstate extends Property {
 		YELLOW,
 		GREEN,
 		BLUE
-		
 	}
 	
-	
+	/**
+	 * Constructor
+	 * Requires a Color, name, purchaseAmmt, and the different unique rent prices at each "build" stage
+	 * @param color - Color enum
+	 * @param name - String name
+	 * @param purchaseAmt - int Cost to purchase
+	 * @param rentStages - int[] the different costs at each building stage
+	 */
 	public RealEstate(Color color, String name, int purchaseAmt, int[] rentStages) {
 		super(name, purchaseAmt, rentStages);
 		this.color = color;
 
-		
+		//price to build is determined by color group
         switch (color) {
-
 	        case BROWN:
 	            buildPrice = 50; break;
 	        case LIGHTBLUE:
@@ -47,9 +56,6 @@ public class RealEstate extends Property {
 	        case GREEN:
 	            buildPrice = 200; break;
 	    }
-    
-		
-		
 	}
 
 	/**
@@ -61,46 +67,12 @@ public class RealEstate extends Property {
 	}
 	
 	/**
-	 * Sets new color for property
-	 * @param color Color object, that will be the new color
-	 */
-	public void setColor(Color color) {
-		this.color = color;
-	}
-	
-	/**
 	 * Gets the cost to build on this space
 	 * @return A number representing the cost
 	 */
 	public int getBuildPrice() {
 		return buildPrice;
 	}
-	
-	
-    public javafx.scene.paint.Color getFXColor() {
-    	
-        switch (color) {
-            case BLUE:
-                return javafx.scene.paint.Color.BLUE;
-            case BROWN:
-                return javafx.scene.paint.Color.BROWN;
-            case LIGHTBLUE:
-                return javafx.scene.paint.Color.LIGHTBLUE;
-            case PINK:
-                return javafx.scene.paint.Color.PINK;
-            case ORANGE:
-                return javafx.scene.paint.Color.ORANGE;
-            case GREEN:
-                return javafx.scene.paint.Color.GREEN;
-            case RED:
-                return javafx.scene.paint.Color.RED;
-            case YELLOW:
-                return javafx.scene.paint.Color.YELLOW;
-			default:
-				return javafx.scene.paint.Color.LIGHTGREEN;
-        }
-        
-    }
 
 	/**
 	 * The current building stage of this property
@@ -118,6 +90,14 @@ public class RealEstate extends Property {
     	return canBuild;
     }
     
+    /**
+     * Builds a house or hotel on a particular realestate property.
+     * Validates ownership, and if building is allowed, if can afford,
+     * and if building evenly. If passes, then transacts the build and
+     * increments buildstage/rentstage.
+     * @param player - the Player purchasing the building
+     * @param model - Model gamestate object to send notifications
+     */
     public void buildHouseHotel(Player player, Model model) {
     	
     	//check if this space is owned by the purchaser
@@ -125,19 +105,20 @@ public class RealEstate extends Property {
     		return;
     	}
     	
-    	//first must get a color set before can build
+    	//must get a color set before can build
     	if (!this.canBuild) {
     		if (!player.isAI()) model.notifyViewOfInfoMessage("Can't build! Must aquire a set!");
     		return; 
     	}
     	
+    	//can't build if already at stage 5
     	if (this.buildingStage>=5) {
     		if (!player.isAI()) model.notifyViewOfInfoMessage("Already fully developed!");
     		return;
     	}
     	
     	//monopoly rule where you can only build houses/hotels evenly across properties, checking if violation
-			//checking the player's other owned realestate properties of the same color
+		//checking the player's other owned realestate properties of the same color
 	    	List<Property> myProperties = this.getOwner().getListOfProperties();
 	    	for (Property p: myProperties) {
 	    		if (p instanceof RealEstate) {
@@ -164,48 +145,33 @@ public class RealEstate extends Property {
     	}
     }
     
-    public int autoSellHouseHotel(Player player, Model model) {
-    	
-//    	//monopoly rule where you can only sell houses/hotels evenly across properties, checking if violation
-//    	List<Property> myProperties = this.getOwner().getListOfProperties();
-//    	for (Property p: myProperties) {
-//    		if (p instanceof RealEstate) {
-//    			RealEstate checkRealEstate = (RealEstate)p;
-//    			
-//    			if (checkRealEstate.getColor().equals(this.getColor())) {
-//    				//if i have another realestate of the same color that has a higher buildstage, can't sell
-//        			if(checkRealEstate.getBuildingStage()>this.getBuildingStage()) { 
-//        				if (!player.isAI()) model.notifyViewOfInfoMessage("Not selling evenly across properties of same color!");
-//        				return; //Throw exception?
-//        			}
-//    			}	
-//    		}
-//    	}
-//    	
-//    	if (this.buildingStage < 1) {
-//    		model.notifyViewOfInfoMessage("No buildings to sell!");
-//    		return;
-//    	}
-    	
+    /**
+     * Used during bankruptcy. Will make the transaction,
+     * and return the amount of cash raised from selling a
+     * single building on the property.
+     * @param player - Player the player doing the selling
+     * @return - int how much raised cash from selling
+     */
+    public int autoSellHouseHotel(Player player) {
     	//if found no conflicts, sell
     	if (this.buildingStage > 0) {
-    	int sellPrice = buildPrice/2;
-    	player.addCash(sellPrice);
-    	this.rentStageIndex -= 1;
-    	this.buildingStage -= 1;
-    	model.notifyViewOfInfoMessage(player.toString() + " sold house/hotel for $" + sellPrice + "!");
-    	
-    	return sellPrice;
-    	} return 0;
-    	
+	    	int sellPrice = buildPrice/2;
+	    	player.addCash(sellPrice);
+	    	this.rentStageIndex -= 1;
+	    	this.buildingStage -= 1;
+	    	return sellPrice;
+    	}
+    	return 0;
     }
     
     
 	/**
-	 * checks for monopolies. if no monopoly, makes sure that rents are reset to first stage and can't build
-	 * 
-	 * @param 
+	 * Helper function for when property acquired in player.updatePropertiesMatches()
+	 * Will update all matching real estate cards to make sure their rents are upgraded due to match, 
+	 * and will enable building.
+	 * @param matchedOwnedPropertiesCount - int how many matching properties of a particular real estate object
 	 */
+    @Override
 	public void applyMatchedPropertyEffect(int matchedOwnedPropertiesCount) {
 		//brown and blue are only groups of 2
 		if (matchedOwnedPropertiesCount == 2 && (this.color.equals(Color.BROWN) || this.color.equals(Color.BLUE))) {
@@ -227,8 +193,4 @@ public class RealEstate extends Property {
 		}
 		
 	}
-	
-	
-
-
 }

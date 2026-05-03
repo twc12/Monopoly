@@ -1447,7 +1447,7 @@ public class View extends Application implements Observer {
 		// TEST The top color of properties
 		if (space instanceof RealEstate) {
 			Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
-					((RealEstate) space).getFXColor());
+					(getFXColor((RealEstate) space)));
 			topColorBandRect.setTranslateY(-23); // -23 is to put match the corners perfectly
 			spaceCardPane.getChildren().add(topColorBandRect);
 		}
@@ -3263,7 +3263,7 @@ public class View extends Application implements Observer {
 
 			// only realestate has colors
 			if (testSpace instanceof RealEstate) {
-				colorRect.setFill(((RealEstate) testSpace).getFXColor()); // cast to realestate obj so can get javafx
+				colorRect.setFill(getFXColor(re)); // cast to realestate obj so can get javafx
 																			// color
 			} else {
 				colorRect.setFill(defaultSpaceColor);
@@ -3504,5 +3504,33 @@ public class View extends Application implements Observer {
 		return aiLoggerScrollPane;
 
 	}
-
+	
+	/**
+	 * Gets a JAVAFx color out of a Real Estate object based on
+	 * the RealEstate's Color enum.
+	 * @param estate - the real estate object
+	 * @return javafxColor
+	 */
+	private javafx.scene.paint.Color getFXColor(RealEstate estate) {
+	    switch (estate.getColor()) {
+        case BLUE:
+            return javafx.scene.paint.Color.BLUE;
+        case BROWN:
+            return javafx.scene.paint.Color.BROWN;
+        case LIGHTBLUE:
+            return javafx.scene.paint.Color.LIGHTBLUE;
+        case PINK:
+            return javafx.scene.paint.Color.PINK;
+        case ORANGE:
+            return javafx.scene.paint.Color.ORANGE;
+        case GREEN:
+            return javafx.scene.paint.Color.GREEN;
+        case RED:
+            return javafx.scene.paint.Color.RED;
+        case YELLOW:
+            return javafx.scene.paint.Color.YELLOW;
+		default:
+			return javafx.scene.paint.Color.LIGHTGREEN;
+	    }
+	}
 }

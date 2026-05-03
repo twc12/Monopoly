@@ -2572,7 +2572,9 @@ public class View extends Application implements Observer {
 
 		// if the message is a dice roll result, show the dice rolled
 		if (message instanceof DiceRollResultMessage) {
+			
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
+			
 			animateDiceRoll(diceRollResult.getDice1Result(), diceRollResult.getDice2Result());
 		}
 
@@ -2619,7 +2621,7 @@ public class View extends Application implements Observer {
 			if (currentPlayer instanceof AIPlayer) {
 				rollDiceButton.setDisable(true);
 
-				Timeline aiDelay = new Timeline(new KeyFrame(Duration.seconds(4), e -> {
+				Timeline aiDelay = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
 					((AIPlayer) currentPlayer).playAITurn(controller);
 				}));
 
@@ -2917,6 +2919,7 @@ public class View extends Application implements Observer {
 				}
 				// if the player rolled doubles then allow another roll dice
 				else {
+					
 					System.out.println("Log: rollDiceButton.setDisable(false); 2754");
 					rollDiceButton.setDisable(false);
 				}

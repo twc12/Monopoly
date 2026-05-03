@@ -53,7 +53,7 @@ public class Model extends Observable implements Serializable {
 
 	private GameSettings gameSettings; // Placeholder for Jake
 
-	private HashMap<String, Boolean> themes = new HashMap<>();
+
 	private int turnCounter = 1;
 	private boolean gameFinished = false;
 
@@ -111,7 +111,7 @@ public class Model extends Observable implements Serializable {
 		playerIconsToPickFrom.add("wheeler");
 
 		// instantiate the board of spaces and apply gamesettings
-		board = new Board();
+		board = new Board(this);
 		GoSpace goSpace = (GoSpace) board.firstSpace;
 		// applying go value to go space
 		goSpace.setAmountEarnedWhenPassingGo(gameSettings.getCustomGoValue());
@@ -216,6 +216,10 @@ public class Model extends Observable implements Serializable {
 	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public String getTheme() {
+		return theme;
 	}
 
 	/**
@@ -404,14 +408,6 @@ public class Model extends Observable implements Serializable {
 		return attemptsAmmount;
 	}
 
-	/**
-	 * Gets a hash map of all the themes for the game
-	 * 
-	 * @return A hash map of all game themes
-	 */
-	public HashMap<String, Boolean> getThemes() {
-		return themes;
-	}
 
 	/**
 	 * putPlayerInJail(player): This function will be called when the player should

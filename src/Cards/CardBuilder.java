@@ -97,12 +97,12 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Pay Poor Pirate Tax Of $15");
 			cardDescription.add("Go Directly\nTo Brig\nDo Not Pass Go\nDo Not Collect $200");
 			cardDescription.add("Advance To Go");
-			cardDescription.add("Advance To Railroad");
+			cardDescription.add("Advance To Ship");
 			cardDescription.add("Advance To Utility");
-			cardDescription.add("Advance To Pirate Cove");
+			cardDescription.add("Advance To Isla Cruces");
 			cardDescription.add("Take A Stroll On The\nPlank Walk\nAdvance To Plank Walk");
 			cardDescription.add("Advance To St. Charles Port");
-			cardDescription.add("Take A Ride On The Reading Ship");
+			cardDescription.add("Take A Ride On The Black Pearl");
 			cardDescription.add("Ye Have Been Elected\nCaptain Of The Crew\nPay Each Player $50");
 			cardDescription.add("Get Out Of Brig Free!\nThis Card May Be Kept");
 			cardDescription.add("Sail Forward 3 Spaces");

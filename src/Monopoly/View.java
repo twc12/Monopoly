@@ -692,7 +692,7 @@ public class View extends Application implements Observer {
 	 * information is available for the code in this function to use. This should
 	 * make sense, we only create the main game once its ready to be made.
 	 * 
-	 * @return
+	 * @return Scene: The main scene of the playable game
 	 */
 	private Scene createMainGame() {
 		potentialTradeProperty = null;
@@ -739,10 +739,6 @@ public class View extends Application implements Observer {
 		playerObjToPlayerPiece = new HashMap<Player, Circle>();
 
 		BorderPane mainScreen = new BorderPane();
-
-		// Set the monopoly title at the top
-		VBox topLabelSection = createTopLabelSection();
-		topLabelSection.setAlignment(Pos.TOP_CENTER);
 
 		// Create the board
 		StackPane visualGameBoard = buildMonopolyBoard();
@@ -898,11 +894,6 @@ public class View extends Application implements Observer {
 			root.setStyle("-fx-background-color: rgb(168, 190, 168,.6);");
 		if (theme.equals("pirateTheme"))
 			root.setStyle("-fx-background-color: rgb(198, 164, 102);");
-
-		root.getChildren().add(topLabelSection);
-		StackPane.setAlignment(topLabelSection, Pos.TOP_CENTER);
-		topLabelSection.setMouseTransparent(true);
-		topLabelSection.setTranslateY(15); // move down slightly
 
 		// ___________________________Right side
 		// image___________________________________
@@ -1118,10 +1109,10 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * showOtherPlayersInfoInTheMiddle(): This function will be called when the
+	 * showOtherPlayersInfoInBottomRight(): This function will be called when the
 	 * player card on the right side is clicked. This function will place the
-	 * selected other players info card in the middle of the screen to replace the
-	 * dice area temporally until roll dice happens again
+	 * selected other players info card in the bottom right of the screen to replace the
+	 * Ai Logger area temporally they click on the card again
 	 * 
 	 * @param selectedOtherPlayer (Player): The object of the selected other player
 	 *                            chosen to be shown
@@ -1153,30 +1144,13 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This will create the top "MONOPOLY" Text, the user error info and the Ai
-	 * logger
-	 * 
-	 * @return VBox: IT holds top: "MOPOLY", middle: "User error info", bottom:
-	 *         VBox: Ai logger
-	 */
-	private VBox createTopLabelSection() {
-
-		VBox topLabelSection = new VBox(10);
-		topLabelSection.setAlignment(Pos.CENTER);
-
-		// Move down slightly
-		topLabelSection.setPadding(new Insets(-105, 0, 0, 0));
-
-		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
-
-		return topLabelSection;
-	}
-
-	/**
 	 * buildMonopolyBoard(): This function will craft the center monopoly board with
-	 * all spaces.
+	 * all spaces. Each space will be able to be hovered over to show detailed stats
+	 * it will also have nice images for the corner spaces according to the selected
+	 * theme. We will also put the title image view in here
+	 * and the info boxes like who's turn it is and what just happened
 	 * 
-	 * @return GridPane: The one to set at the center of the screen
+	 * @return StackPane: The one to set at the center of the screen
 	 */
 	public StackPane buildMonopolyBoard() {
 
@@ -1235,14 +1209,14 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth,
-	 * boardHeight): This function will loop over all the spaces cards and add them
-	 * to the main board grid pane in their corrisponding orientation and such
+	 * placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth, boardHeight): 
+	 * This function will loop over all the spaces cards and add them
+	 * to the main board grid pane in their corresponding orientation and such
 	 * 
-	 * @param mainBoardPane     (GridPane): The main visual grid pane in the middle
-	 * @param allSpaces         (List<Spaces>): A list of all spaces on the board
-	 * @param boardWidth        (int): The 11x11 dimension of the board
-	 * @param boardHeight(int): The 11x11 dimension of the board
+	 * @param mainBoardPane	(GridPane): The main visual grid pane in the middle
+	 * @param allSpaces   	(List<Spaces>): A list of all spaces on the board
+	 * @param boardWidth  	(int): The 11x11 dimension of the board
+	 * @param boardHeight	(int): The 11x11 dimension of the board
 	 */
 	private void placeAllPropertySpaces(GridPane mainBoardGridPane, List<Space> allSpaces, int boardWidth,
 			int boardHeight) {
@@ -1526,9 +1500,12 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This creates and returns the boardpane for the bottom section
+	 * This creates and returns the Stackpane for the bottom section
+	 * The bottom section has the current players info, animated
+	 * dice rolling, main buttons, and the Ai logger/ other players info 
 	 * 
-	 * @return
+	 * @return StackPane: It holds the left card player info, dice roll area, main buttons,
+	 * and ai logger/ other players info
 	 */
 	private StackPane buildBottomSection() {
 
@@ -1584,11 +1561,11 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This function will build the group that holds a VBox of buttons as
+	 * This function will build the main buttons group that holds a VBox of buttons as
 	 * rectangles. There will be a Roll dice button, Trade button, build button, and
 	 * end turn button.
 	 * 
-	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)a
+	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)
 	 */
 	private Group buildMainButtons() {
 		// Buttons
@@ -1618,6 +1595,10 @@ public class View extends Application implements Observer {
 		tradeButtonRect.setArcHeight(30);
 
 		Label tradeLabel = new Label("Trade");
+		// if trading is disabled, then switch the text to show disabled
+		if (controller.model.getGameSettings().getTradingEnabled() == false) {
+			tradeLabel.setText("Trading <Disabled>");
+		}
 		StackPane tradeButtonStackPane = new StackPane();
 		this.tradeButton = tradeButtonStackPane;
 		tradeButtonStackPane.getChildren().addAll(tradeButtonRect, tradeLabel);
@@ -1724,35 +1705,6 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This is a helper fucntion to `Node createVisualPlayerInfoCard(currPlyaer)`
-	 * because I needed the string of a color name and I didnt want the large switch
-	 * statement in that function
-	 * 
-	 * @param color (Color): Javafx color object
-	 * @return String, the lowercase name of the color object
-	 */
-	private String colorObjectToString(Color color) {
-		if (color.equals(Color.RED))
-			return "red";
-		if (color.equals(Color.BLUE))
-			return "blue";
-		if (color.equals(Color.GREEN))
-			return "green";
-		if (color.equals(Color.YELLOW))
-			return "yellow";
-		if (color.equals(Color.PURPLE))
-			return "purple";
-		if (color.equals(Color.PINK))
-			return "pink";
-		if (color.equals(Color.BLACK))
-			return "black";
-		if (color.equals(Color.ORANGE))
-			return "orange";
-		return "black"; // if no color here then black is fine
-
-	}
-
-	/**
 	 * createScrollPaneOfPlayersProperties(player): This function will create a
 	 * visual java fx scroll pane that will be horizontal. It will show the players
 	 * owned properties with details on how much they get per house they own how
@@ -1848,7 +1800,10 @@ public class View extends Application implements Observer {
 						if (currentTurnsPlayer.getIsDoneRollingDice() == true) {
 							potentialTradeProperty = thisSpacesProperty;
 							System.out.println("Setting potentialTradeProperty to " + thisSpacesProperty.getName());
-							tradeButton.setDisable(false); // enable the trade button
+							// if trading is enabled, then turn on the trade button
+							if (controller.model.getGameSettings().getTradingEnabled() == true) {
+								tradeButton.setDisable(false); // enable the trade button
+							}
 						}
 					}
 
@@ -1865,7 +1820,10 @@ public class View extends Application implements Observer {
 					if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 						potentialTradeProperty = (Property) visualPropertyInfoCard.getUserData();
 						System.out.println("Setting potentialTradeProperty to " + potentialTradeProperty.getName());
-						tradeButton.setDisable(false); // enable the trade button
+						// if trading is enabled, then turn on the trade button
+						if (controller.model.getGameSettings().getTradingEnabled() == true) {
+							tradeButton.setDisable(false); // enable the trade button
+						}
 					}
 				});
 			}
@@ -1897,43 +1855,35 @@ public class View extends Application implements Observer {
 
 	/**
 	 * handleDiceRoll(): This function is called when the user presses the "Roll
-	 * Dice" button
+	 * Dice" button it will confirm the player isnt in the jail and it will call the 
+	 * controller to roll dice for the current player 
 	 */
 	private void handleDiceRoll() {
-
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn.
-
-		// TESTING
-		System.out.println("handleDiceRol: called");
-
+		System.out.println("[+] handleDiceRol: called");
 		Player currentPlayer = controller.getCurrentPlayer();
-
-		// if the player is in jail then get the user input and process the user
-		// decision
+		// if the player is in jail then get the user input and process the user decision
 		if (currentPlayer.isInJail() == true) {
 			return;
 		} else {
-			// TESTING
-			System.out.println("handleDiceRol: calling controller.rollDice(currPlayer)");
-
+			System.out.println("	[+] handleDiceRol: calling controller.rollDice(currPlayer)");
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
-
 		}
-
 		// if the player is done rolling dice then dont allow them to roll dice
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn.
 		}
-
 		populatePlayerCardWithNewInfo(currentPlayer); // refresh player card after dice-roll phase resolves
-
 		return;
 	}
 
 	/**
 	 * This can only happen when the trade button is turned on by a player pressing
-	 * on another players porperty in their info card
+	 * on another players porperty in their info card. This will 
+	 * prompt the user with a trade window where they can chose their own cash,
+	 * get out of jail free cards, and properties they want to put up 
+	 * for that trade.
 	 */
 	private void handleTradeButton() {
 		Player buyingPlayer = controller.getCurrentPlayer();
@@ -2136,8 +2086,10 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) build
-	 * button is pressed
+	 * this will be called when the build button is pressed. It will 
+	 * check that the selected property to build is actually something
+	 * and then it will attempt to build the next house/hotel on the property 
+	 * if the player has enough money.  
 	 */
 	private void handleBuildButton() {
 		if (selectedPropertyToBuild != null) {
@@ -2152,8 +2104,8 @@ public class View extends Application implements Observer {
 	 * animateDiceRoll(): This function will show the dice result of a turn in the
 	 * bottom center of the screen with two large dice.
 	 * 
-	 * Parameters: dice1Result (int): The result for the first dice dice2Result
-	 * (int): The result for the second dice
+	 * @param dice1Result (int): The result for the first dice dice2Result
+	 * @param dice2Result (int): The result for the second dice
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/dice.mp3").toExternalForm());
@@ -2339,16 +2291,8 @@ public class View extends Application implements Observer {
 	/**
 	 * animatePlayerMoving(player, ammtMoved): This function will move a player
 	 * `ammtMoved` number of spaces. This function is called after a message is
-	 * received from the model.
-	 * 
-	 * MAJOR PROBLEM ALERT!!!! I dont think we can "Animate" if we are not doing
-	 * circle.translateX!!! Right now this function will just place the player piece
-	 * into the next stack frame by adding it as a child of that frame. To do actual
-	 * animation we have to do translates which Alex M couldnt figure out in time
-	 * for the milestone 1. The problem he was facing was getting the location of
-	 * the stack frame I wanted to move to and then translating a player piece to
-	 * that x location. - WE CAN GET X,Y locations of the board space stack panes
-	 * BUT I kept getting super high numbers and I couldnt debug the offset in time
+	 * received from the model. it will animate the player moving by delaying 
+	 * the amount of time before moving to the next space 
 	 * 
 	 * @param player     (Player): The player that moved
 	 * @param ammtToMove (int): The amount they moved and should be moved
@@ -2474,7 +2418,9 @@ public class View extends Application implements Observer {
 	/**
 	 * showOptionsForGettingOutOfJail(currentPlayer): This function will determine
 	 * which options are available for getting out of jail for this player based on
-	 * what the player has
+	 * what the player has. If they have a get out of jail card itll show that option
+	 * if they have more dice rolls itll show roll doubles, if they have atleast $50 
+	 * it will show "pay $50" 
 	 * 
 	 * @param currentPlayer (Player): the current player whos turn it is, who is
 	 *                      found to be in jail
@@ -2560,7 +2506,18 @@ public class View extends Application implements Observer {
 
 	/**
 	 * This function will decipher that type of message is received and then it will
-	 * act on the message with a corresponding function
+	 * act on the message with a corresponding function.
+	 * 
+	 * There is a lot of different types of messages from the model that can be received
+	 * one is a dice roll result, at which point the view will aniimate the dice,
+	 * 
+	 * another is the action of a ai player, it will show that in the log in the bottom 
+	 * right
+	 * 
+	 * another is when a player is prompted to purchase a property it will show that info 
+	 * card 
+	 * 
+	 * There are a few more 
 	 * 
 	 * @param model   (Model): The state of the model
 	 * @param message (Object): Could be any type of message from the model
@@ -2735,7 +2692,8 @@ public class View extends Application implements Observer {
 
 	/**
 	 * Adds an Overlay to the board that can display a card. This will show the card
-	 * right in the middle of the screen.
+	 * right in the middle of the screen. Then once the user clicks the card
+	 * it will take effect
 	 */
 	private void buildCardOverlay() {
 		// Sizing
@@ -2788,7 +2746,7 @@ public class View extends Application implements Observer {
 	/**
 	 * Used for displaying and updating the card Overlay when a card space is hit.
 	 * 
-	 * @param card
+	 * @param card (Card): The card object that should be shown to the viewer
 	 */
 	public void showCard(Card card) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/cardSound.mp3").toExternalForm());
@@ -2863,7 +2821,14 @@ public class View extends Application implements Observer {
 		});
 	}
 
-	// purchaseprompt hbox with property infocard on left, buttons on right
+	/**
+	 * showPurcahsePrompt(player, property): This function will be called
+	 * when we recieve a "show purchase prompt" from the model. This function
+	 * pops up the property given as a info card and shows a buy/skip button
+	 * for the user to press to choose to buy or skip buying the property
+	 * @param player (Player): The player who has the right to choose
+	 * @param property (Property): The property that is being sold
+	 */
 	public void showPurchasePrompt(Player player, Property property) {
 		rollDiceButton.setDisable(true);
 		System.out.println("Log: rollDiceButton.setDisable(true) 2731");
@@ -2986,12 +2951,13 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * Builds a resizable stackframe for viewing property cards. used for tracking
-	 * rent prices and general space info
+	 * Builds a resize-able stackframe for viewing property cards. used for tracking
+	 * rent prices and general space info. This function is used for everything, 
+	 * showing purchase prompts, on hover of spaces, and property info scroll panes
 	 * 
 	 * @param testSpace the space that the card is basing itself on
 	 * @param cardWidth the width of the card to scale from
-	 * @return StackPane the card image
+	 * @return StackPane the card image with all the detail
 	 */
 	public StackPane buildSpaceCard(Property testSpace, double cardWidth) {
 		double cardHeight = cardWidth * 1.6;
@@ -3259,6 +3225,12 @@ public class View extends Application implements Observer {
 		return root;
 	}
 
+	/**
+	 * buildAILoggerScrollPane(): This function will build a scroll pane 
+	 * that has a black background and will be added to with text whenever
+	 * a ai makes a decision. 
+	 * @return ScrollPane: The scroll pane for the ais actions to fill 
+	 */
 	private ScrollPane buildAILoggerScrollPane() {
 
 		// AI MOVEMENT/DECISION LOGGER

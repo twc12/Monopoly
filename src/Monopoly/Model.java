@@ -460,9 +460,14 @@ public class Model extends Observable implements Serializable {
 	/**
 	 * Grabs the card that send the player to jail
 	 * 
+	 * This is made because we needed to visually delay 
+	 * the action of moving to jail to fix a bug that the player 
+	 * circle icon in the view didnt make it all the way to 
+	 * the jail and it would stop short 
+	 * 
 	 * @return the jail card, a card object
 	 */
-	public Card getGoToJail() {
+	public Card getGoToJailCard() {
 		return jailCard;
 	}
 }

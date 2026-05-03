@@ -1,9 +1,9 @@
 /**
- * This class holds the Community Chest space object, which when the player lands on it,
- * The space pulls from the models Community Chest card deck and applies that effect to the player. 
- * The view is then notified of this to show accordingly.
+ * CommunityChest: Represents
+ * a community chest space on the monopoly
+ * board in the backend
  * 
- * @author Tyler Carpenter
+ * @author Tyler 
  */
 package Spaces;
 
@@ -13,23 +13,25 @@ import Monopoly.Model;
 public class CommunityChest extends Space {
 
 	/**
-	 * Space constructor, that constructs the name and the string for the 
-	 * spaces image file 
-	 * 
-	 * @param imageFile
+	 * Constructor: Builds a instance of the community
+	 * chest card pulling space on the board
+	 * @param imageFile (Str): The image path for this space
 	 */
 	public CommunityChest(String imageFile) {
 		super("Community Chest");
 		this.imageFile = imageFile;
 	}
-	
+
 	/**
-	 * Processes the space by popping the card from the top of the Community Chest card stack, then 
-	 * re-populating the deck if it is empty, then notifying the view of the cards effect.
-	 * The controller applies the effect to the player.
+	 * processSpace(player, model): This function will act on the player
+	 * the action of pulling a card from the community chest space 
+	 * 
+	 * @param Player; the player to act the card on 
+	 * @param Modell: used to notify the view 
 	 */
 	@Override
 	protected void processSpace(Player player, Model model) {
+		System.out.println("[+] ChanceCard: "+player.getPlayerName()+" landed on community chest card");
 		Card card = model.getCommunityChestCards().pop();
 		if(model.getCommunityChestCards().isEmpty())
 			model.regenerateDeck();

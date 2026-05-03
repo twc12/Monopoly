@@ -10,12 +10,12 @@ import Monopoly.Model;
 import Spaces.Player;
 
 public interface CardEffect {
-	
+
 	/**
 	 * executes given code
 	 * 
 	 * @param player: Specified player object
-	 * @param model: Model class for larger scale interaction
+	 * @param model:  Model class for larger scale interaction
 	 */
 	void execute(Player player, Model model);
 }

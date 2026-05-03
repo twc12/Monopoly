@@ -2,18 +2,6 @@ package Spaces;
 
 import Monopoly.Model;
 
-/**
- * GoSpace:
- * This class will represent the go space in the model
- * By default this space will give the player 200 for passing go
- * but on game initialization it can be changed with the setter
- * to give out a different amount.
- * 
- *  Processing this space would be simply adding the cash to the player 
- * 
- * @author Jake
- * @author Alex
- */
 public class GoSpace extends Space {
 	
 	private int amountEarnedWhenPassingGo = 200;

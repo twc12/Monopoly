@@ -5,6 +5,11 @@ import java.util.List;
 import Spaces.Player;
 import Spaces.Property;
 
+/**
+ * Sent to the view after a bankruptcy has been processed, and gives
+ * info on the outcome of the bankruptcy.
+ * @author: Jake
+ */
 public class BankruptcyMessage {
 
 	private int ammtOwed;
@@ -13,6 +18,14 @@ public class BankruptcyMessage {
 	private Player player;
 	private boolean gameOver;
 	
+	/**
+	 * Constructor
+	 * @param player - Player player going through bacnkruptcy
+	 * @param ammtOwed - int how much they're being charged, which is greater than their strating cash
+	 * @param buildingsSoldCount - int how many buildings they sold during bankruptcy
+	 * @param propertiesSold - List<Property> how many properties sold during bankruptcy
+	 * @param gameOver - boolean if the player survived bankruptcy or not
+	 */
 	public BankruptcyMessage(Player player, int ammtOwed, int buildingsSoldCount, List<Property> propertiesSold, boolean gameOver) {
 		this.ammtOwed = ammtOwed;
 		this.buildingsSoldCount = buildingsSoldCount;
@@ -53,6 +66,10 @@ public class BankruptcyMessage {
 		return gameOver;
 	}
 	
+	/**
+	 * GETTER: Gets the player who went through bankruptcy
+	 * @return Player object, the player going through bankruptcy
+	 */
 	public Player getPlayer() {
 		return player;
 	}

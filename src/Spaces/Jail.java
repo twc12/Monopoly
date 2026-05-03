@@ -6,30 +6,16 @@ import java.util.Set;
 
 import Monopoly.Model;
 
-/**
- * Jail: This class represents the jail space in the model.
- * This space holds both the players in the jail and the players just visiting.
- * This space will store the amount of attempts a player used to get out 
- * of jail in the map called 'playerAttemptsToGetOutMapping'
- * this is used because once a player rolls 3 times they are forced to pay $50 
- * @author Alex
- * @author Jarrod
- */
 public class Jail extends Space {
 	
 	
 	private Set<Player> currPlayersInJail;
 	public  Map<Player, Integer> playerAttemptsToGetOutMapping;
 	
-	/**
-	 * Constructor: Creates the jail object that will hold all the players
-	 * just visiting and also imprisoned
-	 * @param imageFileStr (String): The image file name for the jail space 
-	 */
-	public Jail(String imageFileStr) {
+	public Jail(String imageFile) {
 		super("Jail");
 		playerAttemptsToGetOutMapping = new HashMap<>();
-		this.imageFile = imageFileStr;
+		this.imageFile = imageFile;
 	}
 	
 	/**

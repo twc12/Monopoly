@@ -1,9 +1,8 @@
 /**
- * This class holds the chance space object, which when the player lands on it,
- * The space pulls from the models chance card deck and applies that effect to the player. 
- * The view is then notified of this to show accordingly.
+ * Chance: This space represents
+ * a chance card space 
  * 
- * @author Tyler Carpenter
+ * @author Tyler
  */
 
 package Spaces;
@@ -14,10 +13,8 @@ import Monopoly.Model;
 public class Chance extends Space {
 	
 	/**
-	 * Space constructor, that constructs the name and the string for the 
-	 * spaces image file 
-	 * 
-	 * @param imageFile
+	 * Constructor: Initializes a Chance card pulling space 
+	 * @param imageFile (Str): The string for this space image
 	 */
 	public Chance(String imageFile) {
 		super("Chance");
@@ -25,13 +22,17 @@ public class Chance extends Space {
 	}
 
 	/**
-	 * Processes the space by popping the card from the top of the chance card stack, then 
-	 * re-populating the deck if it is empty, then notifying the view of the cards effect.
-	 * The controller applies the effect to the player.
+	 * processSpace(player, model): This will
+	 * act on the player and pull a card and 
+	 * act on that card using this player
+	 * 
+	 * @param Player: The player to act on 
+	 * @param Model: uses to notify the view 
 	 */
 	@Override
 	protected void processSpace(Player player, Model model) {
 		Card card = model.getChanceCards().pop();
+		System.out.println("[+] <Chance>processSpace: "+player.getPlayerName()+" landed on chance card -> "+card.getDescription());
 		if(model.getChanceCards().isEmpty())
 			model.regenerateDeck();
 		if (!player.isAI()) model.notifyViewCardDrawn(player, card);

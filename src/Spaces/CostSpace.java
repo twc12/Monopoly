@@ -1,7 +1,16 @@
 package Spaces;
 
+/**
+ * Abstract subclass of Space. Property and Tax Spaces are all CostSpaces
+ * which will need to have a method .getCostToCharge based on different factors.
+ * @author: Jake
+ */
 public abstract class CostSpace extends Space {
 	
+	/**
+	 * Constructor
+	 * @param name - String the name of the space
+	 */
 	public CostSpace(String name) {
 		super(name);
 	}
@@ -13,6 +22,4 @@ public abstract class CostSpace extends Space {
 	 * @return the amount this player will be charged
 	 */
 	public abstract int getCostToCharge(Player player, int diceRoll);
-
-	
 }

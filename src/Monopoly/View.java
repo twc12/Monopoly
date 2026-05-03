@@ -53,6 +53,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -287,6 +288,7 @@ public class View extends Application implements Observer {
 	 */
 	private StackPane detailedCardInfoOverlay;
 	private StackPane tradeViewStackPane;
+	private StackPane aiTradeViewStackPane;
 
 	private StackPane root;
 	private Stage stage;
@@ -569,6 +571,7 @@ public class View extends Application implements Observer {
 		startGameButton.setBorder(Border.stroke(Color.GOLD));
 		startGameButton.setMinSize(150, 60);
 		startGameButton.setOnAction(event -> {
+			System.out.println("[+] Starting game!");
 			controller = new Controller(this);
 			controller.initializeGameSettings(gameSettings);
 
@@ -579,6 +582,7 @@ public class View extends Application implements Observer {
 			// if the first player is an ai, send message to model, to send back to us to
 			// start ai player
 			if (controller.getCurrentPlayer() instanceof AIPlayer) {
+				System.out.println("[-] First player was found to be a ai.. Calling NotifyViewOfNextPlayersTurn("+controller.getCurrentPlayer().getPlayerName()+")");
 				controller.model.notifyViewOfNextPlayersTurn(controller.getCurrentPlayer());
 			}
 		});
@@ -606,7 +610,7 @@ public class View extends Application implements Observer {
 				stage.setScene(gameScene);
 				stage.setResizable(false);
 			} else {
-				System.out.println("Log: File section cancled");
+				//System.out.println("[+] <View>start: File section cancled");
 
 			}
 		});
@@ -692,7 +696,7 @@ public class View extends Application implements Observer {
 	 * information is available for the code in this function to use. This should
 	 * make sense, we only create the main game once its ready to be made.
 	 * 
-	 * @return Scene: The main scene of the playable game
+	 * @return
 	 */
 	private Scene createMainGame() {
 		potentialTradeProperty = null;
@@ -740,6 +744,10 @@ public class View extends Application implements Observer {
 
 		BorderPane mainScreen = new BorderPane();
 
+		// Set the monopoly title at the top
+		VBox topLabelSection = createTopLabelSection();
+		topLabelSection.setAlignment(Pos.TOP_CENTER);
+
 		// Create the board
 		StackPane visualGameBoard = buildMonopolyBoard();
 
@@ -765,8 +773,8 @@ public class View extends Application implements Observer {
 				if (currStackPane.getUserData().equals(playersCurrentSpaceObj)) {
 					// Create a new circle for each player
 					Circle playersIconCircle = new Circle(0, 0, playerCircleRadius);
-					System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-							+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
+					////System.out.println("[+] : Attempting to load playerIcon at addr: " + "/" + theme + "/"
+					//		+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 					Image playersIconImage = new Image(
 							"/" + theme + "/" + currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 					playersIconCircle.setFill(new ImagePattern(playersIconImage));
@@ -895,6 +903,11 @@ public class View extends Application implements Observer {
 		if (theme.equals("pirateTheme"))
 			root.setStyle("-fx-background-color: rgb(198, 164, 102);");
 
+		root.getChildren().add(topLabelSection);
+		StackPane.setAlignment(topLabelSection, Pos.TOP_CENTER);
+		topLabelSection.setMouseTransparent(true);
+		topLabelSection.setTranslateY(15); // move down slightly
+
 		// ___________________________Right side
 		// image___________________________________
 		Image rightImage = new Image("/" + theme + "/uiRight.png");
@@ -973,9 +986,9 @@ public class View extends Application implements Observer {
 			fileChooser.setInitialFileName("monopolySave.monopoly");
 			File selectedFile = fileChooser.showSaveDialog(stage);
 			if (selectedFile != null) {
-				System.out.println("Logs: Save file selected: " + selectedFile.getAbsolutePath());
+				////System.out.println("[+] : Save file selected: " + selectedFile.getAbsolutePath());
 			} else {
-				System.out.println("Logs: No save folder selected, canclled");
+				////System.out.println("[+] : No save folder selected, canclled");
 			}
 
 			// double check that the name ends with ".monopoly", add it if it doesnt
@@ -991,7 +1004,7 @@ public class View extends Application implements Observer {
 				objOutStream.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("Logs: Failed to save a game state!");
+				////System.out.println("[+] : Failed to save a game state!");
 				infoToTellPlayer.setText("Error: Failed to save game state!");
 			}
 		});
@@ -1035,16 +1048,16 @@ public class View extends Application implements Observer {
 		if (rightSideIconsMap == null) {
 			rightSideIconsMap = new HashMap<>();
 			for (Player player : allPlayers) {
-				System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-						+ player.getPlayerIconStr() + "PlayerIcon.png");
+				// ////System.out.println("[+] <view>buildRightPlayerPicker: Attempting to load playerIcon at addr: " + "/" + theme + "/"
+				//		+ player.getPlayerIconStr() + "PlayerIcon.png");
 				Image playerIconImage = new Image("/" + theme + "/" + player.getPlayerIconStr() + "PlayerIcon.png");
 				Circle playersIconCircle = new Circle(12, new ImagePattern(playerIconImage));
 				rightSideIconsMap.put(player, playersIconCircle);
-				System.out.println("Log: rightPicker: maping=" + rightSideIconsMap.get(currPlayer));
+				////System.out.println("[+] <view>buildRightPlayerPicker: rightPicker: maping=" + rightSideIconsMap.get(currPlayer));
 			}
 		}
 
-		System.out.println("Log: rightPicker: the entire map: " + rightSideIconsMap);
+		//////System.out.println("[+] <view>buildRightPlayerPicker: rightPicker: the entire map: " + rightSideIconsMap);
 
 		// loop over all the players, adding their rectangle to the right size with
 		// their color and Id
@@ -1054,7 +1067,7 @@ public class View extends Application implements Observer {
 			StackPane currPlayerStackPane;
 
 			Circle playersIconCircle = rightSideIconsMap.get(player);
-			System.out.println("Logs: buildRightSidePicker: playersIconCirlce=" + playersIconCircle);
+			//////System.out.println("[+] <view>buildRightPlayerPicker: buildRightSidePicker: playersIconCirlce=" + playersIconCircle);
 
 			// for the current player, create a empty white box for them
 			if (player.equals(currPlayer)) {
@@ -1109,10 +1122,10 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * showOtherPlayersInfoInBottomRight(): This function will be called when the
+	 * showOtherPlayersInfoInTheMiddle(): This function will be called when the
 	 * player card on the right side is clicked. This function will place the
-	 * selected other players info card in the bottom right of the screen to replace the
-	 * Ai Logger area temporally they click on the card again
+	 * selected other players info card in the middle of the screen to replace the
+	 * dice area temporally until roll dice happens again
 	 * 
 	 * @param selectedOtherPlayer (Player): The object of the selected other player
 	 *                            chosen to be shown
@@ -1144,13 +1157,30 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * buildMonopolyBoard(): This function will craft the center monopoly board with
-	 * all spaces. Each space will be able to be hovered over to show detailed stats
-	 * it will also have nice images for the corner spaces according to the selected
-	 * theme. We will also put the title image view in here
-	 * and the info boxes like who's turn it is and what just happened
+	 * This will create the top "MONOPOLY" Text, the user error info and the Ai
+	 * logger
 	 * 
-	 * @return StackPane: The one to set at the center of the screen
+	 * @return VBox: IT holds top: "MOPOLY", middle: "User error info", bottom:
+	 *         VBox: Ai logger
+	 */
+	private VBox createTopLabelSection() {
+
+		VBox topLabelSection = new VBox(10);
+		topLabelSection.setAlignment(Pos.CENTER);
+
+		// Move down slightly
+		topLabelSection.setPadding(new Insets(-105, 0, 0, 0));
+
+		BorderPane.setAlignment(topLabelSection, Pos.CENTER);
+
+		return topLabelSection;
+	}
+
+	/**
+	 * buildMonopolyBoard(): This function will craft the center monopoly board with
+	 * all spaces.
+	 * 
+	 * @return GridPane: The one to set at the center of the screen
 	 */
 	public StackPane buildMonopolyBoard() {
 
@@ -1209,21 +1239,21 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth, boardHeight): 
-	 * This function will loop over all the spaces cards and add them
-	 * to the main board grid pane in their corresponding orientation and such
+	 * placeAllPropertySpaces(mainBoardGridPane, allSpaces, boardWidth,
+	 * boardHeight): This function will loop over all the spaces cards and add them
+	 * to the main board grid pane in their corrisponding orientation and such
 	 * 
-	 * @param mainBoardPane	(GridPane): The main visual grid pane in the middle
-	 * @param allSpaces   	(List<Spaces>): A list of all spaces on the board
-	 * @param boardWidth  	(int): The 11x11 dimension of the board
-	 * @param boardHeight	(int): The 11x11 dimension of the board
+	 * @param mainBoardPane     (GridPane): The main visual grid pane in the middle
+	 * @param allSpaces         (List<Spaces>): A list of all spaces on the board
+	 * @param boardWidth        (int): The 11x11 dimension of the board
+	 * @param boardHeight(int): The 11x11 dimension of the board
 	 */
 	private void placeAllPropertySpaces(GridPane mainBoardGridPane, List<Space> allSpaces, int boardWidth,
 			int boardHeight) {
 
 		for (int spaceIdx = 0; spaceIdx < allSpaces.size(); spaceIdx++) {
 			// TESTING
-			System.out.println("SpaceIdx=" + spaceIdx);
+			//////System.out.println("[+] <View>placeAllPropertySpaces: SpaceIdx=" + spaceIdx);
 
 			Space currSpace = allSpaces.get(spaceIdx);
 
@@ -1395,11 +1425,10 @@ public class View extends Application implements Observer {
 	 * @param rotateAmmt        (int): Some spaces are rotated so this will be
 	 *                          inputed based on the side of the board
 	 */
-	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt,
-			int spaceIdx) {
+	private void addPropertySpaceObjToBoard(GridPane mainBoardGridPane, Space space, int col, int row, int rotateAmmt, int spaceIdx) {
 		int nameFont = 8;
 		// TESTING
-		System.out.println("\nPutting Space: " + space.toString() + "in col=" + col + " row=" + row);
+		////System.out.println("[+] <view>addPropertySpaceObjToBoard: Putting Space: " + space.toString() + "in col=" + col + " row=" + row);
 		// ^^ TESTING
 
 		// IN THE FUTURE WE WILL CALL A FUNCTION THAT RETURNS A STACK FRAME WHICH
@@ -1418,7 +1447,7 @@ public class View extends Application implements Observer {
 		// TEST The top color of properties
 		if (space instanceof RealEstate) {
 			Rectangle topColorBandRect = new Rectangle(widthOfPropertySpaceCards, heightOfColorOnSpaceCard,
-					((RealEstate) space).getFXColor());
+					(getFXColor((RealEstate) space)));
 			topColorBandRect.setTranslateY(-23); // -23 is to put match the corners perfectly
 			spaceCardPane.getChildren().add(topColorBandRect);
 		}
@@ -1500,12 +1529,9 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This creates and returns the Stackpane for the bottom section
-	 * The bottom section has the current players info, animated
-	 * dice rolling, main buttons, and the Ai logger/ other players info 
+	 * This creates and returns the boardpane for the bottom section
 	 * 
-	 * @return StackPane: It holds the left card player info, dice roll area, main buttons,
-	 * and ai logger/ other players info
+	 * @return
 	 */
 	private StackPane buildBottomSection() {
 
@@ -1561,11 +1587,11 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * This function will build the main buttons group that holds a VBox of buttons as
+	 * This function will build the group that holds a VBox of buttons as
 	 * rectangles. There will be a Roll dice button, Trade button, build button, and
 	 * end turn button.
 	 * 
-	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)
+	 * @return Group -> VBox -> Stack Panes (Rectangles, Labels)a
 	 */
 	private Group buildMainButtons() {
 		// Buttons
@@ -1595,10 +1621,6 @@ public class View extends Application implements Observer {
 		tradeButtonRect.setArcHeight(30);
 
 		Label tradeLabel = new Label("Trade");
-		// if trading is disabled, then switch the text to show disabled
-		if (controller.model.getGameSettings().getTradingEnabled() == false) {
-			tradeLabel.setText("Trading <Disabled>");
-		}
 		StackPane tradeButtonStackPane = new StackPane();
 		this.tradeButton = tradeButtonStackPane;
 		tradeButtonStackPane.getChildren().addAll(tradeButtonRect, tradeLabel);
@@ -1672,8 +1694,8 @@ public class View extends Application implements Observer {
 		playerName.setTextFill(Color.BISQUE);
 		playerName.setTextOverrun(OverrunStyle.CLIP); // removes the annoying "..." from happening in the text
 
-		System.out.println("Logs: Attempting to load playerIcon at addr: " + "/" + theme + "/"
-				+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
+		//////System.out.println("[+] <View>createVisualPlayerInfoCard: Attempting to load playerIcon at addr: " + "/" + theme + "/"
+				//+ currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 		Image playerIconImage = new Image("/" + theme + "/" + currPlayer.getPlayerIconStr() + "PlayerIcon.png");
 		Circle playersCircleIcon = new Circle(20, new ImagePattern(playerIconImage));
 
@@ -1799,11 +1821,8 @@ public class View extends Application implements Observer {
 						// onlyl if the current player is done rolling are they allowed to trade
 						if (currentTurnsPlayer.getIsDoneRollingDice() == true) {
 							potentialTradeProperty = thisSpacesProperty;
-							System.out.println("Setting potentialTradeProperty to " + thisSpacesProperty.getName());
-							// if trading is enabled, then turn on the trade button
-							if (controller.model.getGameSettings().getTradingEnabled() == true) {
-								tradeButton.setDisable(false); // enable the trade button
-							}
+							////System.out.println("[+] <View>createScrollPaneOfPlayersProperties: Setting potentialTradeProperty to " + thisSpacesProperty.getName());
+							tradeButton.setDisable(false); // enable the trade button
 						}
 					}
 
@@ -1819,11 +1838,8 @@ public class View extends Application implements Observer {
 					// onlyl if the current player is done rolling are they allowed to trade
 					if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
 						potentialTradeProperty = (Property) visualPropertyInfoCard.getUserData();
-						System.out.println("Setting potentialTradeProperty to " + potentialTradeProperty.getName());
-						// if trading is enabled, then turn on the trade button
-						if (controller.model.getGameSettings().getTradingEnabled() == true) {
-							tradeButton.setDisable(false); // enable the trade button
-						}
+						////System.out.println("[+] <View>createScrollPaneOfPlayersProperties: Setting potentialTradeProperty to " + potentialTradeProperty.getName());
+						tradeButton.setDisable(false); // enable the trade button
 					}
 				});
 			}
@@ -1855,35 +1871,43 @@ public class View extends Application implements Observer {
 
 	/**
 	 * handleDiceRoll(): This function is called when the user presses the "Roll
-	 * Dice" button it will confirm the player isnt in the jail and it will call the 
-	 * controller to roll dice for the current player 
+	 * Dice" button
 	 */
 	private void handleDiceRoll() {
+
 		infoToTellPlayer.setText(""); // Clear the error info on dice turn.
-		System.out.println("[+] handleDiceRol: called");
+
+		// TESTING
+		////System.out.println("[+] <View>handleDiceRoll: called");
+
 		Player currentPlayer = controller.getCurrentPlayer();
-		// if the player is in jail then get the user input and process the user decision
+
+		// if the player is in jail then get the user input and process the user
+		// decision
 		if (currentPlayer.isInJail() == true) {
 			return;
 		} else {
-			System.out.println("	[+] handleDiceRol: calling controller.rollDice(currPlayer)");
+			// TESTING
+			////System.out.println("[+] <view>handleDiceRol: calling controller.rollDice(currPlayer)");
+
 			controller.rollDice(currentPlayer);
 			// we will get a message back from the model with the resulting dice rolled
+
 		}
+
 		// if the player is done rolling dice then dont allow them to roll dice
 		if (controller.getCurrentPlayer().getIsDoneRollingDice() == false) {
 			infoToTellPlayer.setText("Doubles! Roll again!"); // Clear the error info on dice turn.
 		}
+
 		populatePlayerCardWithNewInfo(currentPlayer); // refresh player card after dice-roll phase resolves
+
 		return;
 	}
 
 	/**
 	 * This can only happen when the trade button is turned on by a player pressing
-	 * on another players porperty in their info card. This will 
-	 * prompt the user with a trade window where they can chose their own cash,
-	 * get out of jail free cards, and properties they want to put up 
-	 * for that trade.
+	 * on another players porperty in their info card
 	 */
 	private void handleTradeButton() {
 		Player buyingPlayer = controller.getCurrentPlayer();
@@ -1909,7 +1933,7 @@ public class View extends Application implements Observer {
 		amountOfMoneyToPayInput.setMaxWidth(150);
 		amountOfMoneyToPayInput.setOnKeyTyped(event -> {
 			String playersInput = amountOfMoneyToPayInput.getText();
-			if (playersInput.length() == 0 || playersInput.equals("200")) {
+			if (playersInput.length() == 0 || playersInput.equals("0")) {
 				ammountOfMoneyToPay = 0;
 				amtOfMoneyToPayLabel.setText("0$ (default)");
 			} else {
@@ -1977,14 +2001,16 @@ public class View extends Application implements Observer {
 
 				}
 			});
+			if (!(sellingPlayer instanceof AIPlayer)) {
+				playersTradeInputsVbox.getChildren().add(amountOfGOOJCardsInput);
+				playersTradeOutputsVbox.getChildren().add(amtOfGOOJCardsLabel);
+			}
 
-			playersTradeInputsVbox.getChildren().add(amountOfGOOJCardsInput);
-			playersTradeOutputsVbox.getChildren().add(amtOfGOOJCardsLabel);
 		}
 
 		// if the player has any properties to put into the trade then create a checkbox
 		// for each other them for them to select
-		if (buyingPlayer.getListOfProperties().size() != 0) {
+		if (buyingPlayer.getListOfProperties().size() != 0 && !(sellingPlayer instanceof AIPlayer)) {
 			listOfPropertiesToOffer.clear();
 			propertiesToLabels = new HashMap<>();
 			// add all the buyers properties as options
@@ -2055,7 +2081,12 @@ public class View extends Application implements Observer {
 
 		a.setTitle("Attempting Trade!");
 		a.setContentText(buyingPlayer.getPlayerName() + " is trying to trade with " + sellingPlayer.getPlayerName());
-		a.setHeaderText("Attempting Trade!");
+		if (sellingPlayer instanceof AIPlayer){
+			a.setHeaderText("Attempting Trade with Ai Player!");
+		}
+		else{
+			a.setHeaderText("Attempting Trade!");
+		}
 
 		a.setOnCloseRequest(event -> {
 			// clear the window to consider the trade is closed
@@ -2066,9 +2097,27 @@ public class View extends Application implements Observer {
 
 		// create a submit button
 		Button submitTradeButton = new Button("Attempt Trade");
+		if (sellingPlayer instanceof AIPlayer) {
+			submitTradeButton.setText("Attempt Trade with AI Player");
+		}
 		submitTradeButton.setOnAction(event -> {
-			offeringVBox.getChildren().addAll(playersTradeOutputsVbox, acceptBtn, declineBtn);
-			a.showAndWait();
+			if (sellingPlayer instanceof AIPlayer){
+				AIPlayer sellerAiPlayer = (AIPlayer) sellingPlayer;
+				boolean aiTradeDecision = sellerAiPlayer.decideOnOfferedTrade(potentialTradeProperty, ammountOfMoneyToPay);
+				
+				if (aiTradeDecision == true) {
+					// if the trade is accepted then we send to the controller
+					controller.executeTrade(buyingPlayer, sellingPlayer, potentialTradeProperty, null,
+							ammountOfMoneyToPay, 0);
+				}
+				showHumanToAiTradeResult(buyingPlayer, sellerAiPlayer, potentialTradeProperty, ammountOfMoneyToPay, aiTradeDecision);
+				
+			}
+			else {
+				offeringVBox.getChildren().addAll(playersTradeOutputsVbox, acceptBtn, declineBtn);
+				a.showAndWait();
+			}
+			
 		});
 
 		// create a cancle trade button
@@ -2084,12 +2133,70 @@ public class View extends Application implements Observer {
 		tradeViewBorderPane.setCenter(playersTradeOutputsVbox);
 
 	}
+	
+	/**
+	 * showHumanToAiTradeResult(): This function is called 
+	 * if a trade from a human to an ai happens, this will show the result to the player
+	 * who attempted the trade 
+	 */
+	private void showHumanToAiTradeResult(Player humanBuyer, AIPlayer aiSeller, Property desiredProperty, int tradeOfferCash, boolean sellerAiDecision) {
+		// create left side of offerer
+		VBox buyerHumanVBox = new VBox(10);
+		Label humanBuyerLabel = new Label("Human "+aiSeller.getPlayerName());
+		humanBuyerLabel.setFont(new Font(25));
+		buyerHumanVBox.getChildren().add(humanBuyerLabel);
+		Image humanBuyerImage = new Image("/" + theme + "/humanTrader.png");
+		ImageView humanBuyerView = new ImageView(humanBuyerImage);
+		humanBuyerView.setFitWidth(200); humanBuyerView.setPreserveRatio(true);
+		buyerHumanVBox.getChildren().add(humanBuyerView);
+		
+		StackPane propertyStackPane = this.buildSpaceCard(desiredProperty, 200);
+		Label cashOfferLabel = new Label("$"+tradeOfferCash);
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+		VBox offeringVBox = new VBox(20);
+		offeringVBox.getChildren().addAll(propertyStackPane, cashOfferLabel);
+		
+		// create the right dynamic side 
+		VBox sellerAiVBox = new VBox(10);
+		Label aiSellerLabel = new Label("Ai "+aiSeller.getPlayerName());
+		aiSellerLabel.setFont(new Font(25));
+		sellerAiVBox.getChildren().add(aiSellerLabel);
+		String aiSellerImagePath = "";
+		// if the seller accepts the trade it will use the happy image
+		if (sellerAiDecision == true) {
+			aiSellerImagePath = "/aiSellerAcceptsTrade.png";
+		}
+		// else it will use the rejects decline image
+		else {
+			aiSellerImagePath = "/aiSellerRejectsTrade.png";
+		}
+		Image aiSellerImage = new Image("/" + theme + aiSellerImagePath);
+		ImageView aiSellerView = new ImageView(aiSellerImage);
+		aiSellerView.setFitWidth(200); aiSellerView.setPreserveRatio(true);
+		sellerAiVBox.getChildren().add(aiSellerView);
+		
+		int seperation = 10;
+		if (sellerAiDecision == false) {
+			seperation = 30;
+		}
+		HBox tradeWindowHBox = new HBox(seperation);
+		tradeWindowHBox.getChildren().addAll(buyerHumanVBox, offeringVBox, sellerAiVBox);
+		
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		a.getDialogPane().setContent(tradeWindowHBox);
+		a.setTitle("Human - Ai Attempting Trade!");
+		a.setContentText("Human "+ humanBuyer.getPlayerName()+ " is trying to trade with Ai " + aiSeller.getPlayerName());
+		a.setHeaderText("Human - Ai Attempting Trade!");
+		a.show();
+	}
+	
+	
+	
 
 	/**
-	 * this will be called when the build button is pressed. It will 
-	 * check that the selected property to build is actually something
-	 * and then it will attempt to build the next house/hotel on the property 
-	 * if the player has enough money.  
+	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) build
+	 * button is pressed
 	 */
 	private void handleBuildButton() {
 		if (selectedPropertyToBuild != null) {
@@ -2104,8 +2211,8 @@ public class View extends Application implements Observer {
 	 * animateDiceRoll(): This function will show the dice result of a turn in the
 	 * bottom center of the screen with two large dice.
 	 * 
-	 * @param dice1Result (int): The result for the first dice dice2Result
-	 * @param dice2Result (int): The result for the second dice
+	 * Parameters: dice1Result (int): The result for the first dice dice2Result
+	 * (int): The result for the second dice
 	 */
 	private void animateDiceRoll(int dice1Result, int dice2Result) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/dice.mp3").toExternalForm());
@@ -2291,23 +2398,29 @@ public class View extends Application implements Observer {
 	/**
 	 * animatePlayerMoving(player, ammtMoved): This function will move a player
 	 * `ammtMoved` number of spaces. This function is called after a message is
-	 * received from the model. it will animate the player moving by delaying 
-	 * the amount of time before moving to the next space 
+	 * received from the model.
+	 * 
+	 * MAJOR PROBLEM ALERT!!!! I dont think we can "Animate" if we are not doing
+	 * circle.translateX!!! Right now this function will just place the player piece
+	 * into the next stack frame by adding it as a child of that frame. To do actual
+	 * animation we have to do translates which Alex M couldnt figure out in time
+	 * for the milestone 1. The problem he was facing was getting the location of
+	 * the stack frame I wanted to move to and then translating a player piece to
+	 * that x location. - WE CAN GET X,Y locations of the board space stack panes
+	 * BUT I kept getting super high numbers and I couldnt debug the offset in time
 	 * 
 	 * @param player     (Player): The player that moved
 	 * @param ammtToMove (int): The amount they moved and should be moved
 	 */
 	public void animatePlayerMoving(Player player, int ammtToMove) {
-		System.out.println("animatePlayerMoving: player=" + player.getPlayerName() + " startIndex="
+		System.out.println("[+] <View>animatePlayerMoving: player=" + player.getPlayerName() + " startIndex="
 				+ listOfSpacesPanes.indexOf(whichStackPanesPlayersAreOn.get(player)) + " ammtToMove=" + ammtToMove);
-
-		System.out.println("view: animatePlayerMoving");
 
 		Timeline moveTimeline = new Timeline();
 
 		StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
 		if (currentSpacesPane == null) {
-			System.out.println("ERROR: Player object is not in hash map somehow");
+			System.out.println("[+] <View>animatePlayerMoving: ERROR: Player object is not in hash map somehow    ERROR    ERROR    ERROR");
 			return;
 		}
 
@@ -2346,56 +2459,51 @@ public class View extends Application implements Observer {
 						circleCount++;
 					}
 				}
-
+				
 				whichStackPanesPlayersAreOn.put(player, nextSpacePane);
 			});
-
-			moveTimeline.setOnFinished(e -> {
-				boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
-				System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is " + purchaseOverlayIsOn);
-				boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance
-						|| player.getCurrentSpace() instanceof CommunityChest;
-				if (player.getIsDoneRollingDice() == false) {
-					// if there is currently a purchase prompt on the screen then done enable the
-					// roll dice button
-					if (!cardPromptIsBeingShown) {
-						System.out.println("Log: rollDiceButton.setDisable(false) 2281");
-						rollDiceButton.setDisable(false);
-					}
-				}
-				// if the player is done rolling then enable the end turn button
-				else if (!purchaseOverlayIsOn && !cardPromptIsBeingShown) {
-					System.out.println("Log: endTurnButton.setDisable(false); 2296");
-					endTurnButton.setDisable(false);
-				}
-				// if the player is done rolling dice then dont allow them to roll dice
-				else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-					// disable the roll dice button because they finished rolling
-					rollDiceButton.setDisable(true);
-					Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
-					if (curSpace instanceof Property) {
-						if (((Property) curSpace).getOwner() == null) {
-							endTurnButton.setDisable(true);
-						} else {
-							System.out.println("Log: endTurnButton.setDisable(false) 2310");
-							endTurnButton.setDisable(false);
-						}
-					} else {
-						// only if the player wasnt given a card prompt should you allow the end turn
-						// button to be pressed
-						if (!(curSpace instanceof Chance) && !(curSpace instanceof CommunityChest)) {
-							System.out.println("Log: endTurnButton.setDisable(false) 2317");
-							endTurnButton.setDisable(false);
-
-						}
-					}
-				}
-			});
-
 			moveTimeline.getKeyFrames().add(frame);
-
 		}
-
+		moveTimeline.setOnFinished(e -> {
+			boolean purchaseOverlayIsOn = this.purchaseOverlay.visibleProperty().getValue();
+			System.out.println("Log: moveTimeline.setOnFinished: purchaseOverlayIsOn is " + purchaseOverlayIsOn);
+			boolean cardPromptIsBeingShown = player.getCurrentSpace() instanceof Chance
+					|| player.getCurrentSpace() instanceof CommunityChest;
+			if (player.getIsDoneRollingDice() == false) {
+				// if there is currently a purchase prompt on the screen then done enable the
+				// roll dice button
+				if (!cardPromptIsBeingShown && !(player instanceof AIPlayer)) {
+					System.out.println("Log: rollDiceButton.setDisable(false) 2281");
+					rollDiceButton.setDisable(false);
+				}
+			}
+			// if the player is done rolling then enable the end turn button
+			else if (!purchaseOverlayIsOn && !cardPromptIsBeingShown) {
+				System.out.println("Log: endTurnButton.setDisable(false); 2296");
+				endTurnButton.setDisable(false);
+			}
+			// if the player is done rolling dice then dont allow them to roll dice
+			else if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
+				// disable the roll dice button because they finished rolling
+				rollDiceButton.setDisable(true);
+				Space curSpace = controller.getCurrentPlayer().getCurrentSpace();
+				if (curSpace instanceof Property) {
+					if (((Property) curSpace).getOwner() == null) {
+						endTurnButton.setDisable(true);
+					} else {
+						System.out.println("Log: endTurnButton.setDisable(false) 2310");
+						endTurnButton.setDisable(false);
+					}
+				} else {
+					// only if the player wasnt given a card prompt should you allow the end turn
+					// button to be pressed
+					if (!(curSpace instanceof Chance) && !(curSpace instanceof CommunityChest)) {
+						System.out.println("Log: endTurnButton.setDisable(false) 2317");
+						endTurnButton.setDisable(false);
+					}
+				}
+			}
+		});
 		moveTimeline.play();
 
 	}
@@ -2418,16 +2526,14 @@ public class View extends Application implements Observer {
 	/**
 	 * showOptionsForGettingOutOfJail(currentPlayer): This function will determine
 	 * which options are available for getting out of jail for this player based on
-	 * what the player has. If they have a get out of jail card itll show that option
-	 * if they have more dice rolls itll show roll doubles, if they have atleast $50 
-	 * it will show "pay $50" 
+	 * what the player has
 	 * 
 	 * @param currentPlayer (Player): the current player whos turn it is, who is
 	 *                      found to be in jail
 	 */
 	private void showOptionsForGettingOutOfJail(Player currentPlayer) {
 		int doublesAttempts = controller.getAmmtOfJailAttempts(currentPlayer);
-		System.out.println("View: Showing options for getting out of jail: doublesAttempts = " + doublesAttempts);
+		//System.out.println("[+] <View>showOptionsForGettingOutOfJail: Showing options for getting out of jail: doublesAttempts = " + doublesAttempts);
 		mainButtonsGroup.getChildren().clear(); // remove core buttons
 
 		VBox jailButtonsVBox = new VBox(5);
@@ -2474,7 +2580,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2360");
+				//System.out.println("[+] <View>showOptionsForGettingOutOfJail: endTurnButton.setDisable(false) 2360");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(payCashStackPane);
@@ -2495,7 +2601,7 @@ public class View extends Application implements Observer {
 				mainButtonsGroup.getChildren().clear(); // remove the jail options
 				mainButtonsGroup.getChildren().add(coreButtonsVBox); // add the core buttons back
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2381");
+				//System.out.println("[+] <View>showOptionsForGettingOutOfJail: endTurnButton.setDisable(false) 2381");
 				endTurnButton.setDisable(false);
 			});
 			jailButtonsVBox.getChildren().add(useGOOJStackPane);
@@ -2506,18 +2612,7 @@ public class View extends Application implements Observer {
 
 	/**
 	 * This function will decipher that type of message is received and then it will
-	 * act on the message with a corresponding function.
-	 * 
-	 * There is a lot of different types of messages from the model that can be received
-	 * one is a dice roll result, at which point the view will aniimate the dice,
-	 * 
-	 * another is the action of a ai player, it will show that in the log in the bottom 
-	 * right
-	 * 
-	 * another is when a player is prompted to purchase a property it will show that info 
-	 * card 
-	 * 
-	 * There are a few more 
+	 * act on the message with a corresponding function
 	 * 
 	 * @param model   (Model): The state of the model
 	 * @param message (Object): Could be any type of message from the model
@@ -2525,34 +2620,32 @@ public class View extends Application implements Observer {
 	@Override
 	public void update(Observable model, Object message) {
 		// TESTING
-		System.out.println("view: update: received '" + message + "' message");
+		//System.out.println("[+] <View>update: received '" + message + "' message");
 
 		// if the message is a dice roll result, show the dice rolled
 		if (message instanceof DiceRollResultMessage) {
-			
 			DiceRollResultMessage diceRollResult = (DiceRollResultMessage) message;
-			
 			animateDiceRoll(diceRollResult.getDice1Result(), diceRollResult.getDice2Result());
 		}
 
 		// if the message is that a player moved, animate the player moving on the board
 		else if (message instanceof PlayerMovedMessage) {
-
 			PlayerMovedMessage movedMessage = (PlayerMovedMessage) message;
+			System.out.println("[*] <View>Update-PlayerMoved: currPlayer ("+movedMessage.getPlayer()+") is moving amt="+movedMessage.getAmmtMoved());
 
-			// For letting dice roll first
+			// For letting dice roll first, THIS DELAY IS TO LET THE DICE ROLL BEFORE MOVING
 			Timeline moveDelay = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
 				animatePlayerMoving(movedMessage.getPlayer(), movedMessage.getAmmtMoved());
-
+				System.out.println("[*] <View>Update-PlayerMoved: inside timeline currPlayer ("+movedMessage.getPlayer()+")");
 			}));
 			moveDelay.play();
-			System.out.println("player on" + movedMessage.getPlayer().getCurrentSpace().getName());
+			//System.out.println("[+] <View>update: player on" + movedMessage.getPlayer().getCurrentSpace().getName());
 		}
 
 		// if the message is that its the next players turn, switch the bottom left
 		// player card to the new player
 		else if (message instanceof NextPlayerMessage) {
-			System.out.println("\n\n----NextPlayer----");
+			//System.out.println("\n\n----NextPlayer----");
 			potentialTradeProperty = null; // there are no selected properties at this stage
 			tradeButton.setDisable(true);
 			buildButton.setDisable(true);
@@ -2566,23 +2659,27 @@ public class View extends Application implements Observer {
 			// if the next player is in jail, show their next options for getting out of
 			// jail
 			Player currentPlayer = nextPlayerMsg.getNextPlayer();
-			System.out
-					.println("NextPlayer: " + currentPlayer.getPlayerName() + " isInJail=" + currentPlayer.isInJail());
+			System.out.println("[-] <View>Update-NextPlayer: currPlayer = "+currentPlayer.getPlayerName());
+			//System.out.println("[+] <View>update:NextPlayerMessage Section: NextPlayer: " + currentPlayer.getPlayerName() + " isInJail=" + currentPlayer.isInJail());
 			if (currentPlayer.isInJail()) {
 				showOptionsForGettingOutOfJail(currentPlayer); // this will change the buttons in the bottom right
 			} else {
-				System.out.println("Log: rollDiceButton.setDisable(false) 2450");
+				//System.out.println("[+] <View>update: rollDiceButton.setDisable(false) 2450");
 				rollDiceButton.setDisable(false);
 			}
 
 			if (currentPlayer instanceof AIPlayer) {
+				System.out.println("	[-] <View>Update-NextPlayer: currPlayer ("+currentPlayer.getPlayerName()+") is an AI player");
 				rollDiceButton.setDisable(true);
 
-				Timeline aiDelay = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
+				Timeline aiDelay = new Timeline(new KeyFrame(Duration.seconds(4), e -> {
+					System.out.println("	[-] <View>Update-NextPlayer: right inside timeline currPlayer ("+currentPlayer.getPlayerName()+") dontRunFlag = True");
 					((AIPlayer) currentPlayer).playAITurn(controller);
+					System.out.println("	[-] <View>Update-NextPlayer: right after inside timeline currPlayer ("+currentPlayer.getPlayerName()+") DontRunFalg = Flase");
 				}));
 
 				aiDelay.play();
+				System.out.println("	[-] <View>Update-NextPlayer: after .play() timeline currPlayer ("+currentPlayer.getPlayerName()+") is an AI player");
 			}
 		}
 
@@ -2631,9 +2728,28 @@ public class View extends Application implements Observer {
 			delay.play();
 		}
 
+		// if the view is notified that a player is going to jail, you can play sounds
+		// and animate
+//		else if (message instanceof GoToJailMessage) {
+//			GoToJailMessage goToJailMsg = (GoToJailMessage) message;
+//			Player player = goToJailMsg.getPlayerGoingToJail();
+//			// FUTURE NOTE: now you can play a sound of the player going to jail and animate them going there
+//			
+//			// Move the player to the jail space
+//			
+//			// get the current pane the player is one, then use it to find the index in the list of all panes
+//			StackPane currentSpacesPane = whichStackPanesPlayersAreOn.get(player);
+//			if (currentSpacesPane == null) //System.out.println("ERROR: Player object is not in hash map somehow");
+//			Circle playersPeiceToMove = playerObjToPlayerPiece.get(player);
+//			currentSpacesPane.getChildren().remove(playersPeiceToMove);
+//			
+//			jailSpaceStackPane.getChildren().add(playersPeiceToMove);
+//			whichStackPanesPlayersAreOn.put(player, jailSpaceStackPane);
+//		}
+
 		// generic string can be used to update player info label in the center
 		else if (message instanceof String) {
-			System.out.println("Log: view::update::String message received of: " + (String) message);
+			//System.out.println("[+] : <View>update:String message received of: " + (String) message);
 			String sentence = (String) message;
 			infoToTellPlayer.setText(sentence);
 		}
@@ -2687,13 +2803,157 @@ public class View extends Application implements Observer {
 			this.currPlayerLabel.setText(gameOverMsg.getPlayerName() + " wins!");
 			this.currPlayerLabel.setStyle(this.textThemeColor + "-fx-font-size: 50px; -fx-font-weight: bold;");
 		}
+		
+		// If the model sends us a messages saying an ai is attempting to trade, show a prompt to human users, but show the results of ai -> ai trades
+		else if (message instanceof AiAttemptingTradeMessage) {
+			// if the ai attempting to trade is up then dont let the animateMove end the turn, WE WILL END IT 
+			AiAttemptingTradeMessage aiAttemptTradeMsg = (AiAttemptingTradeMessage) message;
+			// If the seller is an ai, then show the trade, wait a bit, show the result, then move on 
+			if (aiAttemptTradeMsg.getSellerPlayer() instanceof AIPlayer) {
+					showTwoAisTrading(aiAttemptTradeMsg);
+					if (aiAttemptTradeMsg.getOtherAiDecision() == true) {
+						System.out.println("[$] Processing Trade between ai "+aiAttemptTradeMsg.getAiBuyer()+" and ai "+aiAttemptTradeMsg.getSellerPlayer() + " for "+ aiAttemptTradeMsg.getDesiredProperty().getName());
+						controller.executeTrade(aiAttemptTradeMsg.getAiBuyer(), aiAttemptTradeMsg.getSellerPlayer(), aiAttemptTradeMsg.getDesiredProperty(), null,
+								aiAttemptTradeMsg.getTradeOfferCash(), 0);
+					}
+			}
+			// if the seller is a human, then prompt the corrisponding user player
+			else {
+				showAiTryingToTradeWithYouPrompt(aiAttemptTradeMsg);
+			}
+		}
+
+	}
+	
+	/**
+	 * showTwoAisTrading(aiAttemptTradeMsg): This function is called when 
+	 * An ai attempts to trade with another ai. This function will show a 2 frame
+	 * animation of the ai thinking and the ai Declining or accepting
+	 */
+	private void showTwoAisTrading(AiAttemptingTradeMessage aiAttemptTradeMsg) {
+		// create left side of offerer
+		VBox buyerAiVBox = new VBox(10);
+		Label aiBuyerLabel = new Label("Ai "+aiAttemptTradeMsg.getAiBuyer().getPlayerName());
+		aiBuyerLabel.setFont(new Font(25));
+		buyerAiVBox.getChildren().add(aiBuyerLabel);
+		Image aiBuyerImage = new Image("/" + theme + "/aiTrader.png");
+		ImageView aiBuyerView = new ImageView(aiBuyerImage);
+		aiBuyerView.setFitWidth(200); aiBuyerView.setPreserveRatio(true);
+		buyerAiVBox.getChildren().add(aiBuyerView);
+		
+		StackPane propertyStackPane = this.buildSpaceCard(aiAttemptTradeMsg.getDesiredProperty(), 200);
+		Label cashOfferLabel = new Label("$"+aiAttemptTradeMsg.getTradeOfferCash( ));
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+		VBox offeringVBox = new VBox(20);
+		offeringVBox.getChildren().addAll(propertyStackPane, cashOfferLabel);
+		
+		// create the right dynamic side 
+		VBox sellerAiVBox = new VBox(10);
+		Label aiSellerLabel = new Label("Ai "+aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		aiSellerLabel.setFont(new Font(25));
+		sellerAiVBox.getChildren().add(aiSellerLabel);
+		String aiSellerImagePath = "";
+		// if the seller accepts the trade it will use the happy image
+		if (aiAttemptTradeMsg.getOtherAiDecision() == true) {
+			aiSellerImagePath = "/aiSellerAcceptsTrade.png";
+		}
+		// else it will use the rejects decline image
+		else {
+			aiSellerImagePath = "/aiSellerRejectsTrade.png";
+		}
+		Image aiSellerImage = new Image("/" + theme + aiSellerImagePath);
+		ImageView aiSellerView = new ImageView(aiSellerImage);
+		aiSellerView.setFitWidth(200); aiSellerView.setPreserveRatio(true);
+		sellerAiVBox.getChildren().add(aiSellerView);
+		
+		int seperation = 10;
+		if (aiAttemptTradeMsg.getOtherAiDecision() == false) {
+			seperation = 30;
+		}
+		HBox tradeWindowHBox = new HBox(seperation);
+		tradeWindowHBox.getChildren().addAll(buyerAiVBox, offeringVBox, sellerAiVBox);
+		
+		
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		a.getDialogPane().setContent(tradeWindowHBox);
+		a.setTitle("Ai - Ai Attempting Trade!");
+		a.setContentText("Ai "+ aiAttemptTradeMsg.getAiBuyer().getPlayerName()+ " is trying to trade with Ai " + aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		a.setHeaderText("Ai - Ai Attempting Trade!");
+		a.setOnCloseRequest(event -> {
+			// clear the window to consider the trade is closed
+		});
+		a.show();
+	}
+	
+	/**
+	 * showAiTryingToTradeWithYouPrompt(aiAttemptTradeMsg): this function is called
+	 * when an ai tries to trade with a human. This function will display a show an wait to the human
+	 * if they want to accept or decline the trade from the ai. 
+	 * 
+	 * @param aiAttemptTradeMsg (AiAttemptingTradeMessage): holds all the trade information, buyer, property, offer.
+	 */
+	private void showAiTryingToTradeWithYouPrompt(AiAttemptingTradeMessage aiAttemptTradeMsg) {
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		((Button) a.getDialogPane().lookupButton(ButtonType.OK)).setText("Cancle");
+		// create the view of the offer 
+		HBox aiGuyAndOfferingHBox = new HBox(10);
+		Label aiGuyNameLabel = new Label(aiAttemptTradeMsg.getAiBuyer().getPlayerName());
+		aiGuyNameLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+		VBox aiPlayerVBox = new VBox(10);
+		Image aiGuyStandingImage = new Image("/" + theme + "/aiTrader.png");
+		ImageView aiGuyStandingView = new ImageView(aiGuyStandingImage);
+		aiPlayerVBox.getChildren().addAll(aiGuyNameLabel, aiGuyStandingView);
+		aiGuyStandingView.setFitWidth(200); aiGuyStandingView.setPreserveRatio(true);
+		aiGuyAndOfferingHBox.getChildren().add(aiPlayerVBox);
+		
+		VBox offeringVBox = new VBox(10);
+		Label cashOfferLabel = new Label("$"+aiAttemptTradeMsg.getTradeOfferCash( ));
+		cashOfferLabel.setTextFill(Color.FORESTGREEN);
+		cashOfferLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+		offeringVBox.getChildren().add(cashOfferLabel);
+		
+		offeringVBox.getChildren().add(buildSpaceCard(aiAttemptTradeMsg.getDesiredProperty(), 120));
+		
+		aiGuyAndOfferingHBox.getChildren().add(offeringVBox);
+		
+		a.getDialogPane().setContent(aiGuyAndOfferingHBox);
+
+		Button acceptBtn = new Button("Accept Trade");
+		acceptBtn.setOnAction(event -> {
+			// if the trade is accepted then we send to the controller the finalized trade
+			controller.executeTrade(aiAttemptTradeMsg.getAiBuyer(), aiAttemptTradeMsg.getSellerPlayer(), aiAttemptTradeMsg.getDesiredProperty(), null,
+					aiAttemptTradeMsg.getTradeOfferCash(), 0);
+			a.close();
+
+			// redraw current players' visual inventory
+			populatePlayerCardWithNewInfo(controller.getCurrentPlayer());
+
+			// redraw other players' inventory
+			showOtherPlayersInfoInBottomRight(aiAttemptTradeMsg.getAiBuyer()); 
+			if (otherPlayerInfoCardStackPane.getChildren().size() == 1) {// if it refreshes to the ai console only, redraw on top
+				otherPlayerInfoCardStackPane.getChildren().add(createVisualPlayerInfoCard(aiAttemptTradeMsg.getAiBuyer())); 
+			}
+
+		});
+		Button declineBtn = new Button("Decline Trade");
+		declineBtn.setOnAction(event -> {
+			// clear the window
+			a.close();
+		});
+		
+		offeringVBox.getChildren().addAll(acceptBtn,declineBtn);
+
+		a.setTitle("Attempting Trade!");
+		a.setContentText("Ai "+ aiAttemptTradeMsg.getAiBuyer().getPlayerName()+ " is trying to trade with " + aiAttemptTradeMsg.getSellerPlayer().getPlayerName());
+		a.setHeaderText("Attempting Trade!");
+		a.show();
 
 	}
 
 	/**
 	 * Adds an Overlay to the board that can display a card. This will show the card
-	 * right in the middle of the screen. Then once the user clicks the card
-	 * it will take effect
+	 * right in the middle of the screen.
 	 */
 	private void buildCardOverlay() {
 		// Sizing
@@ -2746,11 +3006,11 @@ public class View extends Application implements Observer {
 	/**
 	 * Used for displaying and updating the card Overlay when a card space is hit.
 	 * 
-	 * @param card (Card): The card object that should be shown to the viewer
+	 * @param card
 	 */
 	public void showCard(Card card) {
 		AudioClip sound = new AudioClip(getClass().getResource("/" + theme + "/cardSound.mp3").toExternalForm());
-		System.out.println(card.getImage());
+		//System.out.println("[+] <View>showCard: "+card.getImage());
 		// Special sounds for the Go To Jail Space
 		AudioClip jailSound = new AudioClip(getClass().getResource("/" + theme + "/goToJail.mp3").toExternalForm());
 		if (controller.getCurrentPlayer().getCurrentSpace() instanceof GoToJailSpace) {
@@ -2765,7 +3025,7 @@ public class View extends Application implements Observer {
 			cardTitle.setText("Community Chest");
 			sound.play();
 		}
-		System.out.println("Logs: showcard attempting to load image: " + "/" + theme + "/" + card.getImage());
+		//System.out.println("[+] <View>showCard: showcard attempting to load image: " + "/" + theme + "/" + card.getImage());
 		cardImage = new Image("/" + theme + "/" + card.getImage());
 		cardIcon.setImage(cardImage);
 		cardLabel.setText(card.getDescription());
@@ -2780,7 +3040,7 @@ public class View extends Application implements Observer {
 			// if the current space isnt a card popup space then dont enable the end turn
 			// yet
 			if (!(currentSpace instanceof Chance) && !(currentSpace instanceof CommunityChest)) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2658");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2658");
 				endTurnButton.setDisable(false);
 			}
 		}
@@ -2794,9 +3054,9 @@ public class View extends Application implements Observer {
 			controller.resolveCard(card, controller.getCurrentPlayer());
 			populatePlayerCardWithNewInfo(controller.getCurrentPlayer()); // incase they get a get out of jail free card
 			if (controller.getCurrentPlayer().isInJail()) {
-				System.out.println("Log: rollDiceButton.setDisable(true) 2699");
+				//System.out.println("[+] <View>showCard: rollDiceButton.setDisable(true) 2699");
 				rollDiceButton.setDisable(true);
-				System.out.println("Log: endTurnButton.setDisable(false) 2701");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2701");
 				endTurnButton.setDisable(false);
 			}
 			// if the player is on a property that is already owned then show the end turn
@@ -2805,7 +3065,7 @@ public class View extends Application implements Observer {
 			if (possibleNewPlayersSpace instanceof Property) {
 				Property possibleNewPlayersProperty = (Property) possibleNewPlayersSpace;
 				if (possibleNewPlayersProperty.getOwner() != null) {
-					System.out.println("Log: endTurnButton.setDisable(false) 2709");
+					//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2709");
 					endTurnButton.setDisable(false);
 				}
 			}
@@ -2813,7 +3073,7 @@ public class View extends Application implements Observer {
 			// if the player wasnt moved from the chance/community chest card, then enable
 			// the end turn button
 			if (currentPlayersSpace == possibleNewPlayersSpace) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2716");
+				//System.out.println("[+] <View>showCard: endTurnButton.setDisable(false) 2716");
 				endTurnButton.setDisable(false);
 			}
 
@@ -2821,17 +3081,10 @@ public class View extends Application implements Observer {
 		});
 	}
 
-	/**
-	 * showPurcahsePrompt(player, property): This function will be called
-	 * when we recieve a "show purchase prompt" from the model. This function
-	 * pops up the property given as a info card and shows a buy/skip button
-	 * for the user to press to choose to buy or skip buying the property
-	 * @param player (Player): The player who has the right to choose
-	 * @param property (Property): The property that is being sold
-	 */
+	// purchaseprompt hbox with property infocard on left, buttons on right
 	public void showPurchasePrompt(Player player, Property property) {
 		rollDiceButton.setDisable(true);
-		System.out.println("Log: rollDiceButton.setDisable(true) 2731");
+		//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(true) 2731");
 		this.purchaseOverlay.getChildren().clear();// clear old version
 
 		// copying style from cardprompt
@@ -2879,13 +3132,12 @@ public class View extends Application implements Observer {
 				this.purchaseOverlay.setVisible(false);
 				// only if the player is done, allow the end turn button
 				if (player.getIsDoneRollingDice() == true) {
-					System.out.println("Log: endTurnButton.setDisable(false) 2727");
+					//System.out.println("[+] <View>showPurchasePrompt: endTurnButton.setDisable(false) 2727");
 					endTurnButton.setDisable(false);
 				}
 				// if the player rolled doubles then allow another roll dice
 				else {
-					
-					System.out.println("Log: rollDiceButton.setDisable(false); 2754");
+					//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(false); 2754");
 					rollDiceButton.setDisable(false);
 				}
 
@@ -2913,10 +3165,10 @@ public class View extends Application implements Observer {
 			this.infoToTellPlayer.setText("Passed on purchasing!");
 			// only if the player is done rolling then enable the end turn button
 			if (controller.getCurrentPlayer().getIsDoneRollingDice() == true) {
-				System.out.println("Log: endTurnButton.setDisable(false) 2752");
+				//System.out.println("[+] <View>showPurchasePrompt: endTurnButton.setDisable(false) 2752");
 				endTurnButton.setDisable(false);
 			} else {
-				System.out.println("Log: rollDiceButton.setDisable(false); 2822");
+				//System.out.println("[+] <View>showPurchasePrompt: rollDiceButton.setDisable(false); 2822");
 				rollDiceButton.setDisable(false);
 			}
 		});
@@ -2951,13 +3203,12 @@ public class View extends Application implements Observer {
 	}
 
 	/**
-	 * Builds a resize-able stackframe for viewing property cards. used for tracking
-	 * rent prices and general space info. This function is used for everything, 
-	 * showing purchase prompts, on hover of spaces, and property info scroll panes
+	 * Builds a resizable stackframe for viewing property cards. used for tracking
+	 * rent prices and general space info
 	 * 
 	 * @param testSpace the space that the card is basing itself on
 	 * @param cardWidth the width of the card to scale from
-	 * @return StackPane the card image with all the detail
+	 * @return StackPane the card image
 	 */
 	public StackPane buildSpaceCard(Property testSpace, double cardWidth) {
 		double cardHeight = cardWidth * 1.6;
@@ -3012,7 +3263,7 @@ public class View extends Application implements Observer {
 
 			// only realestate has colors
 			if (testSpace instanceof RealEstate) {
-				colorRect.setFill(((RealEstate) testSpace).getFXColor()); // cast to realestate obj so can get javafx
+				colorRect.setFill(getFXColor(re)); // cast to realestate obj so can get javafx
 																			// color
 			} else {
 				colorRect.setFill(defaultSpaceColor);
@@ -3225,12 +3476,6 @@ public class View extends Application implements Observer {
 		return root;
 	}
 
-	/**
-	 * buildAILoggerScrollPane(): This function will build a scroll pane 
-	 * that has a black background and will be added to with text whenever
-	 * a ai makes a decision. 
-	 * @return ScrollPane: The scroll pane for the ais actions to fill 
-	 */
 	private ScrollPane buildAILoggerScrollPane() {
 
 		// AI MOVEMENT/DECISION LOGGER
@@ -3259,5 +3504,33 @@ public class View extends Application implements Observer {
 		return aiLoggerScrollPane;
 
 	}
-
+	
+	/**
+	 * Gets a JAVAFx color out of a Real Estate object based on
+	 * the RealEstate's Color enum.
+	 * @param estate - the real estate object
+	 * @return javafxColor
+	 */
+	private javafx.scene.paint.Color getFXColor(RealEstate estate) {
+	    switch (estate.getColor()) {
+        case BLUE:
+            return javafx.scene.paint.Color.BLUE;
+        case BROWN:
+            return javafx.scene.paint.Color.BROWN;
+        case LIGHTBLUE:
+            return javafx.scene.paint.Color.LIGHTBLUE;
+        case PINK:
+            return javafx.scene.paint.Color.PINK;
+        case ORANGE:
+            return javafx.scene.paint.Color.ORANGE;
+        case GREEN:
+            return javafx.scene.paint.Color.GREEN;
+        case RED:
+            return javafx.scene.paint.Color.RED;
+        case YELLOW:
+            return javafx.scene.paint.Color.YELLOW;
+		default:
+			return javafx.scene.paint.Color.LIGHTGREEN;
+	    }
+	}
 }

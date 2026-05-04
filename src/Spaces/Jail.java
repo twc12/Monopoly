@@ -56,14 +56,7 @@ public class Jail extends Space {
 	 * @param player (Player): The player being added to jail
 	 */
 	public void addPlayerToJail(Player player) {
-
 		System.out.println("Player has been sent to jail");
-		
-		// if this player is already in jail that is a problem
-		if (playerAttemptsToGetOutMapping.containsKey(player)) {
-			throw new IllegalStateException("Player is already in jail, cannot be put in jail again");
-		}
-		
 		playerAttemptsToGetOutMapping.put(player, 0);
 	}
 }

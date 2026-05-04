@@ -19,7 +19,7 @@ public class GoToJailSpace extends Space {
 
 	
 	@Override
-	protected void processSpace(Player player, Model model) {
+	public void processSpace(Player player, Model model) {
 		Card card = model.getGoToJail();
 		if (!player.isAI()) model.notifyViewCardDrawn(player, card);
 	}

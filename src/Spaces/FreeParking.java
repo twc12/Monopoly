@@ -40,7 +40,7 @@ public class FreeParking extends Space {
 	 * reward is given out, the reward pot is reset to 0
 	 */
 	@Override
-	protected void processSpace(Player player, Model model) {
+	public void processSpace(Player player, Model model) {
 		// Checks if the rule to collect tax money from free parking is enabled
 		if (model.getGameSettings().getFreeParkingRule()) {
 			player.addCash(currFreeParkingReward);

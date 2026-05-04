@@ -1,4 +1,4 @@
-package Monopoly;
+package Messages;
 
 import Spaces.AIPlayer;
 import Spaces.Player;

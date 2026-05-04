@@ -15,6 +15,7 @@ import Spaces.RealEstate;
 import Spaces.Space;
 import Spaces.TaxSpace;
 import Spaces.Utility;
+import View.View;
 
 import java.io.File;
 import java.io.FileInputStream;

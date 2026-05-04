@@ -30,7 +30,7 @@ public class CommunityChest extends Space {
 	 * @param Modell: used to notify the view 
 	 */
 	@Override
-	protected void processSpace(Player player, Model model) {
+	public void processSpace(Player player, Model model) {
 		System.out.println("[+] ChanceCard: "+player.getPlayerName()+" landed on community chest card");
 		Card card = model.getCommunityChestCards().pop();
 		if(model.getCommunityChestCards().isEmpty())

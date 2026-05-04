@@ -12,6 +12,7 @@ import Cards.Card;
 import Cards.CardEffect;
 import Cards.Deck;
 import Messages.AiActionMessage;
+import Messages.AiAttemptingTradeMessage;
 import Messages.AiLogsEnabledMessage;
 import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
@@ -24,6 +25,7 @@ import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Space;
+import View.View;
 
 // game state
 public class Model extends Observable implements Serializable{

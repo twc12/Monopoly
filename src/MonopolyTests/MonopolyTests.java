@@ -10,8 +10,15 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import Cards.Card;
+import Messages.AiActionMessage;
+import Messages.AiAttemptingTradeMessage;
 import Messages.AiLogsEnabledMessage;
 import Messages.BankruptcyMessage;
+import Messages.CardDrawnMessage;
+import Messages.DiceRollResultMessage;
+import Messages.GameOverMessage;
+import Messages.NextPlayerMessage;
+import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
 import Monopoly.Controller;
 import Monopoly.GameSettings;
@@ -19,6 +26,10 @@ import Monopoly.GameSettings.Theme;
 import Monopoly.Model;
 import Monopoly.Controller.JAIL_CHOICE;
 import Spaces.AIPlayer;
+import Spaces.CommunityChest;
+import Spaces.FreeParking;
+import Spaces.GoSpace;
+import Spaces.GoToJailSpace;
 import Spaces.Player;
 import Spaces.Property;
 import Spaces.Railroad;
@@ -422,7 +433,6 @@ class MonopolyTests {
 	}
 	
 	@Test
-
 	void aiTradeTests() {
 		//
 		Controller controller = new Controller();
@@ -642,6 +652,158 @@ class MonopolyTests {
 		waterworks.processSpace(player1, model); 	//player 1 buys it
 		waterworks.processSpace(player2, model); 	//player 2 lands on it
 		electric.processSpace(player1, model); 		//player 1 completes the match
+	}
+	
+	
+	@Test
+	void testAiPlayer() {
+		System.out.println("\n\n\n\n\n\n");
+		Controller controller = new Controller();
+		GameSettings customSettings = new GameSettings();
+		customSettings.setCustomGoValue(10);
+		customSettings.setAmountOfPlayers(0);
+	    customSettings.setAmountOfAIPlayers(3);
+		controller.initializeGameSettings(customSettings);
+	    Model model = controller.model;
+	    
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    
+	    if (player instanceof AIPlayer) {
+	    	AIPlayer aiPlayer = (AIPlayer) player;
+	    	aiPlayer.calculateTrade();
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(25)); // TRAIN 3
+	    	
+	    	
+	    	AIPlayer aiPlayer2 = (AIPlayer) model.getPlayers().get(1);
+	    	controller.purchaseProperty(aiPlayer2, (Property) spaces.get(15)); // TRAIN 2
+	    	
+	    	for (int i=0; i<100; i++) {	    		
+	    		aiPlayer.calculateTrade();
+	    	}
+	    	aiPlayer.addCash(-1200);
+	    	aiPlayer.calculateTrade();
+	    	aiPlayer.addCash(100000);
+	    	aiPlayer2.getListOfProperties().remove(0);
+	    	aiPlayer.getListOfProperties().clear();
+	    	controller.purchaseProperty(aiPlayer, mediterranean); // TRAIN 3
+	    	controller.purchaseProperty(aiPlayer, baltic); // TRAIN 3
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(5)); // TRAIN 2
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(15)); // TRAIN 2
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(25)); // TRAIN 3
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(35)); // TRAIN 2
+	    	aiPlayer.calculateTrade();
+	    	aiPlayer.calculateTrade();
+	    	aiPlayer.calculateTrade();
+	    	aiPlayer.getListOfProperties().clear();
+	    	controller.purchaseProperty(aiPlayer, mediterranean); // TRAIN 3
+	    	controller.purchaseProperty(aiPlayer2, baltic); // TRAIN 3
+	    	aiPlayer.removeTradeLog(baltic, 0);
+	    	aiPlayer.addCash(-2000000);
+	    	aiPlayer.decideOnOfferedTrade(baltic, 100);
+	    	aiPlayer.decideOnOfferedTrade(baltic, 0);
+	    	aiPlayer.addCash(2000000);
+	    	
+	    	AiAttemptingTradeMessage aiMsg = new AiAttemptingTradeMessage(null, null, 0, null, null);
+	    	aiMsg.getAiBuyer();
+	    	aiMsg.getDesiredProperty();
+	    	aiMsg.getTradeOfferCash();
+	    	aiMsg.getSellerPlayer();
+	    	aiMsg.getOtherAiDecision();
+	    	NextPlayerMessage msg = new NextPlayerMessage(null);
+	    	msg.getNextPlayer();
+	    	
+	    	AiActionMessage msg2 = new AiActionMessage(null);
+	    	msg2.getAiAction();
+	    	
+	    	GameOverMessage msg3 = new GameOverMessage(aiPlayer);
+	    	msg3.getPlayerName();
+	    	
+	    	PlayerMovedMessage msg4 = new PlayerMovedMessage(null, 0);
+	    	msg4.getPlayer();
+	    	msg4.getAmmtMoved();
+	    	
+	    	DiceRollResultMessage msg5 = new DiceRollResultMessage(1, 1);
+	    	msg5.getDice1Result();
+	    	msg5.getDice2Result();
+	    	
+	    	CardDrawnMessage afds = new CardDrawnMessage(null, null);
+	    	afds.getCard();
+	    	afds.getPlayer();
+	    }
+	    
+	    else {
+	    	fail();
+	    }
+	}
+	
+	@Test
+	void testAiPlayer2() {
+		Controller controller = new Controller();
+		GameSettings customSettings = new GameSettings();
+		customSettings.setAmountOfPlayers(0);
+	    customSettings.setAmountOfAIPlayers(3);
+		controller.initializeGameSettings(customSettings);
+		customSettings.setCustomGoValue(10);
+		customSettings.setAmountOfPlayers(0);
+		customSettings.setPropertyPriceAdjust(1);
+		customSettings.setStartingMoney(-1);
+		customSettings.setStartingMoney(100);
+		customSettings.setAmountOfAIPlayers(1);
+		customSettings.setAmountOfPlayers(5);
+	    customSettings.setAmountOfAIPlayers(3);
+	    Model model = controller.model;
+	    
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    
+	    if (player instanceof AIPlayer) {
+	    	AIPlayer aiPlayer = (AIPlayer) player;
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(5)); // TRAIN 2
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(15)); // TRAIN 2
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(25)); // TRAIN 3
+	    	controller.purchaseProperty(aiPlayer, (Property) spaces.get(35)); // TRAIN 2
+	    	
+	    	aiPlayer.calculateTrade();
+	    	
+	    }
+	    else {
+	    	fail();
+	    }
+	}
+	
+	@Test 
+	void spacesTests() {
+		Controller controller = new Controller();
+		GameSettings customSettings = new GameSettings();
+		customSettings.setFreeParkingRule(true);
+	    Model model = controller.model;
+	    controller.initializeGameSettings(customSettings);
+	    
+	    Player player = controller.getCurrentPlayer();
+	    List<Space> spaces = controller.getSpaces();
+	    RealEstate mediterranean = (RealEstate) spaces.get(1);
+	    RealEstate baltic = (RealEstate) spaces.get(3);
+	    
+	    model.board.jailSpace.getCurrentPlayersInJail();
+	    ((GoToJailSpace) spaces.get(30)).processSpace(player, model);
+	    ((GoToJailSpace) spaces.get(30)).getJailSpace();
+	    ((GoSpace) spaces.get(0)).getAmountEarnedWhenPassingGo();
+	    
+	    ((FreeParking) spaces.get(20)).processSpace(player, model);
+	    ((FreeParking) spaces.get(20)).getFreeParkingRewardAmount();
+	    
+	    ((CommunityChest) spaces.get(2)).processSpace(player, model);	    
+	    
+	    ((CommunityChest) spaces.get(2)).equals((FreeParking) spaces.get(20));
+	    ((CommunityChest) spaces.get(2)).equals((CommunityChest) spaces.get(2));
+	    ((CommunityChest) spaces.get(2)).equals((CommunityChest) spaces.get(17));
+	    ((CommunityChest) spaces.get(2)).getImageFile();
+	    ((CommunityChest) spaces.get(2)).hasImage();
 	}
 
 }

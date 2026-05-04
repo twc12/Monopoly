@@ -1,4 +1,4 @@
-package Monopoly;
+package View;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +13,7 @@ import java.util.Random;
 
 import Cards.Card;
 import Messages.AiActionMessage;
+import Messages.AiAttemptingTradeMessage;
 import Messages.AiLogsEnabledMessage;
 import Messages.BankruptcyMessage;
 import Messages.CardDrawnMessage;
@@ -21,6 +22,8 @@ import Messages.GameOverMessage;
 import Messages.NextPlayerMessage;
 import Messages.PlayerMovedMessage;
 import Messages.PurchasePromptMessage;
+import Monopoly.Controller;
+import Monopoly.GameSettings;
 import Monopoly.Controller.JAIL_CHOICE;
 import Monopoly.GameSettings.Theme;
 import Spaces.AIPlayer;

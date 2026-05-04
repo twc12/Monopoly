@@ -95,6 +95,7 @@ public class AIPlayer extends Player {
 
     /**
      * Checks if the given player owns any railroad properties.
+     * 
      * @param player the player to check
      * @return true if the player owns at least one railroad, false otherwise
      */
@@ -111,6 +112,7 @@ public class AIPlayer extends Player {
     /**
      * Gets the net worth of the player, calculated as their cash reserves
      * plus the purchase price of all owned properties.
+     * 
      * @param player the player to evaluate
      * @return the player's total net worth
      */
@@ -127,6 +129,7 @@ public class AIPlayer extends Player {
      * Determines which opposing player is the most vulnerable, based on
      * net worth, whether they own a monopoly, and whether they own any railroads.
      * The AI uses this player as its primary target when making strategic decisions.
+     * 
      * @return the player deemed weakest among all opponents
      */
     private Player determineWeakest() {

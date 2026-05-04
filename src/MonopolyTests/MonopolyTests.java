@@ -805,5 +805,34 @@ class MonopolyTests {
 	    ((CommunityChest) spaces.get(2)).getImageFile();
 	    ((CommunityChest) spaces.get(2)).hasImage();
 	}
+	
+	@Test
+	void whoIsWeakest() {	
+		Controller controller = new Controller();
+		Model model = controller.model;
+		controller.initializeGameSettings(new GameSettings());
+		AIPlayer playerOne = new AIPlayer(0, "", "", controller.getModel());
+		AIPlayer playerTwo = new AIPlayer(1, "", "", controller.getModel());
+		AIPlayer playerThree = new AIPlayer(2, "", "", controller.getModel());
+		
+		// Only two brown properties, player now has monopoly
+		playerOne.addProperty(new RealEstate(Color.BROWN, "Mediterranean Avenue", 60, new int[]{2,4,10,30,90,160,250}));
+		playerOne.addProperty(new RealEstate(Color.BROWN, "Baltic Avenue", 60, new int[]{4,8,20,60,180,320,450}));	
+		playerTwo.addProperty(new Railroad("Reading Railroad", new int[] {25, 50, 10, 200}, "railroad.png"));
+		playerOne.addProperty(new Railroad("Reading Railroad", new int[] {25, 50, 10, 200}, "railroad.png"));
+					
+		playerTwo.addCash(-1500);
+		
+		playerOne.playAITurn(controller);
+		assertEquals(playerOne.getWeakest().getId(), playerTwo.getId());
+		playerOne.playAITurn(controller);
+		assertEquals(playerOne.getWeakest().getId(), playerTwo.getId());
+		
+		playerOne.putInJail();
+		playerOne.playAITurn(controller);
+		model.getPlayers().remove(0);
+		playerOne.playAITurn(controller);
+	}
+	
 
 }

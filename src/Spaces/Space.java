@@ -5,15 +5,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import Monopoly.Model;
-import javafx.scene.paint.Color;
+
+
+/**
+ * Space - the top level abstract class for all of the monopoly spaces on the board.
+ * All spaces have a name, a reference to the next space, players, etc.
+ */
 public abstract class Space implements Serializable{
-	private static final long serialVersionUID = 1L;
 	
+	private static final long serialVersionUID = 1L;
 	
 	public Space nextSpace;
 	public String name;
 	public Set<Player> playersOnSpace;
 	public String imageFile = "";
+	
 	/**
 	 * Constructor: Initualizes a space 
 	 * @param name (String): The name of the space "BoardWalk"
@@ -87,9 +93,11 @@ public abstract class Space implements Serializable{
 		return false;
 	}
 
+	/**
+	 * Called whenever a player lands on any space. Each subclass will have their own implementation.
+	 * @param player - Player who landed on the space
+	 * @param model - Model a reference to the wider game state
+	 */
 	protected abstract void processSpace(Player player, Model model);
 
-		
-	
-	
 }

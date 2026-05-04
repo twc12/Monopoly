@@ -27,55 +27,49 @@ import Spaces.Property;
 import Spaces.Space;
 import View.View;
 
-// game state
+/**
+ * Model - game state of a particular game of monopoly.
+ * Contains the board, player, cards, gamesettings, etc
+ */
 public class Model extends Observable implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * This variable must be filled in by a future implementation where the theme is 
-	 * passed all the way down from the view into this models constructor and then changes 
-	 * this theme variable. Right now for player icons, alex needs it hard coded BUT you should be able
-	 * the change it later. just make sure that the player icons pngs are named the same as the ones in
-	 * the playerIconsToPickFrom variable with "PlayerIcon.png" added to the end 
-	 */
-	private String theme;// = "standardTheme";
+	private GameSettings gameSettings;					//settings chosen by user in startup screen
+	private String theme;	
 	private int totalHumanPlayers;
 	private int totalAiPlayers;
-	/**
-	 * This holds the spaces of the monopoly board
-	 */
-	public Board board; 
 	
-	private List<Player> players;
+	private List<Player> players;						//references to all players
 	private Player currentPlayer;
 	
-	private Deck cardDeck;
-	private Card jailCard;
-	
-	private int lastDiceRollAmmt;
-
-	private GameSettings gameSettings; // Placeholder for Jake
-	
+	private int lastDiceRollAmmt;						//turn-specific values
 	private int turnCounter = 1;
 	private boolean gameFinished = false;
 	
+	public Board board; 								//board contains spaces
+	private Deck cardDeck;
+	private Card jailCard;
 	
-	//constructor for JUNIT, doesn't create a view
-	public Model() {
-		this(null); 
-	}
-	
-	//constructor, initializes board, players
+	/**
+	 * Constructor. Initializes board, players, game, etc.
+	 * @param viewClassObj, the view being notified
+	 */
 	public Model(View viewClassObj) {
-
-		gameSettings = null; // we havent gotten it yet from the view 
-		//	required for JUNIT not having view
-		if (viewClassObj != null) {
+		gameSettings = null; 						// we havent gotten it yet from the view 
+		if (viewClassObj != null) {					//	required for JUNIT not having view
 			this.addObserver(viewClassObj);
 		}
 		makeJailCard();
-		// THE POST INIT WILL BE CALLED ONCE GAME SETTINGS ARE RECIVED
+		// Note: once game settings are recieved, post_init() will be called
+	}
+	
+	
+	/**
+	 * Constructor for headless version used by JUNIT
+	 */
+	public Model() {
+		this(null); 
 	}
 	
 	/**

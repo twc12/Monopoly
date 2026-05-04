@@ -17,22 +17,31 @@ import Spaces.TaxSpace;
 import Spaces.Utility;
 import Spaces.RealEstate.Color;
 
-//11x11 board
+/**
+ * Board class, holding all of the spaces. An instance of the model contains 1 board.
+ */
 public class Board implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+	private Model model;
+
 	private int totalSpaces = 40;	
 	private int boardWidth = 11;	
 	
 	private LinkedList<Space> spacesLinkedList;
-	public Space firstSpace;
+	
+	public Space firstSpace;											//references kept to spaces used frequently by cards/etc
 	public Jail jailSpace;
     private FreeParking parking;
-	private Model model;
     
-	private int[] utilityRentStages = new int[] {4, 10};
+	private int[] utilityRentStages = new int[] {4, 10};				//common rentstages used by Utility/Roadroad spaces
 	private int[] railRoadRentStages = new int[] {25, 50, 100, 200};
 	
+	/**
+	 * Constructor for board. Populates list of 40 spaces with instances of each type of space.
+	 * Links Space nodes creating singly linked list of spaces.
+	 * 
+	 * @param model - Model gamestate, used for getting theme to populate board based on theme.
+	 */
     public Board(Model model) {
         spacesLinkedList = new LinkedList<>(); 
         jailSpace = new Jail("inJailVisiting.png");

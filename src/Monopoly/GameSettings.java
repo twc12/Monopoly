@@ -2,9 +2,13 @@ package Monopoly;
 
 import java.io.Serializable;
 
+/**
+ * GameSettings - the player's chosen rules/theme selected when starting the game
+ */
 public class GameSettings implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
+	//variables for each of the configurable rules/themes
 	private int amountOfPlayers;
 	private int amountOfAIPlayers;
 	private int startingMoney;
@@ -13,7 +17,6 @@ public class GameSettings implements Serializable{
 	private boolean optionalBuying;
     private boolean freeParkingEnabled;
     private boolean tradingEnabled;
-    
     public enum Theme {
         STANDARD,
         PIRATE,

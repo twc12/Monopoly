@@ -1,41 +1,29 @@
 package Monopoly;
 
 import Cards.Card;
-import Cards.Deck;
 import Spaces.AIPlayer;
-import Spaces.Chance;
-import Spaces.CostSpace;
-import Spaces.FreeParking;
-import Spaces.GoSpace;
-import Spaces.Jail;
 import Spaces.Player;
 import Spaces.Property;
-import Spaces.Railroad;
 import Spaces.RealEstate;
 import Spaces.Space;
-import Spaces.TaxSpace;
-import Spaces.Utility;
 import View.View;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.*;
+
+/**
+ * Controller - contains methods that act on the game-state and flow the game
+ */
 public class Controller {
 	
+	public Model model;						//reference to single game-state Model object
 	public enum JAIL_CHOICE{
-		ROLL_DUBLES, PAY_FIFTY, OUT_OF_JAIL_CARD
+		ROLL_DUBLES,
+		PAY_FIFTY,
+		OUT_OF_JAIL_CARD
 	}
 
-	public Model model;
-	
-	//contructor for JUNIT, doesn't create a view
-	public Controller() {
-		this.model = new Model();
-	}
-	
 	/**
 	 * Constructor: This constructor will be called 
 	 * when the user selects "Load Game" in the start menu.
@@ -69,8 +57,19 @@ public class Controller {
 		}
 	}
 		
+	/**
+	 * Contructor without File
+	 * @param viewClassObj
+	 */
 	public Controller(View viewClassObj) {
 		model = new Model(viewClassObj);
+	}
+	
+	/**
+	 * Headless controller, doesn't have a View or File
+	 */
+	public Controller() {
+		this.model = new Model();
 	}
 
 	/**

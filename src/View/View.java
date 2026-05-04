@@ -2,6 +2,7 @@ package View;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -302,6 +303,8 @@ public class View extends Application implements Observer {
 	 */
 	private StackPane jailSpaceStackPane;
 	private boolean aiLogsEnabled = false;
+	
+	private String osName; // used for text to speech function detection
 
 	public static void main(String[] args) {
 		launch(args);
@@ -309,6 +312,10 @@ public class View extends Application implements Observer {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		
+		// figure out what system the user is on to tell what text to speach function to run 
+		osName = System.getProperty("os.name").toLowerCase();
+		
 		this.stage = stage;
 
 		//icon in windows along the taskbar
@@ -2224,9 +2231,6 @@ public class View extends Application implements Observer {
 		a.setHeaderText("Human - Ai Attempting Trade!");
 		a.show();
 	}
-	
-	
-	
 
 	/**
 	 * NOT IMPLEMENTED YET, this will be called when the (nicer looking) build
@@ -2928,6 +2932,27 @@ public class View extends Application implements Observer {
 	 * @param aiAttemptTradeMsg (AiAttemptingTradeMessage): holds all the trade information, buyer, property, offer.
 	 */
 	private void showAiTryingToTradeWithYouPrompt(AiAttemptingTradeMessage aiAttemptTradeMsg) {
+		
+		// have the ai talk to you about the trade you want hahahahahahah
+		String strToSay = "Hello! May I please trade you "+aiAttemptTradeMsg.getTradeOfferCash()+" for your "+aiAttemptTradeMsg.getDesiredProperty().getName();
+		
+		if (osName.contains("mac")) {
+			try {
+				Runtime.getRuntime().exec("say '"+strToSay+"'");
+			} catch (IOException e) { e.printStackTrace(); } 
+		}
+		else if (osName.contains("win")) {
+			// i need a powersheell script to start the synthesizer and speak 
+			String cmd = "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('" + strToSay + "')";
+			ProcessBuilder windowsSpeachCmd = new ProcessBuilder("powershell.exe", "-Command", cmd);
+			 try { windowsSpeachCmd.start(); }
+			 catch (IOException e) { e.printStackTrace(); } 
+		}
+		else if (osName.contains("nux") || osName.contains("nix")) {
+			try { Runtime.getRuntime().exec("espeak '"+strToSay+"'"); }
+			catch (IOException e) { e.printStackTrace(); } 
+		}
+		
 		Alert a = new Alert(Alert.AlertType.INFORMATION);
 		((Button) a.getDialogPane().lookupButton(ButtonType.OK)).setText("Cancle");
 		// create the view of the offer 

@@ -59,6 +59,10 @@ public class AIPlayer extends Player {
         prevTradeAttempsPropertiesMap = new HashMap<>();
         successsFullTrades = new HashMap<>();
     }
+    
+    public Player getWeakest() {
+    	return weakestPlayer;
+    }
 
     /**
      * Checks if this is an AI player or not
@@ -187,12 +191,17 @@ public class AIPlayer extends Player {
             safetyCap++;
             if (this.isInJail()) break;
         }
-           
-        
 
         calculateTrade();
         build(controller);
-        controller.processEndTurn();
+        
+        // This check is for unit testing purposes
+        if (controller.getCurrentPlayer() != null) {
+        	controller.processEndTurn();
+        }
+        else {
+        	return;
+        }
     }
 
     /**

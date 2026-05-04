@@ -6,6 +6,11 @@ public class GoSpace extends Space {
 	
 	private int amountEarnedWhenPassingGo = 200;
 	
+	/**
+	 * Represents the GO space where players gain $200 cash or a custom amount 
+	 * for passing, this is also where all player start the game from
+	 * @param imageFile the image file to be displayed on this space
+	 */
 	public GoSpace(String imageFile) {
 		super("GO");
 		this.imageFile = imageFile;

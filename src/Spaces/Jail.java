@@ -11,7 +11,12 @@ public class Jail extends Space {
 	
 	private Set<Player> currPlayersInJail;
 	public  Map<Player, Integer> playerAttemptsToGetOutMapping;
-	
+
+	/**
+	 * Jail - the jail space on the board where a player is send after
+	 * going to jail
+	 * @param imageFile the image displayed on the GUI board
+	 */
 	public Jail(String imageFile) {
 		super("Jail");
 		playerAttemptsToGetOutMapping = new HashMap<>();

@@ -104,7 +104,7 @@ public class CardBuilder implements Serializable{
 			cardDescription.add("Get Out Of Brig Free!\nThis Card May Be Kept");
 			cardDescription.add("Sail Forward 3 Spaces");
 			cardDescription.add("Make General Repairs on\nall yer properties\nFor each hut pay $25\nFor each inn pay $100");
-
+ 
 			// Community Chest
 			cardDescription.add("Pirate Insurance Matures\nCollect $100");
 			cardDescription.add("Bank Error In Yer Favor\nCollect $200");
